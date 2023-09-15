@@ -1,11 +1,64 @@
-
 <ion-header class="ion-no-border" [translucent]="true">
-  <ion-toolbar color="diamante">
-    <ion-title>Historial de sesiones</ion-title>
-    <app-options slot="end"></app-options>
-  </ion-toolbar>
+    <ion-toolbar color="diamante">
+        <ion-title>Historial de sesiones</ion-title>
+        <app-options slot="end"></app-options>
+    </ion-toolbar>
 </ion-header>
 
-<ion-content >
+<ion-content>
+
+    <div class="main">
+        <div *ngIf="!loadActivities">
+            <ion-row *ngFor="let result of [1,1,1]">
+
+                <ion-col size="4">
+                    <ion-skeleton-text [animated]="true" style="width: 100%; height: 30px;"></ion-skeleton-text>
+                </ion-col>
+
+                <ion-col size="4">
+                    <ion-skeleton-text [animated]="true" style="width: 100%; height: 30px;"></ion-skeleton-text>
+                </ion-col>
+
+                <ion-col size="4">
+                    <ion-skeleton-text [animated]="true" style="width: 100%; height: 30px;"></ion-skeleton-text>
+                </ion-col>
+
+
+
+            </ion-row>
+        </div>
+
+
+        <table *ngIf="loadActivities" mat-table [dataSource]="dataSource">
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="user">
+                <th style="background-color: #f1f1f1; color: #000; font-size: 16px; font-weight: bold;" mat-header-cell *matHeaderCellDef> Nombre </th>
+                <td mat-cell *matCellDef="let element">
+
+                    {{element.user}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="info">
+                <th style="background-color: #f1f1f1; color: #000; font-size: 16px; font-weight: bold;" mat-header-cell *matHeaderCellDef> Información de sesión </th>
+                <td mat-cell *matCellDef="let element"> {{element.info}} </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="date">
+                <th style="background-color: #f1f1f1; color: #000; font-size: 16px; font-weight: bold;" mat-header-cell *matHeaderCellDef> Fecha </th>
+                <td mat-cell *matCellDef="let element"> {{element.date}} </td>
+            </ng-container>
+
+
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns;  sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator #paginatorHistory [pageSizeOptions]="[20, 50, 100]" showFirstLastButtons aria-label="Seleccionar pagina">
+        </mat-paginator>
+    </div>
 
 </ion-content>

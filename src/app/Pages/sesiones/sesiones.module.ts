@@ -8,6 +8,8 @@ import { SesionesPageRoutingModule } from './sesiones-routing.module';
 
 import { SesionesPage } from './sesiones.page';
 import { ComponentsModule } from 'src/app/Components/components.module';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
   imports: [
@@ -15,7 +17,9 @@ import { ComponentsModule } from 'src/app/Components/components.module';
     FormsModule,
     IonicModule,
     SesionesPageRoutingModule,
-    ComponentsModule
+    ComponentsModule,
+    MatTableModule,
+    MatPaginatorModule
   ],
   declarations: [SesionesPage]
 })
