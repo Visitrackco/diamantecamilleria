@@ -1,0 +1,12 @@
+.center {
+    text-align: center;
+    opacity: .5;
+}
+
+ion-item {
+    cursor: pointer;
+}
+
+ion-item:hover {
+    background: rgba(0,0,0,0.3) !important;
+}

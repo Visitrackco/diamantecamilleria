@@ -1,0 +1,59 @@
+<ion-content>
+
+
+
+
+
+ <div class="main">
+
+  <div class="cerrar">
+    <ion-icon name="close" (click)="close()"></ion-icon>
+  </div>
+
+  <div class="header">
+    <ion-avatar style="width: 100px; height: 100px;">
+      <img [src]="logo" alt="">
+    </ion-avatar>
+    <h4>¡Hola {{ name }}!</h4>
+
+    <ion-button mode="ios" fill="outline" color="diamante" (click)="account()">Configuraciòn de cuenta</ion-button> <br>
+  </div>
+
+  <div class="info">
+
+    <div class="loading" *ngIf="load" >
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <div *ngIf="zones.length > 0" class="account">
+      <h5>Hospitales</h5>
+      <ion-item lines="none" *ngFor="let zone of zones">
+   
+        <ion-label class="ion-text-wrap">{{ zone.Name }}</ion-label>
+        <ion-toggle slot="end" [checked]="zoneSelect == zone.IDVT" [value]="zone" (ionChange)="changeZone($event)"></ion-toggle>
+      </ion-item>
+    </div>
+
+    <h5>Opciones</h5>
+
+    <ion-item lines="none" mode="ios" (click)="history()">
+      <ion-icon color="diamante" slot="start" name="newspaper"></ion-icon>
+      <ion-label>Historial</ion-label>
+    </ion-item>
+
+    <ion-item lines="none" mode="ios" (click)="exit()">
+      <ion-icon color="danger" slot="start" name="close"></ion-icon>
+      <ion-label>Cerrar sesiòn</ion-label>
+    </ion-item>
+
+
+    
+  </div>
+
+  <div class="footer">
+    Camilleria Diamante
+  </div>
+ </div>
+
+
+</ion-content>

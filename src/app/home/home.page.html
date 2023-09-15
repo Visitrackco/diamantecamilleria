@@ -1,0 +1,80 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar color="diamante">
+    <ion-title>
+      Camilleria
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="contenedor margin">
+    <!-- <ion-grid>
+  <ion-row>
+    <ion-col size="6"> <ion-button expand="block" fill="outline" color="diamante" (click)="changeApp('1')">VT WEB</ion-button ></ion-col>
+    <ion-col size="6"> <ion-button expand="block" fill="outline" color="danger" (click)="changeApp('2')">VT ENTRENA</ion-button></ion-col>
+  </ion-row>
+</ion-grid> -->
+
+  <div class="center"> <img src="/assets/diamante.png" alt=""></div>
+
+    <div class="entrena">
+     
+        <h3>Credenciales de Usuario</h3>
+   
+            <!-- <ion-item lines="none">
+      <ion-checkbox slot="start" value="" color="diamante" (ionChange)="changeLogin( $event )"></ion-checkbox>
+      <ion-label>Traducir al inglés</ion-label>
+    </ion-item> -->
+            <ion-item lines="none" class="campos">
+                <ion-icon slot="start" name="person-outline"></ion-icon>
+                <ion-input (ionChange)="change($event, 1)" type="text" placeholder="Usuario" (keyup.enter)="sessionInit()"></ion-input>
+            </ion-item>
+
+            <ion-item lines="none" class="campos">
+                <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+                <ion-input (ionChange)="change($event, 2)" clearOnEdit="false" type="password" placeholder="Contraseña" (keyup.enter)="sessionInit()"></ion-input>
+            </ion-item>
+
+
+            <div *ngFor="let h of rg">
+
+              {{h}}
+            </div>
+
+            <div class="separador"></div>
+
+
+        <ion-grid fixed>
+            <ion-row >
+                <ion-col size="12" class="center">
+                    <ion-button (click)="sessionInit()" mode="ios" class="btn" color="diamante">Iniciar sesiòn</ion-button>
+                </ion-col>
+            </ion-row>
+
+            <ion-row>
+
+              <ion-col size="12">
+
+
+                <div class="" id="google-button" ></div>
+
+              </ion-col>
+            </ion-row>
+
+            <div *ngIf="load">
+                <ion-row>
+                    <ion-col size="10" offset="1" class="center row">
+                        <ion-spinner name="crescent" color="diamante"></ion-spinner>
+                    </ion-col>
+                </ion-row>
+
+                <ion-row>
+                    <ion-col size="10" offset="1" class="center row">
+                        <p>Entrando a camilleria</p>
+                    </ion-col>
+                </ion-row>
+            </div>
+        </ion-grid>
+    </div>
+</div>
+</ion-content>

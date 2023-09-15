@@ -1,0 +1,56 @@
+
+.contenedor {
+  width: 100%;
+  max-width: 400px;
+
+  img {
+    text-align: center;
+  }
+
+}
+
+.margin {
+  margin: 50px auto;
+}
+
+.contenedor h3 {
+  text-align: center;
+  width: 100%;
+  font-size: 20px;
+  margin-bottom: 20px;
+  opacity: .5;
+
+}
+
+.campos {
+  width: 100%;
+  border: 1px solid rgba(0,0,0,0.3);
+  border-radius: 5px;
+  padding: 5px 10px !important;
+  margin-bottom: 10px;
+  opacity: .7;
+}
+
+.btn {
+  width: 400px;
+  margin: 0;
+  font-size: 14px;
+}
+
+.separador {
+  margin-bottom: 50px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#google-button {
+  width: 100%;
+display: flex;
+justify-content: center;
+align-items: center;
+
+}

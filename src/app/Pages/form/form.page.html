@@ -1,0 +1,339 @@
+<ion-header class="ion-no-border" [translucent]="true">
+  <ion-toolbar color="diamante">
+    <ion-title>Formulario Rionegro</ion-title>
+    <app-options slot="end"></app-options>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="main" *ngIf="!loadInfo">
+    <ion-skeleton-text [animated]="true" style="width: 100%; height: 40px"></ion-skeleton-text>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6">
+          <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+        </ion-col>
+        <ion-col size="6">
+          <ion-skeleton-text [animated]="true"  style="width: 90%; height: 70px"></ion-skeleton-text>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="6">
+          <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+        </ion-col>
+        <ion-col size="6">
+          <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="6">
+          <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+        </ion-col>
+        <ion-col size="6">
+          <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <ion-skeleton-text [animated]="true" style="width: 100%; height: 40px"></ion-skeleton-text>
+
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6">
+          <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+        </ion-col>
+        <ion-col size="6">
+          <ion-skeleton-text [animated]="true"  style="width: 90%; height: 70px"></ion-skeleton-text>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="6">
+          <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+        </ion-col>
+        <ion-col size="6">
+          <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="6">
+          <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+        </ion-col>
+        <ion-col size="6">
+          <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <form *ngIf="loadInfo" class="main" [formGroup]="myForm" (ngSubmit)="doSomething()">
+
+    <h3 class="title">Solicitud de camilleria</h3>
+    <br>
+
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6">FECHA DE SOLICITUD</ion-col>
+        <ion-col size="6">
+
+          <mat-form-field>
+            <mat-label>Seleccione fecha</mat-label>
+            <input readonly matInput [matDatepicker]="picker" formControlName="fecha">
+
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="6">HORA DE SOLICITUD</ion-col>
+        <ion-col size="6">
+
+
+          <mat-form-field>
+            <mat-label>Seleccione Hora</mat-label>
+            <input readonly matInput [ngxTimepicker]="pickera" formControlName="hora" />
+
+            <ngx-material-timepicker-toggle matIconSuffix [for]="pickera"></ngx-material-timepicker-toggle>
+            <ngx-material-timepicker color="primary" #pickera></ngx-material-timepicker>
+          </mat-form-field>
+        </ion-col>
+      </ion-row>
+
+
+      <ion-row>
+        <ion-col size="6">NOMBRE DE QUIEN SOLIICITA</ion-col>
+        <ion-col size="6">
+
+
+          <mat-form-field>
+            <mat-label>Escriba un nombre</mat-label>
+            <input matInput formControlName="solicita" />
+
+
+          </mat-form-field>
+        </ion-col>
+      </ion-row>
+
+      <h4 class="title">Origen y Destino</h4>
+      <br>
+
+
+      <ion-row>
+        <ion-col size="6">DONDE ESTA UBICADO LO QUE SE DEBE TRANSPORTAR</ion-col>
+        <ion-col size="6">
+
+          <mat-form-field>
+            <mat-label>Punto</mat-label>
+            <mat-select formControlName="origen">
+              <input placeholder="Buscar punto" class="search" (keyup)="onKey($event)">
+
+              <mat-option *ngFor="let state of selectedStates" [value]="state">{{state.Name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="6">HACIA DONDE SE DEBE TRANSPORTAR</ion-col>
+        <ion-col size="6">
+
+          <mat-form-field>
+            <mat-label>Punto</mat-label>
+            <mat-select formControlName="destino">
+              <input placeholder="Buscar punto" class="search" (keyup)="onKey($event)">
+
+              <mat-option *ngFor="let state of selectedStates" [value]="state">{{state.Name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ion-col>
+      </ion-row>
+
+
+
+      <ion-row>
+        <ion-col size="12" class="title">MOTIVOS DE SOLICITUD - HOSPITAL DE RIONEGRO</ion-col>
+
+      </ion-row>
+      <ion-row>
+        <ion-col size="12" [class.rojo]="(isClick && myForm.controls['motivos']['errors'])">
+
+          <ion-radio-group formControlName="motivos" (ionChange)="changeMot($event)">
+
+            <ion-item lines="none">
+              <ion-radio value="TRANSPORTAR DOCUMENTOS ADMINISTRATIVOS (NO PUEDEN ESPERAR LA RUTA)" slot="start">
+              </ion-radio>
+              <ion-label>TRANSPORTAR DOCUMENTOS ADMINISTRATIVOS (NO PUEDEN ESPERAR LA RUTA)</ion-label>
+            </ion-item>
+
+            <ion-item lines="none">
+              <ion-radio value="TRANSPORTAR DOCUMENTOS ASISTENCIALES (NO PUEDEN ESPERAR LA RUTA)" slot="start">
+              </ion-radio>
+              <ion-label>TRANSPORTAR DOCUMENTOS ASISTENCIALES (NO PUEDEN ESPERAR LA RUTA)</ion-label>
+            </ion-item>
+
+            <ion-item lines="none">
+              <ion-radio value="TRANSPORTAR EQUIPOS" slot="start"></ion-radio>
+              <ion-label>TRANSPORTAR EQUIPOS</ion-label>
+            </ion-item>
+
+            <ion-item lines="none">
+              <ion-radio value="TRANSPORTAR HEMOCOMPONENTES GENERALES" slot="start"></ion-radio>
+              <ion-label>TRANSPORTAR HEMOCOMPONENTES GENERALES</ion-label>
+            </ion-item>
+
+
+            <ion-item lines="none">
+              <ion-radio value="TRANSPORTAR HISTORIA CLÍNICA" slot="start"></ion-radio>
+              <ion-label>TRANSPORTAR HISTORIA CLÍNICA</ion-label>
+            </ion-item>
+
+
+            <ion-item lines="none">
+              <ion-radio value="TRANSPORTAR MEDICAMENTOS" slot="start"></ion-radio>
+              <ion-label>TRANSPORTAR MEDICAMENTOS</ion-label>
+            </ion-item>
+
+            <ion-item lines="none">
+              <ion-radio value="TRANSPORTAR MOBILIARIO" slot="start"></ion-radio>
+              <ion-label>TRANSPORTAR MOBILIARIO</ion-label>
+            </ion-item>
+
+            <ion-item lines="none">
+              <ion-radio value="TRANSPORTAR MUESTRAS (NO PUEDEN IR EN EL TUBO NEUMÁTICO)" slot="start"></ion-radio>
+              <ion-label>TRANSPORTAR MUESTRAS (NO PUEDEN IR EN EL TUBO NEUMÁTICO)</ion-label>
+            </ion-item>
+
+            <ion-item lines="none">
+              <ion-radio value="TRANSPORTAR PACIENTE" slot="start"></ion-radio>
+              <ion-label>TRANSPORTAR PACIENTE</ion-label>
+            </ion-item>
+
+            <ion-item lines="none">
+              <ion-radio value="TRANSPORTAR KIT DE OXIGENO" slot="start"></ion-radio>
+              <ion-label>TRANSPORTAR KIT DE OXIGENO</ion-label>
+            </ion-item>
+
+
+            <ion-item lines="none">
+              <ion-radio value="TRANSPORTE DE ALIMENTACIÓN (NOCTURNO)" slot="start"></ion-radio>
+              <ion-label>TRANSPORTE DE ALIMENTACIÓN (NOCTURNO)</ion-label>
+            </ion-item>
+
+          </ion-radio-group>
+        </ion-col>
+      </ion-row>
+
+
+
+      <ion-row *ngIf="isPaciente">
+        <ion-col size="12" class="title">NOMBRE DEL PACIENTE</ion-col>
+
+      </ion-row>
+
+      <ion-row *ngIf="isPaciente">
+        <ion-col size="12">
+
+          <mat-form-field>
+            <mat-label>Nombre</mat-label>
+
+            <input formControlName="nombrepac" placeholder="Escriba Nombre" matInput>
+
+          </mat-form-field>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngIf="isPaciente">
+        <ion-col size="12" class="title">RECURSOS NECESARIOS</ion-col>
+
+      </ion-row>
+      <ion-row *ngIf="isPaciente">
+        <ion-col size="12" [class.rojo]="(isClick && invalid)">
+          <ion-item lines="none">
+            <ion-checkbox value="SILLA DE RUEDAS" slot="start"  (ionChange)="change($event)"></ion-checkbox>
+            <ion-label>SILLA DE RUEDAS</ion-label>
+          </ion-item>
+
+          <ion-item lines="none">
+            <ion-checkbox value="OXIGENO" slot="start" (ionChange)="change($event)"></ion-checkbox>
+            <ion-label>OXIGENO</ion-label>
+          </ion-item>
+
+          <ion-item lines="none">
+            <ion-checkbox value="CAMILLAS" slot="start" (ionChange)="change($event)"></ion-checkbox>
+            <ion-label>CAMILLAS</ion-label>
+          </ion-item>
+
+          <ion-item lines="none">
+            <ion-checkbox value="NINGUNO" slot="start" (ionChange)="change($event)"></ion-checkbox>
+            <ion-label>NINGUNO</ion-label>
+          </ion-item>
+
+        </ion-col>
+      </ion-row>
+
+
+      <ion-row *ngIf="isPaciente">
+        <ion-col size="12" class="title">SE ENCUENTRA AISLADO</ion-col>
+
+      </ion-row>
+      <ion-row *ngIf="isPaciente">
+        <ion-col size="12" [class.rojo]="(isClick && myForm.controls['aislado']['errors'])">
+
+          <ion-radio-group formControlName="aislado">
+
+            <ion-item lines="none">
+              <ion-radio value="SI" slot="start" >
+              </ion-radio>
+              <ion-label>SI</ion-label>
+            </ion-item>
+
+            <ion-item lines="none">
+              <ion-radio value="NO" slot="start" >
+              </ion-radio>
+              <ion-label>NO</ion-label>
+            </ion-item>
+
+          
+
+          </ion-radio-group>
+        </ion-col>
+      </ion-row>
+
+
+      <ion-row>
+        <ion-col size="12" class="title">OBSERVACIONES ADICIONALES</ion-col>
+
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12">
+
+          <mat-form-field>
+            <mat-label>Observaciòn</mat-label>
+
+            <textarea formControlName="obs" placeholder="Escriba Observaciòn" matInput></textarea>
+
+          </mat-form-field>
+        </ion-col>
+      </ion-row>
+
+
+
+    </ion-grid>
+
+
+
+
+
+
+    <input class="btn" type="submit" value="Guardar">
+
+  </form>
+
+
+
+</ion-content>
