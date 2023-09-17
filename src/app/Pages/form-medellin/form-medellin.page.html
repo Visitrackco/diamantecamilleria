@@ -163,81 +163,10 @@
 
           <ion-radio-group formControlName="motivos" (ionChange)="changeMot($event)">
 
-            <ion-item lines="none">
-              <ion-radio value="TRANSPORTAR ANTÍGENO COVID" slot="start">
+            <ion-item lines="none" *ngFor="let motivo of motivosList">
+              <ion-radio [value]="motivo" slot="start">
               </ion-radio>
-              <ion-label>TRANSPORTAR ANTÍGENO COVID</ion-label>
-            </ion-item>
-
-            <ion-item lines="none">
-              <ion-radio value="CAMBIO DE CORTINAS (MENSAJEROS DEL HOSPITAL)" slot="start">
-              </ion-radio>
-              <ion-label>CAMBIO DE CORTINAS (MENSAJEROS DEL HOSPITAL)</ion-label>
-            </ion-item>
-
-            <ion-item lines="none">
-              <ion-radio value="TRANSPORTAR CILINDROS" slot="start"></ion-radio>
-              <ion-label>TRANSPORTAR CILINDROS</ion-label>
-            </ion-item>
-
-            <ion-item lines="none">
-              <ion-radio value="TRANSPORTAR DOCUMENTOS ADMINISTRATIVOS (MENSAJEROS DEL HOSPITAL)" slot="start"></ion-radio>
-              <ion-label>TRANSPORTAR DOCUMENTOS ADMINISTRATIVOS (MENSAJEROS DEL HOSPITAL)</ion-label>
-            </ion-item>
-
-
-            <ion-item lines="none">
-              <ion-radio value="TRANSPORTAR EQUIPOS" slot="start"></ion-radio>
-              <ion-label>TRANSPORTAR EQUIPOS</ion-label>
-            </ion-item>
-
-
-            <ion-item lines="none">
-              <ion-radio value="TRANSPORTAR HEMOCOMPONENTES" slot="start"></ion-radio>
-              <ion-label>TRANSPORTAR HEMOCOMPONENTES</ion-label>
-            </ion-item>
-
-            <ion-item lines="none">
-              <ion-radio value="TRANSPORTAR HISTORIA CLÍNICA" slot="start"></ion-radio>
-              <ion-label>TRANSPORTAR HISTORIA CLÍNICA</ion-label>
-            </ion-item>
-
-            <ion-item lines="none">
-              <ion-radio value="TRANSPORTAR MEDICAMENTOS (NO PUEDEN ESPERAR RUTA)" slot="start"></ion-radio>
-              <ion-label>TRANSPORTAR MEDICAMENTOS (NO PUEDEN ESPERAR RUTA)</ion-label>
-            </ion-item>
-
-          
-
-            <ion-item lines="none">
-              <ion-radio value="TRANSPORTAR MOBILIARIO (MENSAJEROS DEL HOSPITAL)" slot="start"></ion-radio>
-              <ion-label>TRANSPORTAR MOBILIARIO (MENSAJEROS DEL HOSPITAL)</ion-label>
-            </ion-item>
-
-
-            <ion-item lines="none">
-              <ion-radio value="TRANSPORTAR MUESTRA (NO PUEDE ESPERAR LA RUTA)" slot="start"></ion-radio>
-              <ion-label>TRANSPORTAR MUESTRA (NO PUEDE ESPERAR LA RUTA)</ion-label>
-            </ion-item>
-
-            <ion-item lines="none">
-              <ion-radio value="TRANSPORTAR PACIENTE" slot="start"></ion-radio>
-              <ion-label>TRANSPORTAR PACIENTE</ion-label>
-            </ion-item>
-
-            <ion-item lines="none">
-              <ion-radio value="TRANSPORTAR TETEROS" slot="start"></ion-radio>
-              <ion-label>TRANSPORTAR TETEROS</ion-label>
-            </ion-item>
-
-            <ion-item lines="none">
-              <ion-radio value="TRANSPORTAR EQUIPOS (URGENTES)" slot="start"></ion-radio>
-              <ion-label>TRANSPORTAR EQUIPOS (URGENTES)</ion-label>
-            </ion-item>
-
-            <ion-item lines="none">
-              <ion-radio value="TRANSPORTAR DOCUMENTOS ASISTENCIALES (NO PUEDE ESPERAR LA RUTA)" slot="start"></ion-radio>
-              <ion-label>TRANSPORTAR DOCUMENTOS ASISTENCIALES (NO PUEDE ESPERAR LA RUTA)</ion-label>
+              <ion-label>{{ motivo.Name }}</ion-label>
             </ion-item>
 
           </ion-radio-group>

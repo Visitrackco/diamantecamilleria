@@ -20,6 +20,9 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
+                  
+              "src/firebase-messaging-sw.js",
+              "src/manifest.json" ,
               {
                 "glob": "**/*",
                 "input": "src/assets",
@@ -30,6 +33,7 @@
                 "input": "node_modules/ionicons/dist/ionicons/svg",
                 "output": "./svg"
               }
+          
             ],
             "styles": ["src/theme/variables.scss", "src/global.scss"],
             "scripts": []
@@ -100,6 +104,9 @@
             "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
             "assets": [
+                  
+              "src/firebase-messaging-sw.js",
+              "src/manifest.json" ,
               {
                 "glob": "**/*",
                 "input": "src/assets",

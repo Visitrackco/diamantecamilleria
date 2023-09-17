@@ -4,6 +4,8 @@ import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker
 import { MenuController } from '@ionic/angular';
 import * as moment from 'moment-timezone';
 import { ApiService } from 'src/app/Services/api.service';
+import { SocketService } from 'src/app/Services/Sockets.service';
+import { StorageWebService } from 'src/app/Services/storage.service';
 
 @Component({
   selector: 'app-form-medellin',
@@ -21,11 +23,26 @@ export class FormMedellinPage implements OnInit {
 
   isPaciente;
 
+  motivosList = [];
+
   constructor(
     private fb: FormBuilder,
     private menuCtrl: MenuController,
-    private api: ApiService
-  ) { }
+    private api: ApiService,
+    private stg: StorageWebService,
+    private socket: SocketService
+  ) { 
+
+    this.socket.evento().subscribe({
+      next: (data) => {
+        console.log(data, 'CALIS')
+        const audio = new Audio('/assets/notification.mp3')
+        audio.play()
+     
+      },
+      error: (err) => console.error(err)
+    })
+  }
 
   locations: any[] = [
  
@@ -40,16 +57,31 @@ ionViewWillEnter() {
   this.getLocation()
 }
 
-getLocation() {
-  this.api.getLocationByZone({
-    WorkZoneID: 6842
-  }).then((rs) => {
-    console.log(rs, 'RESULTADOS')
-    this.locations = rs.response;
-    this.selectedStates = this.locations;
-    this.loadInfo = true;
-  })
+async getLocation() {
+  const login = await this.stg.getLogin();
 
+  if (login) {
+
+    this.api.getLocationByZone({
+      WorkZoneID: login[0].WorkZone
+    }).then((rs) => {
+    
+      this.locations = rs.response;
+      this.selectedStates = this.locations;
+  
+      this.api.getWMotivos(login[0].WorkZone
+      ).then((rsMotivo) => {
+        console.log(rsMotivo, 'MOT')
+        this.motivosList = rsMotivo.response;
+        this.loadInfo = true;
+      })
+  
+   
+    })
+  
+
+  }
+ 
 
 }
 
@@ -147,7 +179,7 @@ search(value: any) {
   }
 
   changeMot(event) {
-    if (event.detail.value == 'TRANSPORTAR PACIENTE') {
+    if (event.detail.value.Name == 'TRANSPORTAR PACIENTE') {
       this.isPaciente = true;
       if (this.myForm.controls['recurso']['value'].length == 0) {
         this.invalid = true;

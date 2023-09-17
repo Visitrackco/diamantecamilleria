@@ -16,6 +16,7 @@ export class ToastService {
                message,
                cssClass: 'ok',
                header: 'Camilleria Diamante dice:',
+               
                duration: 5000
           });
 

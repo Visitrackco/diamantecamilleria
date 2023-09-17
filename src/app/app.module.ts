@@ -15,6 +15,18 @@ import { PageGuard } from './Guards/page.guard';
 import { FormRNGGuard } from './Guards/formrng.guard';
 import { FormMEDGuard } from './Guards/formmed.guard';
 
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+
+
+
+const config: SocketIoConfig = { url: 'https://diamanteticvisitrack.com', options: {
+
+} };
+
+
+import { environment } from 'src/environments/environment';
+import { initializeApp } from "firebase/app";
+initializeApp(environment.configFirebase);
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -27,9 +39,9 @@ import { FormMEDGuard } from './Guards/formmed.guard';
       name: 'camilleria',
       driverOrder: [Drivers.IndexedDB, Drivers.SecureStorage, Drivers.LocalStorage]
     }),
-   
+   SocketIoModule.forRoot(config)
   ],
-  providers: [LoginGuard, PageGuard, FormRNGGuard, FormMEDGuard, Storage,{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [ LoginGuard, PageGuard, FormRNGGuard, FormMEDGuard, Storage,{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

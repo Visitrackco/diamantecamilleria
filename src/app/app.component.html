@@ -67,6 +67,15 @@
         </ion-footer>
 
     </ion-menu>
+
+    <div *ngIf="message;">
+        <h1>{{ message.notification.title }}</h1>
+        <h2>{{ message.notification.body }}</h2>
+      </div>
+      <div *ngIf="!message;">
+        No Message Arrived
+      </div>
+    
     <ion-router-outlet id="main"></ion-router-outlet>
 
 </ion-app>

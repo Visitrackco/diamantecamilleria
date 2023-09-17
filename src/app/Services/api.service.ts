@@ -105,6 +105,19 @@ export class ApiService {
 
     }
 
+    getWMotivos(WorkZoneID: any) {
+        return fetch('https://diamanteticvisitrack.com/motivos?WorkZoneID=' + WorkZoneID, {
+            method: 'GET',
+
+        }).then((response) => {
+           
+
+            return response.json().then(async (value: any) => value );
+
+        })
+
+    }
+
 }
 
 

@@ -76,7 +76,6 @@ import { ComponentsModule } from 'src/app/Components/components.module';
     ReactiveFormsModule,
     NgxMaterialTimepickerModule,
     MatSelectModule,
-
     ComponentsModule
   ],
   declarations: [FormMedellinPage]

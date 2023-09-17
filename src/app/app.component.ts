@@ -5,6 +5,10 @@ import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
 import { StorageWebService } from './Services/storage.service';
 import { ObserverService } from './Services/observer.service';
+import { Socket } from 'ngx-socket-io';
+
+import { environment } from "../environments/environment";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
 @Component({
   selector: 'app-root',
@@ -15,6 +19,8 @@ export class AppComponent {
 
   role;
 
+  title = 'af-notification';
+  message:any = null;
 
   constructor(
     private platform: Platform,
@@ -22,7 +28,9 @@ export class AppComponent {
     private router: Router,
     private menuCtrl: MenuController,
     private stg: StorageWebService,
-    private obs: ObserverService
+    private obs: ObserverService,
+    private socket: Socket,
+ 
 
   ) {
 
@@ -38,13 +46,31 @@ export class AppComponent {
   }
 
 
-   ngOnInit() {
-    // If using a custom driver:
-    // await this.storage.defineDriver(MyCustomDriver)
-
-
-
- 
+  ngOnInit(): void {
+    this.requestPermission();
+    this.listen();
+  }
+  requestPermission() {
+    const messaging = getMessaging();
+    getToken(messaging, 
+     { vapidKey: environment.configFirebase.vapidkey}).then(
+       (currentToken) => {
+         if (currentToken) {
+           console.log("Hurraaa!!! we got the token.....");
+           console.log(currentToken);
+         } else {
+           console.log('No registration token available. Request permission to generate one.');
+         }
+     }).catch((err) => {
+        console.log('An error occurred while retrieving token. ', err);
+    });
+  }
+  listen() {
+    const messaging = getMessaging();
+    onMessage(messaging, (payload) => {
+      console.log('Message received. ', payload);
+      this.message=payload;
+    });
   }
 
   async dataRole() {
@@ -52,6 +78,15 @@ export class AppComponent {
 
     if (login.length > 0) {
       this.role = login[0].infoRole[0];
+
+
+      this.socket.on('envio', (d) => {
+
+      })
+    //  this.socket.connect();
+
+
+     // this.socket.emit('connection', {token: login[0].token})
 
       console.log(this.role, 'ROLES')
     }
@@ -112,6 +147,8 @@ export class AppComponent {
       this.createdCollections().then(() => {
      
         this.dataRole()
+
+  
       
         //   this.myPlatform.changePlatform('web');
       }).catch((err) => {

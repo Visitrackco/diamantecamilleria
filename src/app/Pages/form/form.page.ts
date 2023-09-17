@@ -4,6 +4,7 @@ import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker
 import { MenuController } from '@ionic/angular';
 import * as moment from 'moment-timezone';
 import { ApiService } from 'src/app/Services/api.service';
+import { StorageWebService } from 'src/app/Services/storage.service';
 @Component({
   selector: 'app-form',
   templateUrl: './form.page.html',
@@ -22,10 +23,13 @@ export class FormPage implements OnInit {
 
   isPaciente;
 
+  motivos = [];
+
   constructor(
     private fb: FormBuilder,
     private menuCtrl: MenuController,
-    private api: ApiService
+    private api: ApiService,
+    private stg: StorageWebService
   ) { }
 
   locations: any[] = [
@@ -41,16 +45,31 @@ ionViewWillEnter() {
   this.getLocation()
 }
 
-getLocation() {
-  this.api.getLocationByZone({
-    WorkZoneID: 6993
-  }).then((rs) => {
-    console.log(rs, 'RESULTADOS')
-    this.locations = rs.response;
-    this.selectedStates = this.locations;
-    this.loadInfo = true;
-  })
+async getLocation() {
+  const login = await this.stg.getLogin();
 
+  if (login) {
+
+    this.api.getLocationByZone({
+      WorkZoneID: login[0].WorkZone
+    }).then((rs) => {
+    
+      this.locations = rs.response;
+      this.selectedStates = this.locations;
+  
+      this.api.getWMotivos({
+        WorkZoneID: login[0].WorkZone
+      }).then((rsMotivo) => {
+        this.motivos = rsMotivo.response;
+        this.loadInfo = true;
+      })
+  
+   
+    })
+  
+
+  }
+ 
 
 }
 
@@ -148,7 +167,7 @@ search(value: any) {
   }
 
   changeMot(event) {
-    if (event.detail.value == 'TRANSPORTAR PACIENTE') {
+    if (event.detail.value.Name == 'TRANSPORTAR PACIENTE') {
       this.isPaciente = true;
       if (this.myForm.controls['recurso']['value'].length == 0) {
         this.invalid = true;
