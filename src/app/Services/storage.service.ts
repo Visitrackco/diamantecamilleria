@@ -50,6 +50,10 @@ export class StorageWebService {
           return await this.storage.get('login');
      }
 
+     async getToken() {
+          return await this.storage.get('tokenweb');
+     }
+
      async closeSession() {
           return await this.storage.set('login', []);
      }

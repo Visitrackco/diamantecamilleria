@@ -9,6 +9,7 @@ import { Socket } from 'ngx-socket-io';
 
 import { environment } from "../environments/environment";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { ToastService } from './Services/toast.service';
 
 @Component({
   selector: 'app-root',
@@ -30,7 +31,7 @@ export class AppComponent {
     private stg: StorageWebService,
     private obs: ObserverService,
     private socket: Socket,
- 
+    private toast: ToastService
 
   ) {
 
@@ -56,13 +57,13 @@ export class AppComponent {
      { vapidKey: environment.configFirebase.vapidkey}).then(
        (currentToken) => {
          if (currentToken) {
-           console.log("Hurraaa!!! we got the token.....");
-           console.log(currentToken);
+           this.storage.set('tokenweb', currentToken);
          } else {
-           console.log('No registration token available. Request permission to generate one.');
+          this.toast.MsgError('No se generò el token, por favor acepte los permisos de notificaciones en su navegador')
          }
      }).catch((err) => {
-        console.log('An error occurred while retrieving token. ', err);
+
+        this.toast.MsgError('Error mientras se genera el token web ' + err)
     });
   }
   listen() {

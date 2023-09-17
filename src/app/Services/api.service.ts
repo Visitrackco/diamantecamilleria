@@ -36,9 +36,13 @@ export class ApiService {
 
     }
 
-    getUser(data: any) {
+    async getUser(data: any) {
+        const token = await this.stg.get('tokenweb')
         return fetch('https://diamanteticvisitrack.com/users?Login=' + data.Login + '&Password=' + data.Password, {
             method: 'GET',
+            headers: {
+                'x-web': token
+            }
         }).then((response) => response.json().then(async (value: any) => value))
 
     }
@@ -50,12 +54,14 @@ export class ApiService {
 
     }
 
-    googleSingIn(data: any) {
+    async googleSingIn(data: any) {
+        const token = await this.stg.get('tokenweb')
         return fetch('https://diamanteticvisitrack.com/googleSingIn', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'x-web': token
             },
             body: JSON.stringify(data)
         }).then((response) => response.json().then(async (value: any) => value))
