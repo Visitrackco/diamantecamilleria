@@ -1,0 +1,53 @@
+.name {
+    font-size: 12px;
+}
+
+.circle {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    background-color: green;
+    border-radius: 100%;
+
+}
+
+.circle2 {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    background-color: red;
+    border-radius: 100%;
+
+}
+
+.circle3 {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    background-color: orange;
+    border-radius: 100%;
+
+}
+
+.fl {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+font-size: 14px;
+
+    span {
+        margin-right: 10px;
+    }
+}
+
+.flex{
+display: flex;
+justify-content: space-between;
+align-items: center;
+font-weight: bold;
+font-size: 14px;
+
+ion-icon {
+font-size: 24px;
+}
+}

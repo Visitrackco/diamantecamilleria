@@ -11,28 +11,40 @@ export class ToastService {
           private toastCtrl: ToastController
      ) { }
 
-     async MsgOK(message: string) {
+     async MsgOK(message: string, duration?) {
           const toast = await this.toastCtrl.create({
                message,
                cssClass: 'ok',
                header: 'Camilleria Diamante dice:',
                
-               duration: 5000
+               duration: duration ? duration : 5000
           });
 
           return await toast.present();
      }
 
 
-     async MsgError(message: string) {
+     async MsgError(message: string, duration?) {
         const toast = await this.toastCtrl.create({
              message,
              cssClass: 'not',
              header: 'Camilleria Diamante dice:',
-             duration: 5000
+             duration: duration ? duration : 5000
         });
 
         return await toast.present();
    }
+
+   async notification(title, message: string, duration?) {
+     const toast = await this.toastCtrl.create({
+          message,
+          cssClass: 'alert',
+          header: title,
+          duration: duration ? duration : 15000,
+          position: 'top'
+     });
+
+     return await toast.present();
+}
 
 }

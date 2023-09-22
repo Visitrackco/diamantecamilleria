@@ -80,7 +80,7 @@
 
           <mat-form-field>
             <mat-label>Seleccione fecha</mat-label>
-            <input readonly matInput [matDatepicker]="picker" formControlName="fecha">
+            <input readonly matInput [min]="dateServer" [matDatepicker]="picker" formControlName="fecha">
 
             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
@@ -95,10 +95,10 @@
 
           <mat-form-field>
             <mat-label>Seleccione Hora</mat-label>
-            <input readonly matInput [ngxTimepicker]="pickera" formControlName="hora" />
+            <input readonly matInput [min]="timeServer" [ngxTimepicker]="pickera" formControlName="hora" />
 
             <ngx-material-timepicker-toggle matIconSuffix [for]="pickera"></ngx-material-timepicker-toggle>
-            <ngx-material-timepicker color="primary" #pickera></ngx-material-timepicker>
+            <ngx-material-timepicker (timeChanged)="timeChanged($event)" color="primary" #pickera></ngx-material-timepicker>
           </mat-form-field>
         </ion-col>
       </ion-row>
@@ -163,7 +163,7 @@
 
           <ion-radio-group formControlName="motivos" (ionChange)="changeMot($event)">
 
-            <ion-item lines="none" *ngFor="let motivo of motivos">
+            <ion-item lines="none" *ngFor="let motivo of motivosList">
               <ion-radio [value]="motivo" slot="start">
               </ion-radio>
               <ion-label>{{ motivo.Name }}</ion-label>
@@ -276,7 +276,7 @@
 
 
 
-
+    <app-loading *ngIf="saving"></app-loading>
 
     <input class="btn" type="submit" value="Guardar">
 

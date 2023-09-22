@@ -124,6 +124,167 @@ export class ApiService {
 
     }
 
+
+    CreateActivity(data: any) {
+        return fetch('https://diamanteticvisitrack.com/CreateActivity', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'x-token': data.token
+            },
+            body: JSON.stringify(data)
+        }).then((response) => {
+            console.log(response)
+            if (response.status == 401) {
+                return response.json().then(async (value: any) => {
+
+                    this.toast.MsgError(value.err)
+                    this.stg.set('login', [])
+                    this.router.navigate(['/home'])
+                    return;
+
+
+
+                })
+            }
+
+            return response.json().then(async (value: any) => value );
+
+        })
+
+    }
+
+
+    getDate(data: any) {
+        return fetch('https://diamanteticvisitrack.com/date?format=' + data.format, {
+            method: 'GET',
+            headers: {
+         
+                'x-token': data.token
+            },
+           
+        }).then((response) => {
+            console.log(response)
+            if (response.status == 401) {
+                return response.json().then(async (value: any) => {
+
+                    this.toast.MsgError(value.err)
+                    this.stg.set('login', [])
+                    this.router.navigate(['/home'])
+                    return;
+
+
+
+                })
+            }
+
+            return response.json().then(async (value: any) => value );
+
+        })
+
+    }
+
+
+    closeSession(data: any) {
+        return fetch('https://diamanteticvisitrack.com/closeSession', {
+            method: 'GET',
+            headers: {
+         
+                'x-token': data.token
+            },
+           
+        }).then((response) => {
+
+            if (response.status == 401) {
+                return response.json().then(async (value: any) => {
+
+                    this.toast.MsgError(value.err)
+                    this.stg.set('login', [])
+                    this.router.navigate(['/home'])
+                    return;
+
+
+
+                })
+            }
+
+            return response.json().then(async (value: any) => value );
+
+        })
+
+    }
+    
+    
+
+
+    apiGet(service, token) {
+        console.log(service)
+        return fetch('https://diamanteticvisitrack.com/' + service, {
+            method: 'GET',
+            headers: {
+             
+                'x-token': token
+            },
+        
+        }).then((response) => {
+
+            console.log(response)
+        
+            if (response.status == 401) {
+                return response.json().then(async (value: any) => {
+
+                    this.toast.MsgError(value.err)
+                    this.stg.set('login', [])
+                    this.router.navigate(['/home'])
+                    return;
+
+
+
+                })
+            }
+
+            return response.json().then(async (value: any) => value );
+
+        })
+
+    }
+
+    apiPost(service, data: any) {
+        return fetch('https://diamanteticvisitrack.com/' + service, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'x-token': data.token
+            },
+            body: JSON.stringify(data)
+        }).then((response) => {
+       
+            if (response.status == 401) {
+                return response.json().then(async (value: any) => {
+
+                    this.toast.MsgError(value.err)
+                    this.stg.set('login', [])
+                    this.router.navigate(['/home'])
+                    return;
+
+
+
+                })
+            }
+
+            return response.json().then(async (value: any) => value );
+
+        }).catch(() => {
+            this.toast.MsgOK('No se pudo completar la solicitud, verifique su red o comuniquese con el administrador')
+        })
+
+    }
+
+
+    
+
 }
 
 

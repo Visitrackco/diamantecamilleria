@@ -60,6 +60,10 @@ const routes: Routes = [
     path: 'account',
     loadChildren: () => import('./Pages/account/account.module').then( m => m.AccountPageModule)
   },
+  {
+    path: 'control',
+    loadChildren: () => import('./Pages/control/usuarios.module').then( m => m.UsuariosPageModule)
+  },
 ];
 
 @NgModule({

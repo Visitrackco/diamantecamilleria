@@ -1,13 +1,238 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>dashboard</ion-title>
+<ion-header class="ion-no-border" [translucent]="true">
+  <ion-toolbar color="diamante">
+    <ion-title>Tablero de solicitudes</ion-title>
+    <app-options slot="end"></app-options>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">dashboard</ion-title>
-    </ion-toolbar>
-  </ion-header>
+
+<ion-content>
+
+  <div class="loading" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+   </div>
+
+  <div class="main" cdkDropListGroup>
+    <div class="dash" cdkDropListSortingDisabled cdkDropList   (cdkDropListDropped)="dropped($event)" >
+
+      <div class="options">
+
+        <mat-form-field>
+          <mat-label>Motivo</mat-label>
+          <mat-select #mot (selectionChange)="select($event, 1)">
+            <input placeholder="Buscar Motivo" class="search" (keyup)="onKey($event)">
+
+            <mat-option *ngFor="let state of motivosList" [value]="state">{{state.Name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Origen</mat-label>
+          <mat-select #org (selectionChange)="select($event, 2)">
+            <input placeholder="Buscar punto" class="search" (keyup)="onKey($event)">
+
+            <mat-option *ngFor="let state of selectedStates" [value]="state">{{state.Name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Destino</mat-label>
+          <mat-select #des (selectionChange)="select($event, 3)">
+            <input placeholder="Buscar punto" class="search" (keyup)="onKey($event)">
+
+            <mat-option *ngFor="let state of selectedStates" [value]="state">{{state.Name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <ion-button color="danger" fill="outline" (click)="clear()">
+          <ion-icon name="trash"></ion-icon>
+        </ion-button>
+      </div>
+
+      <div class="table">
+     
+        <div *ngIf="!loadActivities">
+          <ion-row *ngFor="let result of [1,1,1]">
+
+            <ion-col size="4">
+              <ion-skeleton-text [animated]="true" style="width: 100%; height: 30px;"></ion-skeleton-text>
+            </ion-col>
+
+            <ion-col size="4">
+              <ion-skeleton-text [animated]="true" style="width: 100%; height: 30px;"></ion-skeleton-text>
+            </ion-col>
+
+            <ion-col size="4">
+              <ion-skeleton-text [animated]="true" style="width: 100%; height: 30px;"></ion-skeleton-text>
+            </ion-col>
+
+
+
+          </ion-row>
+        </div>
+
+
+        <table *ngIf="loadActivities" mat-table [dataSource]="dataSource">
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="estado">
+            <th style="min-width: 350px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+              mat-header-cell *matHeaderCellDef> ESTADO </th>
+            <td mat-cell *matCellDef="let element">
+
+              <div class="center">
+                <span [class]="element.acc.estado"></span> {{element.estado}}
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="fecha">
+            <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+              mat-header-cell *matHeaderCellDef> FECHAS </th>
+            <td mat-cell *matCellDef="let element"> {{element.fecha}} </td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="recibido">
+            <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+              mat-header-cell *matHeaderCellDef> RECIBIDO POR EL MOBIL </th>
+            <td mat-cell *matCellDef="let element"> {{element.recibido}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="motivo">
+            <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+              mat-header-cell *matHeaderCellDef> MOTIVO </th>
+            <td mat-cell *matCellDef="let element"> {{element.motivo}} </td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="origen">
+            <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+              mat-header-cell *matHeaderCellDef> ORIGEN </th>
+            <td mat-cell *matCellDef="let element"> {{element.origen}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="destino">
+            <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+              mat-header-cell *matHeaderCellDef> DESTINO </th>
+            <td mat-cell *matCellDef="let element"> {{element.destino}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="camillero">
+            <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+              mat-header-cell *matHeaderCellDef> CAMILLERO </th>
+            <td mat-cell *matCellDef="let element"> 
+            
+              <div class="camillero" *ngIf="element.camillero">{{element.camillero.FirstName}} {{element.camillero.LastName}}</div>
+     
+              
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="obscentral">
+            <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+              mat-header-cell *matHeaderCellDef> OBSERVACIONES CENTRAL </th>
+            <td mat-cell *matCellDef="let element"> {{element.obscentral}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="obs">
+            <th style="min-width: 350px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+              mat-header-cell *matHeaderCellDef> OBSERVACIONES ADICIONALES </th>
+            <td mat-cell *matCellDef="let element">
+              <div *ngIf="element.motivo == 'TRANSPORTAR PACIENTE'"><strong>Nombre Paciente:</strong>
+                {{element.obs.paciente}}</div>
+              <div *ngIf="element.motivo == 'TRANSPORTAR PACIENTE'"><strong>Recursos:</strong> <span
+                  *ngFor="let rec of element.obs.recursos; let i = index">
+                  {{rec}}<span *ngIf="i < (element.obs.recursos.length - 1)">,</span> </span></div>
+              <div *ngIf="element.motivo == 'TRANSPORTAR PACIENTE'"><strong>Aislado:</strong> {{element.obs.aislado}}
+              </div>
+              <br>
+              <div *ngIf="element.obs.obs"><strong>Observaciones:</strong> {{element.obs.obs}}</div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="acc">
+            <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+              mat-header-cell *matHeaderCellDef> ACCIONES </th>
+            <td mat-cell *matCellDef="let element">
+              <div class="center">
+                <ion-button color="danger" fill="outline">
+                  <ion-icon name="trash"></ion-icon>
+                </ion-button>
+              </div>
+            </td>
+          </ng-container>
+
+        
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns;  sticky: true"></tr>
+          <tr cdkDrag [cdkDragData]="row" (mousedown)="stopIt($event)" (mouseup)="stopOut($event)"  mat-row *matRowDef="let row; columns: displayedColumns;" [class]="row.acc.color"> 
+            <div *cdkDragPreview class="infoDrag">
+              <h3>Solicitud Camilleria</h3>
+               <div><strong>Motivo:</strong>  {{row.motivo}}</div>
+               <div><strong>Fecha:</strong>  {{row.fecha}}</div>
+            </div>
+          </tr>
+        </table>
+
+
+      </div>
+
+      <mat-paginator #paginatorHistory [pageSizeOptions]="[50, 100, 150]" showFirstLastButtons
+        aria-label="Seleccionar pagina">
+      </mat-paginator>
+
+    </div>
+    <div class="users">
+
+      <div class="title">
+        <h3>Usuarios</h3>
+        <ion-button fill="none">
+          <ion-icon name="settings" slot="icon-only" color="light"></ion-icon>
+        </ion-button>
+      </div>
+
+      <div class="content">
+        <ion-item class="user" *ngFor="let user of users" lines="none" cdkDropList
+        cdkDropListSortingDisabled
+        [cdkDropListData]="user"
+        (cdkDropListDropped)="dropped($event)"
+        [class.opacity]="user.isConnect == 0"
+     >
+          <ion-avatar slot="start">
+            <img src="/assets/avatar.svg" width="50px">
+          </ion-avatar>
+          <ion-label class="ion-text-wrap">
+            <div class="name">{{user.FirstName}} {{user.LastName}}</div>
+
+            <div *ngIf="user.isConnect == 1">
+              <span class="circle"></span>
+
+              Conectado
+            </div>
+           
+            <div class="flex" *ngIf="user.isConnect == 0.5">
+             <div>
+              <span class="circle3"></span>
+
+              Descanso 
+             </div>
+
+              <ion-icon  name="cafe-outline" color="light"></ion-icon>
+            
+            </div>
+
+            <div *ngIf="!user.isConnect || user.isConnect == 0 ">
+
+              <span class="circle2"></span>
+              Desconectado
+            </div>
+          </ion-label>
+        
+        </ion-item>
+      </div>
+
+    </div>
+  </div>
+
 </ion-content>

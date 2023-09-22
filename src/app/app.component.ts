@@ -10,6 +10,8 @@ import { Socket } from 'ngx-socket-io';
 import { environment } from "../environments/environment";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { ToastService } from './Services/toast.service';
+import { SocketService } from './Services/Sockets.service';
+import { ApiService } from './Services/api.service';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +23,7 @@ export class AppComponent {
   role;
 
   title = 'af-notification';
-  message:any = null;
+  message: any = null;
 
   constructor(
     private platform: Platform,
@@ -31,17 +33,43 @@ export class AppComponent {
     private stg: StorageWebService,
     private obs: ObserverService,
     private socket: Socket,
-    private toast: ToastService
+    private toast: ToastService,
+    private socketService: SocketService,
+    private api: ApiService
 
   ) {
 
     this.initializeApp();
 
     this.obs.$roleInfo.subscribe((data) => {
-     if (data.length > 0) {
-      this.role = data[0];
-    
-     }
+      if (data.length > 0) {
+        this.role = data[0];
+
+      }
+    })
+
+    this.socketService.reconnectHospital().subscribe(async (data) => {
+      if (data) {
+        const login = await this.stg.getLogin();
+        if (login.length > 0) {
+          if (login[0].isCentral == 1) {
+            this.socketService.hospitalCentral(login[0].WorkZone + 'central')
+          }
+          if (login[0].isCentralAdmin == 1) {
+            this.socketService.hospitalCentral(login[0].WorkZone + 'centraladmin')
+          }
+
+        }
+
+      }
+    })
+
+    this.socketService.alert().subscribe(async (data: any) => {
+      if (data) {
+        
+        this.toast.notification(data.title, data.message)
+
+      }
     })
 
   }
@@ -53,24 +81,28 @@ export class AppComponent {
   }
   requestPermission() {
     const messaging = getMessaging();
-    getToken(messaging, 
-     { vapidKey: environment.configFirebase.vapidkey}).then(
-       (currentToken) => {
-         if (currentToken) {
-           this.storage.set('tokenweb', currentToken);
-         } else {
-          this.toast.MsgError('No se generò el token, por favor acepte los permisos de notificaciones en su navegador')
-         }
-     }).catch((err) => {
+    getToken(messaging,
+      { vapidKey: environment.configFirebase.vapidkey }).then(
+        (currentToken) => {
+          if (currentToken) {
+            this.storage.set('tokenweb', currentToken);
+          } else {
+            this.toast.MsgError('No se generò el token, por favor acepte los permisos de notificaciones en su navegador')
+          }
+        }).catch((err) => {
 
-        this.toast.MsgError('Error mientras se genera el token web ' + err)
-    });
+          this.toast.MsgError('Error mientras se genera el token web ' + err)
+        });
   }
   listen() {
     const messaging = getMessaging();
     onMessage(messaging, (payload) => {
-      console.log('Message received. ', payload);
-      this.message=payload;
+
+  
+
+      this.toast.notification(payload.notification.title, payload.notification.body)
+
+      this.message = payload;
     });
   }
 
@@ -81,33 +113,62 @@ export class AppComponent {
       this.role = login[0].infoRole[0];
 
 
-      this.socket.on('envio', (d) => {
-
-      })
-    //  this.socket.connect();
+      if (login[0].isCentral == 1) {
 
 
-     // this.socket.emit('connection', {token: login[0].token})
 
-      console.log(this.role, 'ROLES')
+        if (login[0].isCentral == 1) {
+          this.socketService.hospitalCentral(login[0].WorkZone + 'central')
+        }
+        if (login[0].isCentralAdmin == 1) {
+          this.socketService.hospitalCentral(login[0].WorkZone + 'centraladmin')
+        }
+
+
+      }
+
     }
   }
 
-  exit() {
+  async exit() {
+    const login = await this.stg.getLogin();
     this.storage.set('login', []).then(() => {
-      // @ts-ignore
-      google.accounts.id.initialize({
-        client_id: "1030069149845-4tidjttl1q56v0h74sv3mmsuasugr8eh.apps.googleusercontent.com",
-      });
-      // @ts-ignore
-      google.accounts.id.disableAutoSelect()
 
-      // @ts-ignore 
-      google.accounts.id.revoke(localStorage.getItem('email'), (done) => {
-        localStorage.clear();
+      if (login) {
 
-        this.router.navigate(['/home'])
-      })
+
+        this.api.closeSession({
+          token: login[0].token
+        }).then(() => {
+          if (login[0].isCentral == 1) {
+            this.socketService.disconnect(login[0].WorkZone + 'central');
+          }
+          if (login[0].isCentralAdmin == 1) {
+            this.socketService.disconnect(login[0].WorkZone + 'centraladmin');
+          }
+          // @ts-ignore
+          google.accounts.id.initialize({
+            client_id: "1030069149845-4tidjttl1q56v0h74sv3mmsuasugr8eh.apps.googleusercontent.com",
+          });
+          // @ts-ignore
+          google.accounts.id.disableAutoSelect()
+
+          // @ts-ignore 
+          google.accounts.id.revoke(localStorage.getItem('email'), (done) => {
+            localStorage.clear();
+
+            this.router.navigate(['/home'])
+          })
+
+
+        })
+
+
+      }
+
+
+
+
 
     })
   }
@@ -117,9 +178,7 @@ export class AppComponent {
       const login = await this.stg.getLogin();
 
       if (login.length > 0) {
-        if (login[0].WorkZoneID.length > 1) {
-
-        } else {
+       
           let work = login[0].WorkZone;
 
           if (work == 6842) {
@@ -128,13 +187,23 @@ export class AppComponent {
           if (work == 6993) {
             this.router.navigate(['/rionegroform'])
           }
-        }
+        
 
         this.menuCtrl.toggle('menu')
       }
     } catch (error) {
 
     }
+  }
+
+  async dash() {
+    this.menuCtrl.toggle('menu')
+    this.router.navigate(['/dashboard'])
+  }
+
+  async control() {
+    this.menuCtrl.toggle('menu')
+    this.router.navigate(['/control'])
   }
 
 
@@ -146,11 +215,11 @@ export class AppComponent {
 
       // if (platforms.includes('desktop')) {
       this.createdCollections().then(() => {
-     
+
         this.dataRole()
 
-  
-      
+
+
         //   this.myPlatform.changePlatform('web');
       }).catch((err) => {
         console.log('Error ', err);
@@ -160,7 +229,7 @@ export class AppComponent {
   }
 
   async createdCollections() {
-  
+
     const login = await this.storage.get('login');
 
 
@@ -170,7 +239,7 @@ export class AppComponent {
 
     }
 
-   
+
 
 
 

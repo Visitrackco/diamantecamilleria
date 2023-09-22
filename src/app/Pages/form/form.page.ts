@@ -1,10 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
+import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
 import * as moment from 'moment-timezone';
 import { ApiService } from 'src/app/Services/api.service';
+import { SocketService } from 'src/app/Services/Sockets.service';
 import { StorageWebService } from 'src/app/Services/storage.service';
+import { ToastService } from 'src/app/Services/toast.service';
 @Component({
   selector: 'app-form',
   templateUrl: './form.page.html',
@@ -12,8 +15,7 @@ import { StorageWebService } from 'src/app/Services/storage.service';
 
 })
 export class FormPage implements OnInit {
-
-
+ 
   isClick;
 
   loadInfo = false;
@@ -23,14 +25,33 @@ export class FormPage implements OnInit {
 
   isPaciente;
 
-  motivos = [];
+  motivosList = [];
+
+  dateServer;
+  timeServer;
+
+  saving;
 
   constructor(
     private fb: FormBuilder,
     private menuCtrl: MenuController,
     private api: ApiService,
-    private stg: StorageWebService
-  ) { }
+    private stg: StorageWebService,
+    private socket: SocketService,
+    private toast: ToastService,
+    private router: Router
+  ) { 
+
+    this.socket.newActivityOn().subscribe({
+      next: (data) => {
+        console.log(data, 'CALIS')
+        const audio = new Audio('/assets/notification.mp3')
+        audio.play()
+     
+      },
+      error: (err) => console.error(err)
+    })
+  }
 
   locations: any[] = [
  
@@ -41,6 +62,7 @@ selectedStates = this.locations;
 invalid;
 
 ionViewWillEnter() {
+  this.loadForm()
   this.menuCtrl.enable(true, 'menu')
   this.getLocation()
 }
@@ -50,21 +72,34 @@ async getLocation() {
 
   if (login) {
 
-    this.api.getLocationByZone({
-      WorkZoneID: login[0].WorkZone
-    }).then((rs) => {
-    
-      this.locations = rs.response;
-      this.selectedStates = this.locations;
-  
-      this.api.getWMotivos({
+    this.myForm.controls['solicita'].setValue(login[0].FirstName + ' ' + login[0].LastName)
+
+    this.api.getDate({
+      token: login[0].token,
+      format: 'America/Bogota'
+    }).then((server) => {
+      this.myForm.controls['fecha'].setValue(server.date)
+      this.dateServer = server.date
+
+      this.myForm.controls['hora'].setValue(server.time)
+      this.timeServer = server.time
+
+      this.api.getLocationByZone({
         WorkZoneID: login[0].WorkZone
-      }).then((rsMotivo) => {
-        this.motivos = rsMotivo.response;
-        this.loadInfo = true;
+      }).then((rs) => {
+      
+        this.locations = rs.response;
+        this.selectedStates = this.locations;
+    
+        this.api.getWMotivos(login[0].WorkZone
+        ).then((rsMotivo) => {
+          console.log(rsMotivo, 'MOT')
+          this.motivosList = rsMotivo.response;
+          this.loadInfo = true;
+        })
+    
+     
       })
-  
-   
     })
   
 
@@ -91,13 +126,17 @@ search(value: any) {
 
   ngOnInit() {
 
+  
+  }
+
+  loadForm() {
     this.myForm = this.fb.group({
-      fecha: new FormControl(moment().tz('America/Bogota').toISOString(), [
+      fecha: new FormControl('', [
         // validaciones síncronas
         Validators.required
  
       ]),
-      hora: new FormControl(moment().tz('America/Bogota').format('HH:mm'), [
+      hora: new FormControl('', [
         // validaciones síncronas
         Validators.required
  
@@ -145,13 +184,25 @@ search(value: any) {
     });
   }
 
-  doSomething() {
+
+  timeChanged(event) {
+
+
+   // this.myForm.controls['hora'].setValue(hora)
+  }
+
+  async doSomething() {
+    this.saving = true;
+    let login = await this.stg.getLogin();
+
+   
     this.isClick = true;
     console.log(this.myForm.controls['recurso'])
     let isValid = false;
     if (this.isPaciente) {
       if (this.myForm.controls['recurso']['value'].length == 0) {
         this.invalid = true;
+        isValid = false;
       } else {
         if (this.myForm.status == 'VALID') {
           isValid = true;
@@ -163,7 +214,96 @@ search(value: any) {
       }
     }
 
-    console.log(isValid)
+    if (isValid) {
+      let json = [{
+        apiId: 'FECHA',
+        Value: moment(this.myForm.controls['fecha']['value']).format('YYYY-MM-DD')
+      },{
+        apiId: 'HORA',
+        Value: this.myForm.controls['hora']['value']
+      },{
+        apiId: 'NOMBRE',
+        Value: this.myForm.controls['solicita']['value']
+      },{
+        apiId: 'TORREPISO_ORG',
+        Value: this.myForm.controls['origen']['value']['Torre'] +  '|' + this.myForm.controls['origen']['value']['Piso']
+      },{
+        apiId: 'HOSPITAL',
+        Value: 'HOSPITAL DE MEDELLIN'
+      },{
+        apiId: 'ORIGEN_MEDELLIN',
+        Value: this.myForm.controls['origen']['value']['Name']
+      },{
+        apiId: 'DESTINO_MEDELLIN',
+        Value: this.myForm.controls['destino']['value']['Name']
+      },{
+        apiId: 'MOTIVOS_MEDELLIN',
+        Value: this.myForm.controls['motivos']['value']
+      },{
+        apiId: 'NOMBRE_PACIENTE',
+        Value: this.myForm.controls['nombrepac']['value']
+      },{
+        apiId: 'RECURSOS',
+        Value: this.myForm.controls['recurso']['value']
+      },{
+        apiId: 'AISLADO',
+        Value: this.myForm.controls['aislado']['value']
+      },{
+        apiId: 'OBSERVACIONES1',
+        Value: this.myForm.controls['obs']['value']
+      }]
+
+      if (login) {
+
+        let fecha = moment(this.myForm.controls['fecha']['value']).format('YYYY-MM-DD');
+       
+        try {
+          const create = await this.api.CreateActivity({
+            WorkZoneID: login[0].WorkZone,
+            json,
+            date: moment(fecha + ' '  + this.myForm.controls['hora']['value']).format('YYYY-MM-DD HH:mm'),
+            token: login[0].token,
+            Motivo: this.myForm.controls['motivos']['value']._id,
+            Origen: this.myForm.controls['origen']['value']._id,
+            Destino: this.myForm.controls['destino']['value']._id,
+            Format: 'America/Bogota'
+          })
+
+          console.log(create)
+
+     
+
+          if (create.status) {
+            create.response.future = create.future;
+            if (create.response.isAdmin == 1) {
+              this.socket.newActivity(login[0].WorkZone + 'centraladmin', create.response)
+            } else {
+              this.socket.newActivity(login[0].WorkZone + 'central', create.response)
+            }
+
+            this.isClick = false;
+         //   this.myForm.reset()
+         //   this.router.navigate(['/dashboard'])
+
+            this.saving = false;
+            
+          } else {
+            this.saving = false;
+            this.toast.MsgError(create.err)
+          }
+        } catch (error) {
+          this.saving = false;
+        ///  this.toast.MsgError(error)
+        }
+      }
+
+
+      
+    } else {
+      this.saving = false;
+    }
+
+    console.log(isValid, 'VALID')
   }
 
   changeMot(event) {

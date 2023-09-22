@@ -80,7 +80,7 @@
 
           <mat-form-field>
             <mat-label>Seleccione fecha</mat-label>
-            <input readonly matInput [matDatepicker]="picker" formControlName="fecha">
+            <input readonly matInput [min]="dateServer" [matDatepicker]="picker" formControlName="fecha">
 
             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
@@ -95,10 +95,10 @@
 
           <mat-form-field>
             <mat-label>Seleccione Hora</mat-label>
-            <input readonly matInput [ngxTimepicker]="pickera" formControlName="hora" />
+            <input readonly matInput [format]="24" [min]="timeServer" [ngxTimepicker]="pickera"  formControlName="hora" />
 
             <ngx-material-timepicker-toggle matIconSuffix [for]="pickera"></ngx-material-timepicker-toggle>
-            <ngx-material-timepicker color="primary" #pickera></ngx-material-timepicker>
+            <ngx-material-timepicker  (timeSet)="timeChanged($event)" color="primary" #pickera></ngx-material-timepicker>
           </mat-form-field>
         </ion-col>
       </ion-row>
@@ -274,7 +274,7 @@
 
 
 
-
+  <app-loading *ngIf="saving"></app-loading>
 
     <input class="btn" type="submit" value="Guardar">
 

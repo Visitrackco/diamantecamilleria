@@ -32,6 +32,33 @@
 }
 
 
+.alert {
+    --background: #26475E;
+    box-shadow: none;
+}
+
+.mat-mdc-form-field-subscript-wrapper {
+    height: 0 !important;
+}
+
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 400px;
+    padding: 10px;
+    border-radius: 10px;
+ 
+    color: rgb(36, 175, 15);
+    font-weight: bold;
+    margin: 10px auto;
+    font-size: 20px;
+    opacity: .5;
+}
+
+
 .menu {
     box-shadow: 0px 30px 50px rgba(0,0,0,0.1);
 }

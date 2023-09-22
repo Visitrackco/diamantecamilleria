@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingController, MenuController } from '@ionic/angular';
+import { Socket } from 'ngx-socket-io';
 import { ApiService } from '../Services/api.service';
 import { ObserverService } from '../Services/observer.service';
+import { SocketService } from '../Services/Sockets.service';
 import { StorageWebService } from '../Services/storage.service';
 import { ToastService } from '../Services/toast.service';
 
@@ -28,7 +30,8 @@ export class HomePage {
     private router: Router,
     private storage: StorageWebService,
     private menu: MenuController,
-    private obs: ObserverService
+    private obs: ObserverService,
+    private socketService: SocketService
    ) {
 
    }
@@ -121,6 +124,8 @@ export class HomePage {
     this.obs.logo(obj.picture == 1 ? obj.pictureUrl : '/assets/avatar.svg')
     this.obs.role(obj.infoRole)
 
+    this.socketService.connect();
+  
 
 /*    if (obj.WorkZoneID.length > 1) {
       obj.WorkZone = obj.WorkZoneID[0];
@@ -134,6 +139,15 @@ export class HomePage {
       obj.WorkZone = obj.WorkZoneID[0];
 
       let work = obj.WorkZone;
+
+      if (obj.isCentral == 1) {
+        this.socketService.hospitalCentral(work + 'central')
+      }
+
+      if (obj.isCentralAdmin == 1) {
+        this.socketService.hospitalCentral(work + 'centraladmin')
+      }
+  
 
       await this.storage.insertUser(obj)
 

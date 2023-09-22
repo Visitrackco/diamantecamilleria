@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { PopoverController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { ApiService } from 'src/app/Services/api.service';
+import { SocketService } from 'src/app/Services/Sockets.service';
 import { StorageWebService } from 'src/app/Services/storage.service';
 import { ToastService } from 'src/app/Services/toast.service';
 
@@ -26,7 +27,8 @@ export class PerfilComponent implements OnInit {
     private pov: PopoverController,
     private router: Router,
     private api: ApiService,
-    private toast: ToastService
+    private toast: ToastService,
+    private socketService: SocketService
   ) { }
 
   ngOnInit() { }
@@ -73,24 +75,42 @@ export class PerfilComponent implements OnInit {
 
   }
 
-  exit() {
+  async exit() {
+
+    const login = await this.stg.getLogin();
     this.storage.set('login', []).then(() => {
 
-      // @ts-ignore
-      google.accounts.id.initialize({
-        client_id: "1030069149845-4tidjttl1q56v0h74sv3mmsuasugr8eh.apps.googleusercontent.com",
-      });
-      // @ts-ignore
-      google.accounts.id.disableAutoSelect()
+      if (login) {
+        this.api.closeSession({
+          token: login[0].token
+        }).then(() => {
+          console.log(login)
+          if (login[0].isCentral == 1) {
+            this.socketService.disconnect(login[0].WorkZone + 'central');
+          }
+          if (login[0].isCentralAdmin == 1) {
+            this.socketService.disconnect(login[0].WorkZone + 'centraladmin');
+          }
+           // @ts-ignore
+          google.accounts.id.initialize({
+            client_id: "1030069149845-4tidjttl1q56v0h74sv3mmsuasugr8eh.apps.googleusercontent.com",
+          });
+          // @ts-ignore
+          google.accounts.id.disableAutoSelect()
+    
+          // @ts-ignore 
+          google.accounts.id.revoke(localStorage.getItem('email'), (done) => {
+            localStorage.clear();
+            this.close();
+            this.router.navigate(['/home'])
+          })
 
-      // @ts-ignore 
-      google.accounts.id.revoke(localStorage.getItem('email'), (done) => {
-        localStorage.clear();
 
-        this.close();
-        this.router.navigate(['/home'])
-      })
+        })
 
+     }
+
+   
 
 
     })

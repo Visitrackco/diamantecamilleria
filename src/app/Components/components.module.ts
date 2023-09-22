@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { MenuComponent } from './menu/menu.component';
 import { OptionsComponent } from './options/options.component';
 import { PerfilComponent } from './perfil/perfil.component';
+import { LoadingComponent } from './loading/loading.component';
 
 
 @NgModule({
@@ -19,12 +20,14 @@ import { PerfilComponent } from './perfil/perfil.component';
   declarations: [
     MenuComponent,
     OptionsComponent,
-    PerfilComponent
+    PerfilComponent,
+    LoadingComponent
   ],
   exports: [
     MenuComponent,
     OptionsComponent,
-    PerfilComponent
+    PerfilComponent,
+    LoadingComponent
 ],
 
 })

@@ -1,0 +1,232 @@
+.main {
+    width: 100%;
+    display: flex;
+
+
+    .dash {
+        width: calc(100% - 300px);
+        height: calc(100vh - 56px);
+    
+        overflow: hidden;
+        overflow-y: scroll;
+
+        .options {
+    
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            background-color: rgba(0,0,0,0.1);
+
+            mat-form-field {
+                width: 200px;
+                font-size: 14px;
+                margin: 0 10px;
+            }
+
+       
+         
+           
+
+         
+        }
+
+        .table {
+            overflow: scroll;
+            height: calc(100vh - 200px);
+
+            .center {
+                display: flex;
+                justify-content: start;
+                align-items: center;
+            }
+
+            .pending {
+                display: inline-block;
+                width: 15px;
+                height: 15px;
+                border-radius: 100%;
+                background-color: #E5DC44;
+                margin-right: 10px;
+            }
+
+            .assigned {
+                display: inline-block;
+                width: 15px;
+                height: 15px;
+                border-radius: 100%;
+                background-color: #44bcec;
+                margin-right: 10px;
+            }
+        }
+       
+    }
+
+    .users {
+        width: 300px;
+        height: calc(100vh - 56px);
+        box-shadow: 0px 50px 70px 50px rgba(11, 59, 106, 0.287);
+        background-color: var(--ion-color-diamante);
+        z-index: 100;
+        color: #fff;
+      
+
+        .user {
+            display: flex;
+
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .title {
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            background-color: #0b2b3f;
+            box-shadow: 0px 20px 30px rgba(101, 176, 252, 0.287);
+            z-index: 100;
+
+            ion-button {
+                background: transparent;
+                --background: transparent;
+            }
+         
+
+            h3 {
+                font-size: 20px;
+                font-weight: bold;
+                margin: 0;
+            }
+        }
+
+        .content {
+            height: calc(100% - 50px);
+            overflow-y: scroll;
+   
+        }
+
+        .name {
+            font-size: 12px;
+        }
+
+        .circle {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: green;
+            border-radius: 100%;
+
+        }
+
+        .circle2 {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            border-radius: 100%;
+
+        }
+
+        .circle3 {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: orange;
+            border-radius: 100%;
+
+        }
+
+
+    }
+}
+
+ion-item {
+    background: transparent;
+    --background: transparent;
+    color: #fff;
+}
+
+.search {
+    width: 100%;
+    outline: none;
+    padding: 10px;
+    color: #000;
+    background-color: #f1f1f1;
+    border: 1px solid rgba(0,0,0,0.1);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+
+mat-option {
+    font-size: 12px !important;
+}
+
+mat-label {
+    font-size: 12px !important;
+}
+
+.cdk-drag {
+    cursor: pointer;
+  
+    &.cdk-drag-placeholder{
+      opacity: 0;
+      display: none;
+      cursor: pointer;
+    }
+  }
+
+  .opacity {
+    opacity: .3;
+    
+  }
+
+
+  .loading {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    z-index: 100;
+  }
+
+  .camillero {
+    font-weight: bold;
+    color: #0b2b3f;
+  }
+
+  .infoDrag {
+    width: 300px;
+    padding: 10px;
+    border-radius: 20px;
+    background-color: #f1f1f1;
+    box-shadow: 0px 20px 50px 10px rgba(0,0,0,0.1);
+    color: #000;
+    h3 {
+        margin: 0;
+        font-size: 14px;
+    }
+  }
+
+  .flex{
+    display: flex;
+    justify-content: space-between;
+
+    ion-icon {
+        font-size: 24px;
+    }
+  }
+
+  .verde {
+    background-color: #e3ffd5;
+  }
+
+  .amarillo {
+    background-color: #faffd5;
+  }
+
+  .rojo {
+    background-color: #f7dddd;
+  }

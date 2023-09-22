@@ -27,10 +27,11 @@ ion-row {
     outline: none;
     padding: 10px;
     color: #fff;
-    background-color: var(--ion-color-primary);
+    background-color: var(--ion-color-diamante);
     border: 1px solid rgba(0,0,0,0.1);
     font-size: 14px;
     font-weight: bold;
+    border-radius: 10px;
 }
 
 .search {

@@ -14,8 +14,9 @@
 }
 
 .main {
-    background-color: #E4EBF0;
+    background-color: #0b2b3f;
     padding: 20px;
+    color: #fff;
    
 }
 
@@ -23,7 +24,9 @@ ion-item {
     background: transparent !important;
     --background: transparent !important;
     cursor: pointer;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+
+    color: #fff;
 
 }
 
@@ -40,7 +43,7 @@ ion-item {
 
 .info {
     padding: 20px;
-    background-color: rgba(255,255,255,0.9);
+    background-color: var(--ion-color-diamante);
     border-radius: 20px;
     opacity: .7;
 }
