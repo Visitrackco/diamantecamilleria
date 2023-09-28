@@ -6,6 +6,10 @@ import { MenuComponent } from './menu/menu.component';
 import { OptionsComponent } from './options/options.component';
 import { PerfilComponent } from './perfil/perfil.component';
 import { LoadingComponent } from './loading/loading.component';
+import { HistoryComponent } from './history/history.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
 
 
 @NgModule({
@@ -13,7 +17,10 @@ import { LoadingComponent } from './loading/loading.component';
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule
+    IonicModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatProgressSpinnerModule
     
   ],
 
@@ -21,13 +28,15 @@ import { LoadingComponent } from './loading/loading.component';
     MenuComponent,
     OptionsComponent,
     PerfilComponent,
-    LoadingComponent
+    LoadingComponent,
+    HistoryComponent
   ],
   exports: [
     MenuComponent,
     OptionsComponent,
     PerfilComponent,
-    LoadingComponent
+    LoadingComponent,
+    HistoryComponent
 ],
 
 })

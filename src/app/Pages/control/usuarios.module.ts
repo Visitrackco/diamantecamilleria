@@ -10,6 +10,7 @@ import { UsuariosPage } from './usuarios.page';
 import { ComponentsModule } from 'src/app/Components/components.module';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   imports: [
@@ -19,7 +20,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     UsuariosPageRoutingModule,
     ComponentsModule,
     MatTableModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatProgressSpinnerModule
   ],
   declarations: [UsuariosPage]
 })

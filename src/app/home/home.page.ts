@@ -125,6 +125,7 @@ export class HomePage {
     this.obs.role(obj.infoRole)
 
     this.socketService.connect();
+
   
 
 /*    if (obj.WorkZoneID.length > 1) {
@@ -151,12 +152,21 @@ export class HomePage {
 
       await this.storage.insertUser(obj)
 
+      
+
+      this.socketService.connectEmit();
+      this.socketService.initUser()
+
+      this.router.navigate(['/dashboard'])
+
+      /*
+
       if (work == 6842) {
         this.router.navigate(['/medellinform'])
       }
       if (work == 6993) {
         this.router.navigate(['/rionegroform'])
-      }
+      } */
    // }
 
   

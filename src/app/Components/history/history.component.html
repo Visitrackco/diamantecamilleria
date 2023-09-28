@@ -1,12 +1,13 @@
 <ion-header class="ion-no-border" [translucent]="true">
   <ion-toolbar color="diamante">
-    <ion-title>Usuarios</ion-title>
-    <app-options slot="end"></app-options>
+    <ion-title>Historial {{ user }}</ion-title>
+    <app-options *ngIf="!hidden" slot="end"></app-options>
   </ion-toolbar>
 </ion-header>
 
 
 <ion-content>
+
 
 
   <div class="loading" *ngIf="loading">
@@ -15,10 +16,6 @@
 
 
   <div class="table">
-
-    <ion-searchbar matInput (keyup)="filtrar($event)" placeholder="Buscar Usuario" mode="ios" (ionClear)="cancel()"></ion-searchbar>
-
-
      
     <div *ngIf="!loadActivities">
       <ion-row *ngFor="let result of [1,1,1]">
@@ -46,39 +43,32 @@
       <!-- Name Column -->
       <ng-container matColumnDef="estado">
         <th style="min-width: 350px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> ESTADO </th>
+          mat-header-cell *matHeaderCellDef> EVENTO </th>
         <td mat-cell *matCellDef="let element">
 
-          <div class="fl" *ngIf="element.estado == 1">
-            <span class="circle"></span>
-
-            Conectado
-          </div>
-         
-          <div class="flex" *ngIf="element.estado == 0.5">
-           <div>
-            <span class="circle3"></span>
-
-            Descanso 
-           </div>
-
-            <ion-icon  name="cafe-outline" color="diamante"></ion-icon>
-          
-          </div>
-
-          <div class="fl" *ngIf="!element.estado || element.estado == 0 ">
-
-            <span class="circle2"></span>
-            Desconectado
-          </div>
+        {{element.estado}} 
      
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="name">
+      <ng-container matColumnDef="fecha">
         <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> NOMBRE </th>
-        <td mat-cell *matCellDef="let element"> {{element.name.FirstName}}  {{element.name.LastName}}  </td>
+          mat-header-cell *matHeaderCellDef> FECHA </th>
+        <td mat-cell *matCellDef="let element">         {{element.fecha}}  </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="solicitud">
+        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+          mat-header-cell *matHeaderCellDef> SOLICITUD TOKEN </th>
+        <td mat-cell *matCellDef="let element">         {{element.solicitud}}  </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="agente">
+        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+          mat-header-cell *matHeaderCellDef> AGENTE </th>
+        <td mat-cell *matCellDef="let element">         {{element.agente}}  </td>
       </ng-container>
 
 
@@ -89,7 +79,7 @@
     
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns;  sticky: true"></tr>
-      <tr class="user" (click)="history(row)"  mat-row *matRowDef="let row; columns: displayedColumns;" > 
+      <tr  (click)="history(row)"  mat-row *matRowDef="let row; columns: displayedColumns;" > 
        
       </tr>
     </table>
@@ -100,5 +90,7 @@
   <mat-paginator #paginatorHistory [pageSizeOptions]="[50, 100, 150]" showFirstLastButtons
     aria-label="Seleccionar pagina">
   </mat-paginator>
+
+  <br><br> <br><br><br><br>
  
 </ion-content>

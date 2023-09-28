@@ -28,15 +28,21 @@
                 <ion-icon name="chevron-forward"></ion-icon>
             </ion-item>
 
-            <ion-item color="banner" *ngIf="role && role.Historial == 1">
+            <ion-item (click)="history()" color="banner" *ngIf="role && role.Historial == 1">
                 <ion-icon name="people" slot="start"></ion-icon>
                 <ion-label>Historial Camilleros</ion-label>
                 <ion-icon name="chevron-forward"></ion-icon>
             </ion-item>
 
-            <ion-item color="banner" *ngIf="role && role.Listas == 1">
+            <ion-item (click)="listas()" color="banner" *ngIf="role && role.Listas == 1">
                 <ion-icon name="list" slot="start"></ion-icon>
                 <ion-label>Listas</ion-label>
+                <ion-icon name="chevron-forward"></ion-icon>
+            </ion-item>
+
+            <ion-item (click)="motivos()" color="banner" *ngIf="role && role.Listas == 1">
+                <ion-icon name="hourglass" slot="start"></ion-icon>
+                <ion-label>Motivos Demora</ion-label>
                 <ion-icon name="chevron-forward"></ion-icon>
             </ion-item>
 
@@ -48,7 +54,7 @@
             </ion-item>
 
 
-            <ion-item color="banner" *ngIf="role && role.Reportes == 1">
+            <ion-item (click)="reportes()" color="banner" *ngIf="role && role.Reportes == 1">
                 <ion-icon name="bar-chart" slot="start"></ion-icon>
                 <ion-label>Reportes</ion-label>
                 <ion-icon name="chevron-forward"></ion-icon>

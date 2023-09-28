@@ -52,11 +52,12 @@ export class AppComponent {
       if (data) {
         const login = await this.stg.getLogin();
         if (login.length > 0) {
+          console.log('RECONNECT', login[0].WorkZone)
           if (login[0].isCentral == 1) {
-            this.socketService.hospitalCentral(login[0].WorkZone + 'central')
+            this.socketService.hospitalCentral((login[0].WorkZone + 'central').toString())
           }
           if (login[0].isCentralAdmin == 1) {
-            this.socketService.hospitalCentral(login[0].WorkZone + 'centraladmin')
+            this.socketService.hospitalCentral((login[0].WorkZone + 'centraladmin').toString())
           }
 
         }
@@ -66,7 +67,7 @@ export class AppComponent {
 
     this.socketService.alert().subscribe(async (data: any) => {
       if (data) {
-        
+      
         this.toast.notification(data.title, data.message)
 
       }
@@ -113,7 +114,7 @@ export class AppComponent {
       this.role = login[0].infoRole[0];
 
 
-      if (login[0].isCentral == 1) {
+    /*  if (login[0].isCentral == 1) {
 
 
 
@@ -126,8 +127,8 @@ export class AppComponent {
 
 
       }
-
-    }
+*/
+    } 
   }
 
   async exit() {
@@ -140,6 +141,9 @@ export class AppComponent {
         this.api.closeSession({
           token: login[0].token
         }).then(() => {
+          login[0].UserID = login[0]._id
+          this.socketService.exitUser(login);
+          this.socketService.disconnectEmit(login);
           if (login[0].isCentral == 1) {
             this.socketService.disconnect(login[0].WorkZone + 'central');
           }
@@ -204,6 +208,24 @@ export class AppComponent {
   async control() {
     this.menuCtrl.toggle('menu')
     this.router.navigate(['/control'])
+  }
+  async history() {
+    this.menuCtrl.toggle('menu')
+    this.router.navigate(['/users'])
+  }
+  async listas() {
+    this.menuCtrl.toggle('menu')
+    this.router.navigate(['/ubicaciones'])
+  }
+
+  async motivos() {
+    this.menuCtrl.toggle('menu')
+    this.router.navigate(['/motivos'])
+  }
+
+  async reportes() {
+    this.menuCtrl.toggle('menu')
+    this.router.navigate(['/error'])
   }
 
 

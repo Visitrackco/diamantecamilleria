@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MenuController, PopoverController } from '@ionic/angular';
 import { ObserverService } from 'src/app/Services/observer.service';
 import { StorageWebService } from 'src/app/Services/storage.service';
@@ -12,6 +12,7 @@ import { PerfilComponent } from '../perfil/perfil.component';
 export class OptionsComponent implements OnInit {
 
   logo = '/assets/avatar.svg';
+
 
   constructor(
     private menuCtrl: MenuController,
@@ -46,6 +47,12 @@ export class OptionsComponent implements OnInit {
     })
 
     await pov.present();
+
+    const data = await pov.onWillDismiss();
+
+    if (data.data) {
+
+    }
   }
 
 

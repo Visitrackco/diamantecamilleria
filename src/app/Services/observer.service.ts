@@ -14,6 +14,9 @@ export class ObserverService {
     roleInfo = new BehaviorSubject([]);
     $roleInfo = this.roleInfo.asObservable();
 
+    reload = new BehaviorSubject([]);
+    $reload = this.reload.asObservable();
+
      constructor(
         
      ) { }
@@ -25,6 +28,11 @@ export class ObserverService {
 
      role(arr) {
           this.roleInfo.next(arr)
+     }
+
+
+     load(arr) {
+          this.reload.next(arr)
      }
 
 }

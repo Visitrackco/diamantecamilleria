@@ -1,0 +1,78 @@
+.name {
+    font-size: 12px;
+}
+
+.table {
+    width: 100%;
+    margin: auto;
+}
+
+.circle {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    background-color: green;
+    border-radius: 100%;
+
+}
+
+.circle2 {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    background-color: red;
+    border-radius: 100%;
+
+}
+
+.circle3 {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    background-color: orange;
+    border-radius: 100%;
+
+}
+
+.fl {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+font-size: 14px;
+
+    span {
+        margin-right: 10px;
+    }
+}
+
+.flex{
+display: flex;
+justify-content: space-between;
+align-items: center;
+font-weight: bold;
+font-size: 14px;
+
+ion-icon {
+font-size: 24px;
+}
+}
+
+.loading {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    z-index: 100;
+  }
+
+  .user{
+    cursor: pointer;
+    transition: all .5s;
+  }
+
+  .user:hover {
+
+    background-color: #f1f1f1;
+  }

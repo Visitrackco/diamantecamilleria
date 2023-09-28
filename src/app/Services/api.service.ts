@@ -50,6 +50,9 @@ export class ApiService {
     getLocationByZone(data: any) {
         return fetch('https://diamanteticvisitrack.com/locations?WorkZoneID=' + data.WorkZoneID, {
             method: 'GET',
+            headers: {
+                'x-token' : data['token']
+            }
         }).then((response) => response.json().then(async (value: any) => value))
 
     }
@@ -111,10 +114,12 @@ export class ApiService {
 
     }
 
-    getWMotivos(WorkZoneID: any) {
+    getWMotivos(WorkZoneID: any, token) {
         return fetch('https://diamanteticvisitrack.com/motivos?WorkZoneID=' + WorkZoneID, {
             method: 'GET',
-
+            headers: {
+                'x-token' : token
+            }
         }).then((response) => {
            
 
@@ -246,6 +251,50 @@ export class ApiService {
 
             return response.json().then(async (value: any) => value );
 
+        }).catch(() => {
+         
+            return {
+                status: false,
+                err: 'No se pudo completar la solicitud, verifique su red o comuniquese con el administrador'
+            }
+        })
+
+    }
+
+    apiDelete(service, token) {
+        console.log(service)
+        return fetch('https://diamanteticvisitrack.com/' + service, {
+            method: 'DELETE',
+            headers: {
+             
+                'x-token': token
+            },
+        
+        }).then((response) => {
+
+            console.log(response)
+        
+            if (response.status == 401) {
+                return response.json().then(async (value: any) => {
+
+                    this.toast.MsgError(value.err)
+                    this.stg.set('login', [])
+                    this.router.navigate(['/home'])
+                    return;
+
+
+
+                })
+            }
+
+            return response.json().then(async (value: any) => value );
+
+        }).catch(() => {
+        
+            return {
+                status: false,
+                err: 'No se pudo completar la solicitud, verifique su red o comuniquese con el administrador'
+            }
         })
 
     }
@@ -278,6 +327,11 @@ export class ApiService {
 
         }).catch(() => {
             this.toast.MsgOK('No se pudo completar la solicitud, verifique su red o comuniquese con el administrador')
+
+            return {
+                status: false,
+                err: 'No se pudo completar la solicitud, verifique su red o comuniquese con el administrador'
+            }
         })
 
     }

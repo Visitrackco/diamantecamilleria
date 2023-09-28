@@ -64,6 +64,14 @@ const routes: Routes = [
     path: 'control',
     loadChildren: () => import('./Pages/control/usuarios.module').then( m => m.UsuariosPageModule)
   },
+  {
+    path: 'historial/:id/:name',
+    loadChildren: () => import('./Pages/historial/historial.module').then( m => m.HistorialPageModule)
+  },
+  {
+    path: 'motivos',
+    loadChildren: () => import('./Pages/motivos/motivos.module').then( m => m.MotivosPageModule)
+  },
 ];
 
 @NgModule({

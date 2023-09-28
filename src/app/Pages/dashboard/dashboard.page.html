@@ -1,7 +1,7 @@
 <ion-header class="ion-no-border" [translucent]="true">
   <ion-toolbar color="diamante">
     <ion-title>Tablero de solicitudes</ion-title>
-    <app-options slot="end"></app-options>
+    <app-options  slot="end"></app-options>
   </ion-toolbar>
 </ion-header>
 
@@ -12,15 +12,38 @@
     <mat-spinner></mat-spinner>
    </div>
 
-  <div class="main" cdkDropListGroup>
-    <div class="dash" cdkDropListSortingDisabled cdkDropList   (cdkDropListDropped)="dropped($event)" >
+  <div class="main" cdkDropListGroup >
+    <div class="dash" [class.cien]="isAssigment != 1" cdkDropListSortingDisabled cdkDropList   (cdkDropListDropped)="dropped($event)" >
 
-      <div class="options">
+
+
+      <div *ngIf="loadActivities" class="options" >
+        <form  [formGroup]="myForm" class="flex">
+        <mat-form-field>
+          <mat-label>Fecha Desde</mat-label>
+          <input formControlName="from" [max]="dateServer" (dateChange)="changePicker($event, 1)" readonly matInput [matDatepicker]="picker" >
+
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Fecha Hasta</mat-label>
+          <input formControlName="to"  [max]="dateServer"  (dateChange)="changePicker($event, 2)" readonly matInput [matDatepicker]="picker2" >
+
+          <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+
+
+
+        <div class="separador"></div>
+
 
         <mat-form-field>
           <mat-label>Motivo</mat-label>
           <mat-select #mot (selectionChange)="select($event, 1)">
-            <input placeholder="Buscar Motivo" class="search" (keyup)="onKey($event)">
+            <input placeholder="Buscar Motivo" class="search" (keyup)="onKey2($event)">
 
             <mat-option *ngFor="let state of motivosList" [value]="state">{{state.Name}}</mat-option>
           </mat-select>
@@ -29,7 +52,7 @@
         <mat-form-field>
           <mat-label>Origen</mat-label>
           <mat-select #org (selectionChange)="select($event, 2)">
-            <input placeholder="Buscar punto" class="search" (keyup)="onKey($event)">
+            <input placeholder="Buscar punto" class="search" (keyup)="onKey($event, 1)">
 
             <mat-option *ngFor="let state of selectedStates" [value]="state">{{state.Name}}</mat-option>
           </mat-select>
@@ -38,16 +61,31 @@
         <mat-form-field>
           <mat-label>Destino</mat-label>
           <mat-select #des (selectionChange)="select($event, 3)">
-            <input placeholder="Buscar punto" class="search" (keyup)="onKey($event)">
+            <input placeholder="Buscar punto" class="search" (keyup)="onKey($event, 2)">
 
-            <mat-option *ngFor="let state of selectedStates" [value]="state">{{state.Name}}</mat-option>
+            <mat-option *ngFor="let state of selectedStates2" [value]="state">{{state.Name}}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <ion-button color="danger" fill="outline" (click)="clear()">
           <ion-icon name="trash"></ion-icon>
         </ion-button>
+
+        <div class="admin" *ngIf="multiple">
+          CA
+          <ion-checkbox [checked]="isAdmin" (ionChange)="ca($event)"></ion-checkbox>
+        </div>
+
+
+        <div class="admin" >
+          T. ESTADOS
+          <ion-checkbox [checked]="isAllStatus" (ionChange)="status($event)"></ion-checkbox>
+        </div>
+
+      </form>
       </div>
+
+
 
       <div class="table">
      
@@ -89,7 +127,21 @@
           <ng-container matColumnDef="fecha">
             <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
               mat-header-cell *matHeaderCellDef> FECHAS </th>
-            <td mat-cell *matCellDef="let element"> {{element.fecha}} </td>
+            <td mat-cell *matCellDef="let element">
+            <div class="fecha">
+              <span>S</span>
+              <strong> {{element.fecha.s}}</strong>
+            </div>  
+            <div class="fecha" *ngIf="element.fecha.o">
+              <span>O</span>
+              <strong> {{element.fecha.o}}</strong>
+            </div>  
+
+            <div class="fecha" *ngIf="element.fecha.d">
+              <span>D</span>
+              <strong> {{element.fecha.d}}</strong>
+            </div>  
+            </td>
           </ng-container>
 
 
@@ -156,8 +208,23 @@
               mat-header-cell *matHeaderCellDef> ACCIONES </th>
             <td mat-cell *matCellDef="let element">
               <div class="center">
-                <ion-button color="danger" fill="outline">
+                <ion-button *ngIf="isDelete && !element.fecha.o" color="danger" fill="outline" (click)="deleteSolicitud(element.acc)">
                   <ion-icon name="trash"></ion-icon>
+                </ion-button>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="token">
+            <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+              mat-header-cell *matHeaderCellDef> TOKEN </th>
+            <td mat-cell *matCellDef="let element">
+              
+
+              <div class="flex">
+                {{element.token}}
+                <ion-button [cdkCopyToClipboard]="element.token" color="diamante" fill="outline" >
+                  <ion-icon name="copy"></ion-icon>
                 </ion-button>
               </div>
             </td>
@@ -166,6 +233,7 @@
         
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns;  sticky: true"></tr>
+         <div *ngIf="isAssigment == 1">
           <tr cdkDrag [cdkDragData]="row" (mousedown)="stopIt($event)" (mouseup)="stopOut($event)"  mat-row *matRowDef="let row; columns: displayedColumns;" [class]="row.acc.color"> 
             <div *cdkDragPreview class="infoDrag">
               <h3>Solicitud Camilleria</h3>
@@ -173,6 +241,15 @@
                <div><strong>Fecha:</strong>  {{row.fecha}}</div>
             </div>
           </tr>
+         </div>
+
+         <div *ngIf="isAssigment != 1" >
+          <tr  mat-row *matRowDef="let row; columns: displayedColumns;" [class]="row.acc.color">    </tr>
+         </div>
+
+         
+         
+       
         </table>
 
 
@@ -183,7 +260,7 @@
       </mat-paginator>
 
     </div>
-    <div class="users">
+    <div class="users" *ngIf="isAssigment == 1">
 
       <div class="title">
         <h3>Usuarios</h3>
@@ -193,7 +270,7 @@
       </div>
 
       <div class="content">
-        <ion-item class="user" *ngFor="let user of users" lines="none" cdkDropList
+        <ion-item (click)="history(user)" class="user" *ngFor="let user of users" lines="none" cdkDropList
         cdkDropListSortingDisabled
         [cdkDropListData]="user"
         (cdkDropListDropped)="dropped($event)"

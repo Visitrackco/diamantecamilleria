@@ -40,93 +40,95 @@ export class FormMedellinPage implements OnInit {
     private socket: SocketService,
     private toast: ToastService,
     private router: Router
-  ) { 
+  ) {
 
     this.socket.newActivityOn().subscribe({
       next: (data) => {
         console.log(data, 'CALIS')
         const audio = new Audio('/assets/notification.mp3')
         audio.play()
-     
+
       },
       error: (err) => console.error(err)
     })
   }
 
   locations: any[] = [
- 
+
   ];
 
-selectedStates = this.locations; 
+  selectedStates = this.locations;
 
-invalid;
+  invalid;
 
-ionViewWillEnter() {
-  this.loadForm()
-  this.menuCtrl.enable(true, 'menu')
-  this.getLocation()
-}
+  ionViewWillEnter() {
+    this.loadForm()
+    this.menuCtrl.enable(true, 'menu')
+    this.getLocation()
+  }
 
-async getLocation() {
-  const login = await this.stg.getLogin();
+  async getLocation() {
+    const login = await this.stg.getLogin();
 
-  if (login) {
+    if (login) {
 
-    this.myForm.controls['solicita'].setValue(login[0].FirstName + ' ' + login[0].LastName)
+      this.myForm.controls['solicita'].setValue(login[0].FirstName + ' ' + login[0].LastName)
 
-    this.api.getDate({
-      token: login[0].token,
-      format: 'America/Bogota'
-    }).then((server) => {
-      this.myForm.controls['fecha'].setValue(server.date)
-      this.dateServer = server.date
+      this.api.getDate({
+        token: login[0].token,
+        format: 'America/Bogota'
+      }).then((server) => {
+        this.myForm.controls['fecha'].setValue(server.date)
+        this.dateServer = server.date
 
-      this.myForm.controls['hora'].setValue(server.time)
-      this.timeServer = server.time
+        this.myForm.controls['hora'].setValue(server.time)
+        this.timeServer = server.time
 
-      this.api.getLocationByZone({
-        WorkZoneID: login[0].WorkZone
-      }).then((rs) => {
-      
-        this.locations = rs.response;
-        this.selectedStates = this.locations;
-    
-        this.api.getWMotivos(login[0].WorkZone
-        ).then((rsMotivo) => {
-          console.log(rsMotivo, 'MOT')
-          this.motivosList = rsMotivo.response;
-          this.loadInfo = true;
+        this.api.getLocationByZone({
+          WorkZoneID: login[0].WorkZone,
+          token: login[0].token
+        }).then((rs) => {
+
+          this.locations = rs.response;
+          this.selectedStates = this.locations;
+
+          this.api.getWMotivos(login[0].WorkZone,
+            login[0].token
+          ).then((rsMotivo) => {
+            console.log(rsMotivo, 'MOT')
+            this.motivosList = rsMotivo.response;
+            this.loadInfo = true;
+          })
+
+
         })
-    
-     
       })
-    })
-  
+
+
+    }
+
 
   }
- 
 
-}
+  onKey(value) {
+    console.log(value)
+    this.selectedStates = this.search(value.target.value);
+  }
 
-onKey(value) { 
-  console.log(value)
-this.selectedStates = this.search(value.target.value);
-}
+  search(value: any) {
 
-search(value: any) { 
+    let filter = value.toLowerCase();
 
-  let filter = value.toLowerCase();
+    return this.locations.filter(option => {
 
-  return this.locations.filter(option => {
-
-    let name = option.Name.toLowerCase()
-    return name.includes(filter)
-  });
-}
+      let name = option.Name.toLowerCase()
+      return name.includes(filter)
+    });
+  }
 
   ngOnInit() {
 
-  
+
   }
 
   loadForm() {
@@ -134,52 +136,52 @@ search(value: any) {
       fecha: new FormControl('', [
         // validaciones síncronas
         Validators.required
- 
+
       ]),
       hora: new FormControl('', [
         // validaciones síncronas
         Validators.required
- 
+
       ]),
       solicita: new FormControl('', [
         // validaciones síncronas
         Validators.required
- 
+
       ]),
       origen: new FormControl('', [
         // validaciones síncronas
         Validators.required
- 
+
       ]),
       destino: new FormControl('', [
         // validaciones síncronas
         Validators.required
- 
+
       ]),
       motivos: new FormControl('', [
         // validaciones síncronas
         Validators.required
- 
+
       ]),
       nombrepac: new FormControl('', [
         // validaciones síncronas
 
-        
- 
+
+
       ]),
       recurso: new FormArray([], [
         // validaciones síncronas
-  
+
       ]),
       aislado: new FormControl('', [
         // validaciones síncronas
 
- 
+
       ]),
       obs: new FormControl('', [
         // validaciones síncronas
 
- 
+
       ])
     });
   }
@@ -188,14 +190,14 @@ search(value: any) {
   timeChanged(event) {
 
 
-   // this.myForm.controls['hora'].setValue(hora)
+    // this.myForm.controls['hora'].setValue(hora)
   }
 
   async doSomething() {
     this.saving = true;
     let login = await this.stg.getLogin();
 
-   
+
     this.isClick = true;
     console.log(this.myForm.controls['recurso'])
     let isValid = false;
@@ -211,6 +213,9 @@ search(value: any) {
     } else {
       if (this.myForm.status == 'VALID') {
         isValid = true;
+        console.log('hola')
+      } else {
+        console.log('aqui')
       }
     }
 
@@ -218,37 +223,37 @@ search(value: any) {
       let json = [{
         apiId: 'FECHA',
         Value: moment(this.myForm.controls['fecha']['value']).format('YYYY-MM-DD')
-      },{
+      }, {
         apiId: 'HORA',
         Value: this.myForm.controls['hora']['value']
-      },{
+      }, {
         apiId: 'NOMBRE',
         Value: this.myForm.controls['solicita']['value']
-      },{
+      }, {
         apiId: 'TORREPISO_ORG',
-        Value: this.myForm.controls['origen']['value']['Torre'] +  '|' + this.myForm.controls['origen']['value']['Piso']
-      },{
+        Value: this.myForm.controls['origen']['value']['Torre'] + '|' + this.myForm.controls['origen']['value']['Piso']
+      }, {
         apiId: 'HOSPITAL',
         Value: 'HOSPITAL DE MEDELLIN'
-      },{
+      }, {
         apiId: 'ORIGEN_MEDELLIN',
         Value: this.myForm.controls['origen']['value']['Name']
-      },{
+      }, {
         apiId: 'DESTINO_MEDELLIN',
         Value: this.myForm.controls['destino']['value']['Name']
-      },{
+      }, {
         apiId: 'MOTIVOS_MEDELLIN',
         Value: this.myForm.controls['motivos']['value']
-      },{
+      }, {
         apiId: 'NOMBRE_PACIENTE',
         Value: this.myForm.controls['nombrepac']['value']
-      },{
+      }, {
         apiId: 'RECURSOS',
         Value: this.myForm.controls['recurso']['value']
-      },{
+      }, {
         apiId: 'AISLADO',
         Value: this.myForm.controls['aislado']['value']
-      },{
+      }, {
         apiId: 'OBSERVACIONES1',
         Value: this.myForm.controls['obs']['value']
       }]
@@ -256,12 +261,12 @@ search(value: any) {
       if (login) {
 
         let fecha = moment(this.myForm.controls['fecha']['value']).format('YYYY-MM-DD');
-       
+
         try {
           const create = await this.api.CreateActivity({
             WorkZoneID: login[0].WorkZone,
             json,
-            date: moment(fecha + ' '  + this.myForm.controls['hora']['value']).format('YYYY-MM-DD HH:mm'),
+            date: moment(fecha + ' ' + this.myForm.controls['hora']['value']).format('YYYY-MM-DD HH:mm'),
             token: login[0].token,
             Motivo: this.myForm.controls['motivos']['value']._id,
             Origen: this.myForm.controls['origen']['value']._id,
@@ -271,7 +276,7 @@ search(value: any) {
 
           console.log(create)
 
-     
+
 
           if (create.status) {
             create.response.future = create.future;
@@ -282,23 +287,24 @@ search(value: any) {
             }
 
             this.isClick = false;
-         //   this.myForm.reset()
-         //   this.router.navigate(['/dashboard'])
+            this.myForm.reset()
+
+            this.router.navigate(['/dashboard'])
 
             this.saving = false;
-            
+
           } else {
             this.saving = false;
             this.toast.MsgError(create.err)
           }
         } catch (error) {
           this.saving = false;
-        ///  this.toast.MsgError(error)
+          ///  this.toast.MsgError(error)
         }
       }
 
 
-      
+
     } else {
       this.saving = false;
     }
@@ -312,9 +318,11 @@ search(value: any) {
       if (this.myForm.controls['recurso']['value'].length == 0) {
         this.invalid = true;
       }
-      this.myForm.controls['nombrepac'].addValidators(Validators.required)
-      this.myForm.controls['aislado'].addValidators(Validators.required)
+    
     } else {
+
+
+
       this.isPaciente = false;
     }
   }

@@ -8,6 +8,7 @@ import { ApiService } from 'src/app/Services/api.service';
 import { SocketService } from 'src/app/Services/Sockets.service';
 import { StorageWebService } from 'src/app/Services/storage.service';
 import { ToastService } from 'src/app/Services/toast.service';
+
 @Component({
   selector: 'app-form',
   templateUrl: './form.page.html',
@@ -85,13 +86,14 @@ async getLocation() {
       this.timeServer = server.time
 
       this.api.getLocationByZone({
-        WorkZoneID: login[0].WorkZone
+        WorkZoneID: login[0].WorkZone,
+        token: login[0].token
       }).then((rs) => {
       
         this.locations = rs.response;
         this.selectedStates = this.locations;
     
-        this.api.getWMotivos(login[0].WorkZone
+        this.api.getWMotivos(login[0].WorkZone, login[0].token
         ).then((rsMotivo) => {
           console.log(rsMotivo, 'MOT')
           this.motivosList = rsMotivo.response;
@@ -192,7 +194,7 @@ search(value: any) {
   }
 
   async doSomething() {
-    this.saving = true;
+ 
     let login = await this.stg.getLogin();
 
    
@@ -200,19 +202,35 @@ search(value: any) {
     console.log(this.myForm.controls['recurso'])
     let isValid = false;
     if (this.isPaciente) {
+      if (this.myForm.controls['nombrepac']['value'] == '') {
+        this.invalid = true;
+        return;
+        isValid = false;
+      }
+      if (this.myForm.controls['aislado']['value'] == '') {
+        this.invalid = true;
+        return;
+        isValid = false;
+      }
       if (this.myForm.controls['recurso']['value'].length == 0) {
         this.invalid = true;
+        return;
         isValid = false;
-      } else {
-        if (this.myForm.status == 'VALID') {
-          isValid = true;
-        }
+
+      }
+
+      if (this.myForm.status == 'VALID') {
+        isValid = true;
       }
     } else {
       if (this.myForm.status == 'VALID') {
         isValid = true;
+      } else {
+        console.log('aqui')
       }
     }
+
+    this.saving = true;
 
     if (isValid) {
       let json = [{
@@ -229,15 +247,15 @@ search(value: any) {
         Value: this.myForm.controls['origen']['value']['Torre'] +  '|' + this.myForm.controls['origen']['value']['Piso']
       },{
         apiId: 'HOSPITAL',
-        Value: 'HOSPITAL DE MEDELLIN'
+        Value: 'HOSPITAL DE RIONEGRO'
       },{
-        apiId: 'ORIGEN_MEDELLIN',
+        apiId: 'ORIGEN_RIONEGRO',
         Value: this.myForm.controls['origen']['value']['Name']
       },{
-        apiId: 'DESTINO_MEDELLIN',
+        apiId: 'DESTINO_RIONEGRO',
         Value: this.myForm.controls['destino']['value']['Name']
       },{
-        apiId: 'MOTIVOS_MEDELLIN',
+        apiId: 'MOTIVOS_RIONEGRO',
         Value: this.myForm.controls['motivos']['value']
       },{
         apiId: 'NOMBRE_PACIENTE',
@@ -276,14 +294,14 @@ search(value: any) {
           if (create.status) {
             create.response.future = create.future;
             if (create.response.isAdmin == 1) {
-              this.socket.newActivity(login[0].WorkZone + 'centraladmin', create.response)
+              this.socket.newActivity((login[0].WorkZone + 'centraladmin').toString(), create.response)
             } else {
-              this.socket.newActivity(login[0].WorkZone + 'central', create.response)
+              this.socket.newActivity((login[0].WorkZone + 'central').toString(), create.response)
             }
 
             this.isClick = false;
-         //   this.myForm.reset()
-         //   this.router.navigate(['/dashboard'])
+            this.myForm.reset()
+            this.router.navigate(['/dashboard'])
 
             this.saving = false;
             
@@ -312,9 +330,15 @@ search(value: any) {
       if (this.myForm.controls['recurso']['value'].length == 0) {
         this.invalid = true;
       }
-      this.myForm.controls['nombrepac'].addValidators(Validators.required)
-      this.myForm.controls['aislado'].addValidators(Validators.required)
+
+
     } else {
+
+
+
+
+    
+ 
       this.isPaciente = false;
     }
   }

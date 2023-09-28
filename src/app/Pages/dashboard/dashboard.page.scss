@@ -15,12 +15,22 @@
             padding: 15px;
             display: flex;
             align-items: center;
+            overflow-x: scroll;
+            width: 100%;
             background-color: rgba(0,0,0,0.1);
 
+            form {
+                display: flex;
+                align-items: center;
+            }
+
             mat-form-field {
-                width: 200px;
+               
                 font-size: 14px;
                 margin: 0 10px;
+                height: 50px;
+                width: 180px;
+
             }
 
        
@@ -57,6 +67,24 @@
                 background-color: #44bcec;
                 margin-right: 10px;
             }
+
+            .demora {
+                display: inline-block;
+                width: 15px;
+                height: 15px;
+                border-radius: 100%;
+                background-color: #e5840c;
+                margin-right: 10px;
+            }
+
+            .completado {
+                display: inline-block;
+                width: 15px;
+                height: 15px;
+                border-radius: 100%;
+                background-color: #097923;
+                margin-right: 10px;
+            }
         }
        
     }
@@ -68,12 +96,19 @@
         background-color: var(--ion-color-diamante);
         z-index: 100;
         color: #fff;
+    
       
 
         .user {
             display: flex;
+            cursor: pointer;
 
             border-bottom: 1px solid rgba(0,0,0,0.1);
+            transition: all .5s;
+        }
+
+        .user:hover {
+            transform: scale(0.9);
         }
 
         .title {
@@ -229,4 +264,60 @@ mat-label {
 
   .rojo {
     background-color: #f7dddd;
+  }
+
+  .cien {
+    width: 100% !important;
+  }
+
+  .admin {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    ion-checkbox {
+        margin-top: 10px;
+    }
+  }
+
+  .fecha {
+    display: flex;
+    margin: 5px;
+
+    span {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        text-align: center;
+        border-radius: 100%;
+        background-color: #95b5c8;
+        color: #333;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+  }
+
+  .separador {
+    width: 10px;
+    height: 70px;
+    background-color: #a1a1a1;
+    margin: 0 10px;
+  }
+
+
+
+
+.loading {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    z-index: 100;
   }

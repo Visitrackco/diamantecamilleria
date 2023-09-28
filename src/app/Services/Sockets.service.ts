@@ -36,6 +36,8 @@ export class SocketService {
 
         const notificaciones = new Observable((obs) => {
             this.socket.on('notification', (data) => {
+
+                console.log(data)
                 
                 obs.next(data);
             })
@@ -48,6 +50,9 @@ export class SocketService {
 
         const notificaciones = new Observable((obs) => {
             this.socket.on('alert', (data) => {
+
+                console.log(data)
+                
             
                 obs.next(data);
             })
@@ -69,7 +74,7 @@ export class SocketService {
     }
 
 
-
+    
 
     hospitalCentral(WorkZoneID) {
         this.socket.emit('hospitalCentral', {
@@ -84,9 +89,63 @@ export class SocketService {
         })
     }
 
+    deleteSolicitud(data) {
+        this.socket.emit('deleteSolicitud', data)
+    }
+
+
     connect() {
         this.socket.connect()
     }
+
+
+    
+    
+     async initUser()  {
+        try {
+          const user = await this.stg.get('login')
+    
+          if (user.length > 0) {
+       
+            this.socket.emit('initUser', {_id: user[0]['_id']});
+          }
+        } catch (e) {}
+      }
+
+
+      async exitUser(user)  {
+        try {
+     
+    
+          if (user) {
+       
+            this.socket.emit('exitUser', {_id: user[0]['_id']});
+          }
+        } catch (e) {}
+      }
+
+
+      async connectEmit()  {
+        try {
+          const user = await this.stg.get('login')
+    
+          if (user.length > 0) {
+            user[0].UserID = user[0]._id
+            this.socket.emit('connectuser', {user: user[0], WorkZoneID: user[0].WorkZone, title: 'Nueva Conexión', msg: 'El usuario ' + user[0].FirstName + ' ' + user[0].LastName + '  se conectó de camilleria'});
+          }
+        } catch (e) {}
+      }
+
+
+
+      async disconnectEmit(user)  {
+        try {
+      
+          if (user) {
+            this.socket.emit('disconnectuser', {user: user[0], WorkZoneID: user[0].WorkZone, title: 'Desconexión', msg: 'El usuario ' + user[0].FirstName + ' ' + user[0].LastName + '  se desconectó de camilleria'});
+          }
+        } catch (e) {}
+      }
 
 
 
@@ -117,6 +176,10 @@ export class SocketService {
 
 
 
+    lockEmit(data) {
+        this.socket.emit('lock', (data))
+       // this.socket.disconnect()
+    }
 
 
 

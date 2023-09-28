@@ -9,16 +9,16 @@ import { ToastService } from 'src/app/Services/toast.service';
 import * as moment from 'moment-timezone'
 import { AlertController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
- 
+
 @Component({
-  selector: 'app-ubicaciones',
-  templateUrl: './ubicaciones.page.html',
-  styleUrls: ['./ubicaciones.page.scss'],
+  selector: 'app-motivos',
+  templateUrl: './motivos.page.html',
+  styleUrls: ['./motivos.page.scss'],
 })
-export class UbicacionesPage implements OnInit {
+export class MotivosPage implements OnInit {
 
   displayedColumns =
-  ['name', 'tag', 'torre', 'piso', 'acc'];
+  ['name', 'acc'];
 dataSource = new MatTableDataSource([]);
 
 @ViewChild('paginatorHistory') paginator: MatPaginator;
@@ -72,7 +72,7 @@ async getHistory() {
     try {
 
       this.dataSource.data = [];
-      const rs = await this.api.apiGet('locations?WorkZoneID=' + login[0].WorkZone, login[0].token)
+      const rs = await this.api.apiGet('demora?WorkZoneID=' + login[0].WorkZone, login[0].token)
 
       if (rs) {
         console.log(rs)
@@ -80,9 +80,6 @@ async getHistory() {
         rs.response.forEach(element => {
           let obj = {
             name: element.Name,
-            tag: element.TagUID,
-            torre: element.Torre,
-            piso: element.Piso,
             acc: element
           }
           fila.push(obj)
@@ -117,7 +114,7 @@ async deletePoint(point) {
 
   const alert = await this.alertCtrl.create({
     header: 'Eliminar ' + point.Name,
-    message: 'Una vez aceptado, se eliminarà el punto de forma permanente',
+    message: 'Una vez aceptado, se eliminarà el motivo de forma permanente',
     buttons: [
       {
         text: 'Cancelar',
@@ -135,7 +132,7 @@ async deletePoint(point) {
             try {
       
        
-              const rs = await this.api.apiDelete('locations?_id=' + point._id, login[0].token)
+              const rs = await this.api.apiDelete('demora?_id=' + point._id, login[0].token)
       
               if (rs) {
 
@@ -150,7 +147,7 @@ async deletePoint(point) {
 
      
       
-                this.toast.MsgOK('Punto eliminado')
+                this.toast.MsgOK('Motivo eliminado')
               }
             } catch (error) {
               this.loadActivities = true;
@@ -171,33 +168,16 @@ async editPoint(point) {
 
   const alert = await this.alertCtrl.create({
     header: 'Editar ' + point.Name,
-    message: 'Modifique cualquier dato de la ubicaciòn seleccionada, 1. tag, 2. nombre, 3. torre/ bloque, 4. piso',
+    message: 'Modifique el nombre',
     inputs: [
-      {
-        
-        placeholder: 'Tag',
-        type: 'text',
-        name: 'tag',
-        value: point.TagUID
-      },
+   
       {
         placeholder: 'Nombre',
         type: 'text',
         name: 'name',
         value: point.Name
       },
-      {
-        placeholder: 'Torre',
-        type: 'text',
-        name: 'torre',
-        value: point.Torre
-      },
-      {
-        placeholder: 'Piso',
-        type: 'text',
-        name: 'piso',
-        value: point.Piso
-      }
+    
     ],
     buttons: [
       {
@@ -208,8 +188,8 @@ async editPoint(point) {
         text: 'Aceptar',
         handler: async (data) => {
 
-          if (!data.tag || !data.name) {
-            this.toast.MsgError('No puede enviar el tag o el nombre vacios.')
+          if (!data.name) {
+            this.toast.MsgError('No puede enviar el nombre vacios.')
             return;
           }
 
@@ -224,7 +204,7 @@ async editPoint(point) {
               data._id = point._id;
               data.token = login[0].token;
        
-              const rs = await this.api.apiPost('locationsEdit', data)
+              const rs = await this.api.apiPost('demoraEdit', data)
       
               if (rs) {
 
@@ -237,7 +217,7 @@ async editPoint(point) {
 
                 this.loading = false;
 
-                this.toast.MsgOK('Punto modificado')
+                this.toast.MsgOK('Motivo modificado')
       
       
               }
@@ -260,34 +240,17 @@ async editPoint(point) {
 async create() {
 
   const alert = await this.alertCtrl.create({
-    header: 'Crear punto ',
-    message: '1. tag, 2. nombre, 3. torre/ bloque, 4. piso',
+    header: 'Crear motivo ',
+    message: '',
     inputs: [
-      {
-        
-        placeholder: 'Tag',
-        type: 'text',
-        name: 'TagUID',
-        value: ''
-      },
+     
       {
         placeholder: 'Nombre',
         type: 'text',
         name: 'Name',
         value: ''
       },
-      {
-        placeholder: 'Torre',
-        type: 'text',
-        name: 'Torre',
-        value: ''
-      },
-      {
-        placeholder: 'Piso',
-        type: 'text',
-        name: 'Piso',
-        value: ''
-      }
+     
     ],
     buttons: [
       {
@@ -298,8 +261,8 @@ async create() {
         text: 'Aceptar',
         handler: async (data) => {
 
-          if (!data.TagUID || !data.Name) {
-            this.toast.MsgError('No puede enviar el tag o el nombre vacios.')
+          if (!data.Name) {
+            this.toast.MsgError('No puede enviar el nombre vacios.')
             return;
           }
 
@@ -317,7 +280,7 @@ async create() {
               data.Prioridad = 0;
               data.WorkZoneID = login[0].WorkZone;
        
-              const rs = await this.api.apiPost('locations', data)
+              const rs = await this.api.apiPost('demora', data)
       
               if (rs) {
 
@@ -333,7 +296,7 @@ async create() {
 
     
 
-                this.toast.MsgOK('Punto creado')
+                this.toast.MsgOK('Motivo creado')
       
       
               }

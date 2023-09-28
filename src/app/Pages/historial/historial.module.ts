@@ -4,25 +4,25 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { UbicacionesPageRoutingModule } from './ubicaciones-routing.module';
+import { HistorialPageRoutingModule } from './historial-routing.module';
 
-import { UbicacionesPage } from './ubicaciones.page';
-import { ComponentsModule } from 'src/app/Components/components.module';
+import { HistorialPage } from './historial.page';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
+import { ComponentsModule } from 'src/app/Components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    UbicacionesPageRoutingModule,
+    HistorialPageRoutingModule,
     ComponentsModule,
     MatTableModule,
     MatPaginatorModule,
     MatProgressSpinnerModule
   ],
-  declarations: [UbicacionesPage]
+  declarations: [HistorialPage]
 })
-export class UbicacionesPageModule {}
+export class HistorialPageModule {}

@@ -4,25 +4,25 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { UbicacionesPageRoutingModule } from './ubicaciones-routing.module';
+import { MotivosPageRoutingModule } from './motivos-routing.module';
 
-import { UbicacionesPage } from './ubicaciones.page';
-import { ComponentsModule } from 'src/app/Components/components.module';
+import { MotivosPage } from './motivos.page';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
+import { ComponentsModule } from 'src/app/Components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    UbicacionesPageRoutingModule,
+    MotivosPageRoutingModule,
     ComponentsModule,
     MatTableModule,
     MatPaginatorModule,
     MatProgressSpinnerModule
   ],
-  declarations: [UbicacionesPage]
+  declarations: [MotivosPage]
 })
-export class UbicacionesPageModule {}
+export class MotivosPageModule {}
