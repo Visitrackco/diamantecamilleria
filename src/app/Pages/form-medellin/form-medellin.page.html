@@ -181,12 +181,12 @@
       </ion-row>
 
       <ion-row *ngIf="isPaciente">
-        <ion-col size="12">
+        <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['nombrepac'].value)">
 
           <mat-form-field>
             <mat-label>Nombre</mat-label>
 
-            <input formControlName="nombrepac" placeholder="Escriba Nombre" matInput>
+            <input  formControlName="nombrepac" placeholder="Escriba Nombre" matInput>
 
           </mat-form-field>
         </ion-col>
@@ -227,7 +227,7 @@
 
       </ion-row>
       <ion-row *ngIf="isPaciente">
-        <ion-col size="12" [class.rojo]="(isClick && myForm.controls['aislado']['errors'])">
+        <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['aislado'].value)">
 
           <ion-radio-group formControlName="aislado">
 

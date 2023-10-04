@@ -72,11 +72,15 @@ const routes: Routes = [
     path: 'motivos',
     loadChildren: () => import('./Pages/motivos/motivos.module').then( m => m.MotivosPageModule)
   },
+  {
+    path: 'motivos-form',
+    loadChildren: () => import('./Pages/motivos-form/motivos-form.module').then( m => m.MotivosFormPageModule)
+  },
 ];
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, useHash: true })
   ],
   exports: [RouterModule]
 })

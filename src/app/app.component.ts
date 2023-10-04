@@ -223,6 +223,11 @@ export class AppComponent {
     this.router.navigate(['/motivos'])
   }
 
+  async motivos2() {
+    this.menuCtrl.toggle('menu')
+    this.router.navigate(['/motivos-form'])
+  }
+
   async reportes() {
     this.menuCtrl.toggle('menu')
     this.router.navigate(['/error'])

@@ -36,13 +36,19 @@
 
             <ion-item (click)="listas()" color="banner" *ngIf="role && role.Listas == 1">
                 <ion-icon name="list" slot="start"></ion-icon>
-                <ion-label>Listas</ion-label>
+                <ion-label>Listas Ubicaciones</ion-label>
                 <ion-icon name="chevron-forward"></ion-icon>
             </ion-item>
 
             <ion-item (click)="motivos()" color="banner" *ngIf="role && role.Listas == 1">
                 <ion-icon name="hourglass" slot="start"></ion-icon>
                 <ion-label>Motivos Demora</ion-label>
+                <ion-icon name="chevron-forward"></ion-icon>
+            </ion-item>
+
+            <ion-item (click)="motivos2()" color="banner" *ngIf="role && role.Listas == 1">
+                <ion-icon name="fitness" slot="start"></ion-icon>
+                <ion-label>Motivos Solicitud</ion-label>
                 <ion-icon name="chevron-forward"></ion-icon>
             </ion-item>
 

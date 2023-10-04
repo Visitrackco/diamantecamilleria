@@ -159,16 +159,18 @@ export class DashboardPage implements OnInit {
             element.estado = 'pending'
 
             let actual = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm')
-            let diff = moment(actual).diff(moment(fechaSolicitud), 'minutes');
-            let color = '';
-            if (diff <= this.tiempos.verde) {
-              color = 'verde';
-            } else if (diff >= (this.tiempos.verde + 1) && diff <= this.tiempos.amarillo) {
-              color = 'amarillo';
-            } else if (diff >= this.tiempos.rojo) {
-              color = 'rojo'
-            }
+        
+            let color: any = this.getColor(element.Motivo.Ans, fechaSolicitud, actual);
 
+            if (element.CreatedByID == login[0]._id && login[0].isCentral != 1) {
+              color = '';
+            }
+          
+          
+            if (element.Activity) {
+              color += ' apoyo';
+            }
+  
             element.color = color;
 
           }
@@ -262,7 +264,33 @@ export class DashboardPage implements OnInit {
     this.obs.$reload.subscribe({
       next: (data) => {
         if (data) {
-          this.clear();
+         if (this.mot) {
+          this.mot.writeValue('');
+         }
+         if (this.org) {
+          this.org.writeValue('');
+         }
+         if (this.des) {
+          this.des.writeValue('');
+         }
+       
+         
+          this.motivoSelect = false;
+          this.origenSelec = false;
+          this.DestinoSelect = false;
+          this.fechaFrom = '';
+          this.fechaTo = '';
+          this.fromTemp = '';
+          this.toTemp = '';
+          this.filter = true;
+          this.isAllStatus = false;
+          this.isFilter = false;
+      
+        if (this.myForm) {
+          this.myForm.controls['from'].setValue('');
+          this.myForm.controls['to'].setValue('');
+        }
+          this.users = [];
           this.midata()
         }
       }
@@ -284,11 +312,13 @@ export class DashboardPage implements OnInit {
   ngOnInit() {
   }
 
-  async ionViewWillEnter() {
+  ionViewWillEnter() {
 
-   
+   moment.locale('en')
 
       this.midata()
+
+      this.stop = false;
    
 
       
@@ -303,7 +333,7 @@ export class DashboardPage implements OnInit {
 
     if (login) {
 
-      if (login[0].WorkZone == 6842) {
+    /*  if (login[0].WorkZone == 6842) {
         this.tiempos  = {
           verde: 6,
           amarillo: 10,
@@ -315,7 +345,7 @@ export class DashboardPage implements OnInit {
           amarillo: 8,
           rojo: 9
         }
-      }
+      } */
 
       if (login[0].isCentral == 1 && login[0].isCentralAdmin == 1) {
         this.multiple = true;
@@ -535,7 +565,34 @@ export class DashboardPage implements OnInit {
     });
   }
 
+  getColor(ans: number, from, to): any {
+
+    let diff = moment(to).diff(moment(from), 'minutes');
+
+    if (ans <= 0) {
+      return '';
+    }
+
+    let verde = parseFloat(((50 * ans) / 100).toFixed());
+    let amarillo = parseFloat(((80 * ans) / 100).toFixed());
+
+    console.log(verde, amarillo, ans)
+
+    if (diff <= verde) {
+      return  'verde';
+    } else if (diff >= amarillo && diff <= ans - 1) {
+      return  'amarillo';
+    } else if (diff >= ans) {
+      return  'rojo'
+    }
+
+    return '';
+    
+  }
+
   async getSolicitudes() {
+    this.stop = false;
+    
     const login = await this.stg.getLogin();
 
     if (login) {
@@ -589,6 +646,8 @@ export class DashboardPage implements OnInit {
         console.log(pendings, 'PENDIENTES')
         pendings.forEach(element => {
 
+
+
           let fecha = element.JSONAnswers.filter((it) => it.apiId == 'FECHA').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'FECHA')[0].Value : ''
           let hora = element.JSONAnswers.filter((it) => it.apiId == 'HORA').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'HORA')[0].Value : ''
 
@@ -612,14 +671,15 @@ export class DashboardPage implements OnInit {
           }
 
           let actual = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm')
-          let diff = moment(actual).diff(moment(fechaSolicitud), 'minutes');
-          let color = '';
-          if (diff <= this.tiempos.verde) {
-            color = 'verde';
-          } else if (diff >= (this.tiempos.verde + 1) && diff <= this.tiempos.amarillo) {
-            color = 'amarillo';
-          } else if (diff >= this.tiempos.rojo) {
-            color = 'rojo'
+      
+          let color: any = this.getColor(element.Motivo.Ans, fechaSolicitud, actual);
+
+          if (element.CreatedByID == login[0]._id && login[0].isCentral != 1) {
+            color = '';
+          }
+        
+          if (element.Activity) {
+            color += ' apoyo';
           }
 
           element.color = color;
@@ -679,6 +739,22 @@ export class DashboardPage implements OnInit {
 
             let exist = fila.findIndex((it) => it.acc._id == element._id);
 
+            let actual = org == '' ? moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm') : moment(org).tz('America/Bogota').format('YYYY-MM-DD HH:mm')
+      
+            let color: any = this.getColor(element.Motivo.Ans, fechaSolicitud, actual);
+
+            if (element.CreatedByID == login[0]._id && login[0].isCentral != 1) {
+              color = '';
+            }
+          
+          
+            if (element.Activity) {
+              color += ' apoyo';
+            }
+  
+            element.color = color;
+
+
             if (element.CompanyStatus == 'PENDIENTE ASIGNACION CAMILLERO') {
               element.estado = 'pending'
             } else if (element.CompanyStatus == 'SOLICITUD CON CAMILLERO') {
@@ -693,8 +769,8 @@ export class DashboardPage implements OnInit {
               estado: element.CompanyStatus,
               fecha: {
                 s: fechaSolicitud,
-                o: !moment(org).tz('America/Bogota').format('YYYY-MM-DD HH:mm').includes('Inv') ? moment(org).tz('America/Bogota').format('YYYY-MM-DD HH:mm') : '',
-                d: !moment(des).tz('America/Bogota').format('YYYY-MM-DD HH:mm').includes('Inv') ? moment(des).tz('America/Bogota').format('YYYY-MM-DD HH:mm') : ''
+                o: org ? moment(org).tz('America/Bogota').format('YYYY-MM-DD HH:mm') : '',
+                d: des ? moment(des).tz('America/Bogota').format('YYYY-MM-DD HH:mm') : ''
               },
               recibido: element.Received ? moment(element.Received).tz('America/Bogota').format('YYYY-MM-DD HH:mm') : '',
               motivo: element.Motivo.Name,
@@ -780,9 +856,13 @@ export class DashboardPage implements OnInit {
               return;
             }
 
-            if (event.item.data.acc.AssignedTo._id == data._id) {
-              this.toast.MsgOK('El camillero ya tiene esta solicitud asignada');
-              return;
+            if (event.item.data.acc.AssignedTo) {
+
+              if (event.item.data.acc.AssignedTo._id == data._id) {
+                this.toast.MsgOK('El camillero ya tiene esta solicitud asignada');
+                return;
+              }
+           
             }
           }
           this.assigment(data, event.item.data);
@@ -961,7 +1041,7 @@ export class DashboardPage implements OnInit {
 
   ionViewWillLeave() {
     if (this.interval) {
-      clearInterval(this.interval);
+    //  clearInterval(this.interval);
     }
     this.mot.writeValue('');
     this.org.writeValue('');

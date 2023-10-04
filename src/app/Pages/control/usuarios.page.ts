@@ -18,7 +18,7 @@ import { AlertController } from '@ionic/angular';
 export class UsuariosPage implements OnInit {
 
   displayedColumns =
-    ['estado', 'name', 'islock', 'isdelete', 'isassigment', 'acc'];
+    ['estado', 'name', 'islock', 'isdelete', 'isassigment', 'programmer', 'acc'];
   dataSource = new MatTableDataSource([]);
 
   @ViewChild('paginatorHistory') paginator: MatPaginator;
@@ -140,6 +140,7 @@ export class UsuariosPage implements OnInit {
               islock: element.IsLocked,
               isdelete: element.isCantDelete,
               isassigment: element.isCantAssigment,
+              programmer: element.isCantProgrammer,
               acc: element
             }
             fila.push(obj)

@@ -194,7 +194,7 @@ export class FormMedellinPage implements OnInit {
   }
 
   async doSomething() {
-    this.saving = true;
+
     let login = await this.stg.getLogin();
 
 
@@ -202,13 +202,26 @@ export class FormMedellinPage implements OnInit {
     console.log(this.myForm.controls['recurso'])
     let isValid = false;
     if (this.isPaciente) {
+      if (this.myForm.controls['nombrepac']['value'] == '') {
+        this.invalid = true;
+        return;
+
+      }
+      if (this.myForm.controls['aislado']['value'] == '') {
+        this.invalid = true;
+        return;
+
+      }
       if (this.myForm.controls['recurso']['value'].length == 0) {
         this.invalid = true;
-        isValid = false;
-      } else {
-        if (this.myForm.status == 'VALID') {
-          isValid = true;
-        }
+        return;
+ 
+
+      }
+
+
+      if (this.myForm.status == 'VALID') {
+        isValid = true;
       }
     } else {
       if (this.myForm.status == 'VALID') {
@@ -220,6 +233,8 @@ export class FormMedellinPage implements OnInit {
     }
 
     if (isValid) {
+
+      this.saving = true;
       let json = [{
         apiId: 'FECHA',
         Value: moment(this.myForm.controls['fecha']['value']).format('YYYY-MM-DD')

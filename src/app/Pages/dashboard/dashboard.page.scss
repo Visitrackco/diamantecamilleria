@@ -321,3 +321,18 @@ mat-label {
     height: 100vh;
     z-index: 100;
   }
+
+
+
+  .apoyo {
+    animation: apoyo 1s infinite alternate-reverse;
+}
+
+@keyframes apoyo {
+    from {
+       transform: scale(1.0);
+    }
+    to {
+        transform: scale(0.97);
+    }
+}

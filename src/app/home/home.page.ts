@@ -159,6 +159,8 @@ export class HomePage {
 
       this.router.navigate(['/dashboard'])
 
+      this.menu.enable(true, 'menu')
+
       /*
 
       if (work == 6842) {
