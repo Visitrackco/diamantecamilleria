@@ -59,6 +59,8 @@ export class FormPage implements OnInit {
   ];
 
 selectedStates = this.locations; 
+selectedStates2;
+
 
 invalid;
 
@@ -92,6 +94,7 @@ async getLocation() {
       
         this.locations = rs.response;
         this.selectedStates = this.locations;
+        this.selectedStates2 = this.locations;
     
         this.api.getWMotivos(login[0].WorkZone, login[0].token
         ).then((rsMotivo) => {
@@ -110,10 +113,16 @@ async getLocation() {
 
 }
 
-onKey(value) { 
-  console.log(value)
-this.selectedStates = this.search(value.target.value);
+onKey(value) {
+
+  this.selectedStates = this.search(value.target.value);
 }
+
+onKey2(value) {
+
+  this.selectedStates2 = this.search(value.target.value);
+}
+
 
 search(value: any) { 
 

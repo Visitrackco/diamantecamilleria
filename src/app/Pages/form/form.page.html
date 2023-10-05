@@ -144,9 +144,9 @@
           <mat-form-field>
             <mat-label>Punto</mat-label>
             <mat-select formControlName="destino">
-              <input placeholder="Buscar punto" class="search" (keyup)="onKey($event)">
+              <input placeholder="Buscar punto" class="search" (keyup)="onKey2($event)">
 
-              <mat-option *ngFor="let state of selectedStates" [value]="state">{{state.Name}}</mat-option>
+              <mat-option *ngFor="let state of selectedStates2" [value]="state">{{state.Name}}</mat-option>
             </mat-select>
           </mat-form-field>
         </ion-col>

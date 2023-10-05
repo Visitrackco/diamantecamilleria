@@ -40,9 +40,14 @@
          
         }
 
+        .tables{
+            font-size: 10px;
+        }
+
         .table {
             overflow: scroll;
             height: calc(100vh - 200px);
+        
 
             .center {
                 display: flex;

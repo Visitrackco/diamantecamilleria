@@ -153,7 +153,7 @@ export class SocketService {
 
         const conenctions = new Observable((obs) => {
             this.socket.on('connectuser', (data) => {
-                console.log('mala', data)
+         
                 obs.next(data);
             })
         })
@@ -165,7 +165,20 @@ export class SocketService {
 
         const conenctions = new Observable((obs) => {
             this.socket.on('disconnectuser', (data) => {
-                console.log('mala', data)
+               
+                obs.next(data);
+            })
+        })
+
+        return conenctions;
+    }
+
+
+    adicional() {
+
+        const conenctions = new Observable((obs) => {
+            this.socket.on('adicional', (data) => {
+    
                 obs.next(data);
             })
         })

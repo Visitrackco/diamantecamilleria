@@ -33,7 +33,7 @@ export class DashboardPage implements OnInit {
 
 
   displayedColumns =
-    ['estado', 'fecha', 'recibido', 'motivo', 'origen', 'destino', 'camillero', 'obscentral', 'obs', 'acc', 'token'];
+    ['estado', 'fecha', 'recibido', 'motivo', 'origen', 'destino', 'camillero', 'obscentral', 'obs', 'obs3', 'acc', 'token'];
   dataSource = new MatTableDataSource([]);
 
   @ViewChild('paginatorHistory') paginator: MatPaginator;
@@ -152,6 +152,8 @@ export class DashboardPage implements OnInit {
 
           let obs = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1')[0].Value : ''
 
+          let obs3 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3')[0].Value : ''
+
           let fechaSolicitud = fecha + ' ' + hora;
 
 
@@ -194,6 +196,7 @@ export class DashboardPage implements OnInit {
               aislado,
               obs
             },
+            obs3,
             acc: element,
             token: element._id
           };
@@ -255,6 +258,13 @@ export class DashboardPage implements OnInit {
       }
     })
 
+    this.socket.adicional().subscribe({
+      next: (data) => {
+        if (data) {
+          this.getSolicitudes();
+        }
+      }
+    })
     this.interval = setInterval(() => {
       if (!this.stop) {
         this.getSolicitudes()
@@ -660,6 +670,9 @@ export class DashboardPage implements OnInit {
 
           let obs = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1')[0].Value : ''
 
+          let obs3 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3')[0].Value : ''
+
+
           let fechaSolicitud = fecha + ' ' + hora;
 
           let exist = fila.findIndex((it) => it.acc._id == element._id);
@@ -677,6 +690,8 @@ export class DashboardPage implements OnInit {
           if (element.CreatedByID == login[0]._id && login[0].isCentral != 1) {
             color = '';
           }
+
+
         
           if (element.Activity) {
             color += ' apoyo';
@@ -703,6 +718,7 @@ export class DashboardPage implements OnInit {
               aislado,
               obs
             },
+            obs3: obs3,
             acc: element,
             token: element._id
           };
@@ -731,6 +747,8 @@ export class DashboardPage implements OnInit {
 
             let obs = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1')[0].Value : ''
 
+            let obs3 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3')[0].Value : ''
+
             let org = element.JSONAnswers.filter((it) => it.apiId == 'FechallegaOrigen').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'FechallegaOrigen')[0].Value : ''
 
             let des = element.JSONAnswers.filter((it) => it.apiId == 'FechaLlegadaDestino').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'FechaLlegadaDestino')[0].Value : ''
@@ -746,10 +764,16 @@ export class DashboardPage implements OnInit {
             if (element.CreatedByID == login[0]._id && login[0].isCentral != 1) {
               color = '';
             }
+
+    
           
           
             if (element.Activity) {
               color += ' apoyo';
+            }
+
+            if (org) {
+              color = '';
             }
   
             element.color = color;
@@ -784,6 +808,7 @@ export class DashboardPage implements OnInit {
                 aislado,
                 obs
               },
+              obs3,
               acc: element,
               token: element._id,
               UpdatedOn: element.UpdatedOn
