@@ -274,8 +274,8 @@
 
       <div class="title">
         <h3>Camilleros</h3>
-        <ion-button fill="none">
-       <!--   <ion-icon name="settings" slot="icon-only" color="light"></ion-icon>--> 
+        <ion-button (click)="getUsers()">
+     <ion-icon name="refresh" slot="icon-only" color="light"></ion-icon>
         </ion-button>
       </div>
 
@@ -291,7 +291,7 @@
           </ion-avatar>
           <ion-label class="ion-text-wrap">
             <div class="name">{{user.FirstName}} {{user.LastName}}</div>
-
+            <div *ngIf="user.isConnect > 0" style="opacity: .7; font-size: 12px;">Solicitudes ùltima sesiòn ( {{user.count}} )</div>
             <div *ngIf="user.isConnect == 1">
               <span class="circle"></span>
 

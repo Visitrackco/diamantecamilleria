@@ -14,7 +14,7 @@ export class ObserverService {
     roleInfo = new BehaviorSubject([]);
     $roleInfo = this.roleInfo.asObservable();
 
-    reload = new BehaviorSubject([]);
+    reload = new BehaviorSubject(false);
     $reload = this.reload.asObservable();
 
      constructor(

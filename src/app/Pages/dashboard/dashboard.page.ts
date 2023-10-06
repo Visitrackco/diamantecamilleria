@@ -431,8 +431,34 @@ export class DashboardPage implements OnInit {
         const rs = await this.api.apiGet('usersworkzone?WorkZoneID=' + login[0].WorkZone, login[0].token)
 
         if (rs) {
-          console.log(rs, 'RS')
-          this.users = rs.response;
+
+          console.log(rs.response);
+
+          this.users = [];
+       
+          for (const ele of rs.response) {
+
+           
+
+            if (ele.isConnect > 0) {
+              const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id, login[0].token) 
+
+              if (count.status) {
+                ele.count = count.response;
+              }
+            } /*else {
+              const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id + '&logout=yes', login[0].token) 
+
+              if (count.status) {
+                ele.count = count.response;
+              }
+            } */
+
+            this.users.push(ele);
+
+          }
+         
+
         }
       } catch (error) {
 
@@ -590,9 +616,9 @@ export class DashboardPage implements OnInit {
 
     if (diff <= verde) {
       return  'verde';
-    } else if (diff >= amarillo && diff <= ans - 1) {
+    } else if (diff > verde && diff <= amarillo) {
       return  'amarillo';
-    } else if (diff >= ans) {
+    } else if (diff > amarillo) {
       return  'rojo'
     }
 
@@ -888,6 +914,13 @@ export class DashboardPage implements OnInit {
                 return;
               }
            
+            } else {
+              if (event.item.data.acc.Activity) {
+                if (event.item.data.acc.UpdatedByID == data._id) {
+                  this.toast.MsgOK('No se puede asignar una solicitud de apoyo para el mismo camillero que lo solicitò');
+                  return;
+                }
+              }
             }
           }
           this.assigment(data, event.item.data);
