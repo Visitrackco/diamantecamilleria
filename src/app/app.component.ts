@@ -233,6 +233,11 @@ export class AppComponent {
     this.router.navigate(['/error'])
   }
 
+  async recursos() {
+    this.menuCtrl.toggle('menu')
+    this.router.navigate(['/recursos'])
+  }
+
 
   initializeApp() {
     this.platform.ready().then(async () => {

@@ -33,6 +33,9 @@ export class FormPage implements OnInit {
 
   saving;
 
+  recursos = [];
+
+
   constructor(
     private fb: FormBuilder,
     private menuCtrl: MenuController,
@@ -98,11 +101,18 @@ async getLocation() {
     
         this.api.getWMotivos(login[0].WorkZone, login[0].token
         ).then((rsMotivo) => {
-          console.log(rsMotivo, 'MOT')
           this.motivosList = rsMotivo.response;
-          this.loadInfo = true;
+          
+          this.api.apiGet('recurso?WorkZoneID=' + login[0].WorkZone, login[0].token).then((rec) => {
+        
+              this.recursos = rec.response;
+              this.loadInfo = true;
+            })
+
+       
+        
         })
-    
+     
      
       })
     })

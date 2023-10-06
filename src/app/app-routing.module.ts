@@ -76,6 +76,10 @@ const routes: Routes = [
     path: 'motivos-form',
     loadChildren: () => import('./Pages/motivos-form/motivos-form.module').then( m => m.MotivosFormPageModule)
   },
+  {
+    path: 'recursos',
+    loadChildren: () => import('./Pages/recursos/recursos.module').then( m => m.RecursosPageModule)
+  },
 ];
 
 @NgModule({

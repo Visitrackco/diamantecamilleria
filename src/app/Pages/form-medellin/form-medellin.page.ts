@@ -32,6 +32,8 @@ export class FormMedellinPage implements OnInit {
 
   saving;
 
+  recursos = [];
+
   constructor(
     private fb: FormBuilder,
     private menuCtrl: MenuController,
@@ -94,12 +96,18 @@ export class FormMedellinPage implements OnInit {
           this.selectedStates = this.locations;
           this.selectedStates2 = this.locations;
 
-          this.api.getWMotivos(login[0].WorkZone,
-            login[0].token
+          this.api.getWMotivos(login[0].WorkZone, login[0].token
           ).then((rsMotivo) => {
-            console.log(rsMotivo, 'MOT')
             this.motivosList = rsMotivo.response;
-            this.loadInfo = true;
+
+            this.api.apiGet('recurso?WorkZoneID=' + login[0].WorkZone, login[0].token).then((rec) => {
+
+              this.recursos = rec.response;
+              this.loadInfo = true;
+            })
+
+
+
           })
 
 
@@ -118,7 +126,7 @@ export class FormMedellinPage implements OnInit {
   }
 
   onKey2(value) {
- 
+
     this.selectedStates2 = this.search(value.target.value);
   }
 
@@ -206,7 +214,9 @@ export class FormMedellinPage implements OnInit {
 
 
     this.isClick = true;
-    console.log(this.myForm.controls['recurso'])
+    console.log(this.myForm.controls['recurso']['value'], 'recursos')
+
+
     let isValid = false;
     if (this.isPaciente) {
       if (this.myForm.controls['nombrepac']['value'] == '') {
@@ -222,7 +232,7 @@ export class FormMedellinPage implements OnInit {
       if (this.myForm.controls['recurso']['value'].length == 0) {
         this.invalid = true;
         return;
- 
+
 
       }
 
@@ -340,7 +350,7 @@ export class FormMedellinPage implements OnInit {
       if (this.myForm.controls['recurso']['value'].length == 0) {
         this.invalid = true;
       }
-    
+
     } else {
 
 
@@ -352,13 +362,19 @@ export class FormMedellinPage implements OnInit {
   change(event) {
     let rec = this.myForm.value.recurso.filter((item) => item == event.detail.value)
 
+
+
     if (rec.length > 0) {
       if (!event.detail.checked) {
-        this.myForm.value.recurso = this.myForm.value.recurso.filter((item) => item != event.detail.value)
+        let idx =  this.myForm.value.recurso.findIndex((item) => item == event.detail.value)
+      
+        this.myForm.value.recurso.splice(idx, 1) 
       }
 
       return;
     }
+
+
     this.myForm.value.recurso.push(event.detail.value);
   }
 
