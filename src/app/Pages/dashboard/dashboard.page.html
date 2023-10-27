@@ -1,330 +1,324 @@
 <ion-header class="ion-no-border" [translucent]="true">
-  <ion-toolbar color="diamante">
-    <ion-title>Tablero de solicitudes</ion-title>
-    <app-options  slot="end"></app-options>
-  </ion-toolbar>
+    <ion-toolbar color="diamante">
+        <ion-title>Tablero de solicitudes</ion-title>
+        <app-options slot="end"></app-options>
+    </ion-toolbar>
 </ion-header>
 
 
 <ion-content>
 
-  <div class="loading" *ngIf="loading">
-    <mat-spinner></mat-spinner>
-   </div>
-
-  <div class="main" cdkDropListGroup >
-    <div class="dash" [class.cien]="isAssigment != 1" cdkDropListSortingDisabled cdkDropList   (cdkDropListDropped)="dropped($event)" >
-
-
-
-      <div *ngIf="loadActivities" class="options" >
-        <form  [formGroup]="myForm" class="flex">
-        <mat-form-field>
-          <mat-label>Fecha Desde</mat-label>
-          <input formControlName="from" [max]="dateServer" (dateChange)="changePicker($event, 1)" readonly matInput [matDatepicker]="picker" >
-
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-label>Fecha Hasta</mat-label>
-          <input formControlName="to"  [max]="dateServer"  (dateChange)="changePicker($event, 2)" readonly matInput [matDatepicker]="picker2" >
-
-          <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
-          <mat-datepicker #picker2></mat-datepicker>
-        </mat-form-field>
-
-
-
-        <div class="separador"></div>
-
-
-        <mat-form-field>
-          <mat-label>Motivo</mat-label>
-          <mat-select #mot (selectionChange)="select($event, 1)">
-            <input placeholder="Buscar Motivo" class="search" (keyup)="onKey2($event)">
-
-            <mat-option *ngFor="let state of motivosList" [value]="state">{{state.Name}}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-label>Origen</mat-label>
-          <mat-select #org (selectionChange)="select($event, 2)">
-            <input placeholder="Buscar punto" class="search" (keyup)="onKey($event, 1)">
-
-            <mat-option *ngFor="let state of selectedStates" [value]="state">{{state.Name}}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-label>Destino</mat-label>
-          <mat-select #des (selectionChange)="select($event, 3)">
-            <input placeholder="Buscar punto" class="search" (keyup)="onKey($event, 2)">
-
-            <mat-option *ngFor="let state of selectedStates2" [value]="state">{{state.Name}}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <ion-button color="danger" fill="outline" (click)="clear()">
-          <ion-icon name="trash"></ion-icon>
-        </ion-button>
-
-        <div class="admin" *ngIf="multiple">
-          CA
-          <ion-checkbox [checked]="isAdmin" (ionChange)="ca($event)"></ion-checkbox>
-        </div>
-
-
-        <div class="admin" >
-          T. ESTADOS
-          <ion-checkbox [checked]="isAllStatus" (ionChange)="status($event)"></ion-checkbox>
-        </div>
-
-      </form>
-      </div>
-
-
-
-      <div class="table">
-     
-        <div *ngIf="!loadActivities">
-          <ion-row *ngFor="let result of [1,1,1]">
-
-            <ion-col size="4">
-              <ion-skeleton-text [animated]="true" style="width: 100%; height: 30px;"></ion-skeleton-text>
-            </ion-col>
-
-            <ion-col size="4">
-              <ion-skeleton-text [animated]="true" style="width: 100%; height: 30px;"></ion-skeleton-text>
-            </ion-col>
-
-            <ion-col size="4">
-              <ion-skeleton-text [animated]="true" style="width: 100%; height: 30px;"></ion-skeleton-text>
-            </ion-col>
-
-
-
-          </ion-row>
-        </div>
-
-
-        <table class="tables" *ngIf="loadActivities" mat-table [dataSource]="dataSource">
-
-          <!-- Name Column -->
-          <ng-container matColumnDef="estado">
-            <th style="min-width: 50px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
-              mat-header-cell *matHeaderCellDef> ESTADO </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)">
-
-              <div class="center">
-                <span [class]="element.acc.estado"></span> 
-              </div>
-
-              <div class="center"> <br>
-              <strong style="color: red;">  {{element.acc.Message}}</strong>
-              </div>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="fecha">
-            <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
-              mat-header-cell *matHeaderCellDef> FECHAS </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)">
-            <div class="fecha">
-              <span>S</span>
-              <strong> {{element.fecha.s}}</strong>
-            </div>  
-            <div class="fecha" *ngIf="element.fecha.o">
-              <span>O</span>
-              <strong> {{element.fecha.o}}</strong>
-            </div>  
-
-            <div class="fecha" *ngIf="element.fecha.d">
-              <span>D</span>
-              <strong> {{element.fecha.d}}</strong>
-            </div>  
-            </td>
-          </ng-container>
-
-
-          <ng-container matColumnDef="recibido">
-            <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
-              mat-header-cell *matHeaderCellDef> RECIBIDO POR EL MOVIL </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> {{element.recibido}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="motivo">
-            <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
-              mat-header-cell *matHeaderCellDef> MOTIVO </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> {{element.motivo}} </td>
-          </ng-container>
-
-
-          <ng-container matColumnDef="origen">
-            <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
-              mat-header-cell *matHeaderCellDef> ORIGEN </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> {{element.origen}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="destino">
-            <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
-              mat-header-cell *matHeaderCellDef> DESTINO </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> 
-            <div>{{element.destino}}</div>
-            <div *ngIf="element.acc.retorno"><strong style="color: green;">Cerrado con retorno</strong></div>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="camillero">
-            <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
-              mat-header-cell *matHeaderCellDef> CAMILLERO </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> 
-            
-              <div class="camillero" *ngIf="element.camillero">{{element.camillero.FirstName}} {{element.camillero.LastName}}</div>
-     
-              
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="obscentral">
-            <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
-              mat-header-cell *matHeaderCellDef> OBSERVACIONES CENTRAL </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> {{element.obscentral}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="obs">
-            <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
-              mat-header-cell *matHeaderCellDef> OBSERVACIONES ADICIONALES </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)">
-              <div *ngIf="element.motivo == 'TRANSPORTAR PACIENTE'"><strong>Nombre Paciente:</strong>
-                {{element.obs.paciente}}</div>
-              <div *ngIf="element.motivo == 'TRANSPORTAR PACIENTE'"><strong>Recursos:</strong> <span
-                  *ngFor="let rec of element.obs.recursos; let i = index">
-                  {{rec}}<span *ngIf="i < (element.obs.recursos.length - 1)">,</span> </span></div>
-              <div *ngIf="element.motivo == 'TRANSPORTAR PACIENTE'"><strong>Aislado:</strong> {{element.obs.aislado}}
-              </div>
-              <br>
-              <div *ngIf="element.obs.obs"><strong>Observaciones:</strong> {{element.obs.obs}}</div>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="obs3">
-            <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
-              mat-header-cell *matHeaderCellDef> OBSERVACIONES CAMILLERO </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> {{element.obs3}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="acc">
-            <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
-              mat-header-cell *matHeaderCellDef> ACCIONES </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element">
-              <div class="center">
-                <ion-button *ngIf="isDelete && !element.fecha.o" color="danger" fill="outline" (click)="deleteSolicitud(element.acc)">
-                  <ion-icon name="trash"></ion-icon>
-                </ion-button>
-              </div>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="token">
-            <th style="min-width: 50px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
-              mat-header-cell *matHeaderCellDef> TOKEN </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element">
-
-              <strong style="color: red;" *ngIf="element.acc.soporte && isAssigment == 1">{{element.acc.soporte}}</strong>
-              
-
-              <div class="flex">
-           
-                <ion-button [cdkCopyToClipboard]="element.token" color="diamante" fill="outline" >
-                  <ion-icon name="copy"></ion-icon>
-                </ion-button>
-              </div>
-            </td>
-          </ng-container>
-
-        
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns;  sticky: true"></tr>
-         <div *ngIf="isAssigment == 1">
-          <tr cdkDrag [cdkDragData]="row" (mousedown)="stopIt($event)" (mouseup)="stopOut($event)"  mat-row *matRowDef="let row; columns: displayedColumns;" [class]="row.acc.color" > 
-            <div *cdkDragPreview class="infoDrag">
-              <h3>Solicitud Camilleria</h3>
-               <div><strong>Motivo:</strong>  {{row.motivo}}</div>
-               <div><strong>Fecha:</strong>  {{row.fecha.s}}</div>
-            </div>
-          </tr>
-         </div>
-
-         <div *ngIf="isAssigment != 1" >
-          <tr  mat-row *matRowDef="let row; columns: displayedColumns;" [class]="row.acc.color" >    </tr>
-         </div>
-
-         
-         
-       
-        </table>
-
-
-      </div>
-
-      <mat-paginator #paginatorHistory [pageSizeOptions]="[50, 100, 150]" showFirstLastButtons
-        aria-label="Seleccionar pagina">
-      </mat-paginator>
-
+    <div class="loading" *ngIf="loading">
+        <mat-spinner></mat-spinner>
     </div>
-    <div class="users" *ngIf="isAssigment == 1">
 
-      <div class="title">
-        <h3>Camilleros</h3>
-        <ion-button (click)="getUsers()">
-     <ion-icon name="refresh" slot="icon-only" color="light"></ion-icon>
-        </ion-button>
-      </div>
+    <div class="main" cdkDropListGroup>
+        <div class="dash" [class.cien]="isAssigment != 1" cdkDropListSortingDisabled cdkDropList (cdkDropListDropped)="dropped($event)">
 
-      <div class="content">
-        <ion-item (click)="history(user)" class="user" *ngFor="let user of users" lines="none" cdkDropList
-        cdkDropListSortingDisabled
-        [cdkDropListData]="user"
-        (cdkDropListDropped)="dropped($event)"
-        [class.opacity]="user.isConnect == 0"
-     >
-          <ion-avatar slot="start">
-            <img src="/assets/avatar.svg" width="50px">
-          </ion-avatar>
-          <ion-label class="ion-text-wrap">
-            <div class="name">{{user.FirstName}} {{user.LastName}}</div>
-            <div *ngIf="user.isConnect > 0" style="opacity: .7; font-size: 12px;">Solicitudes ùltima sesiòn ( {{user.count}} )</div>
-            <div *ngIf="user.isConnect == 1">
-              <span class="circle"></span>
 
-              Conectado
+
+            <div *ngIf="loadActivities" class="options">
+                <form [formGroup]="myForm" class="flex">
+                    <mat-form-field>
+                        <mat-label>Fecha Desde</mat-label>
+                        <input formControlName="from" [max]="dateServer" (dateChange)="changePicker($event, 1)" readonly matInput [matDatepicker]="picker">
+
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                        <mat-label>Fecha Hasta</mat-label>
+                        <input formControlName="to" [max]="dateServer" (dateChange)="changePicker($event, 2)" readonly matInput [matDatepicker]="picker2">
+
+                        <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2></mat-datepicker>
+                    </mat-form-field>
+
+
+
+                    <div class="separador"></div>
+
+
+                    <mat-form-field>
+                        <mat-label>Motivo</mat-label>
+                        <mat-select #mot (selectionChange)="select($event, 1)">
+                            <input placeholder="Buscar Motivo" class="search" (keyup)="onKey2($event)">
+
+                            <mat-option *ngFor="let state of motivosList" [value]="state">{{state.Name}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                        <mat-label>Origen</mat-label>
+                        <mat-select #org (selectionChange)="select($event, 2)">
+                            <input placeholder="Buscar punto" class="search" (keyup)="onKey($event, 1)">
+
+                            <mat-option *ngFor="let state of selectedStates" [value]="state">{{state.Name}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                        <mat-label>Destino</mat-label>
+                        <mat-select #des (selectionChange)="select($event, 3)">
+                            <input placeholder="Buscar punto" class="search" (keyup)="onKey($event, 2)">
+
+                            <mat-option *ngFor="let state of selectedStates2" [value]="state">{{state.Name}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <ion-button color="danger" fill="outline" (click)="clear()">
+                        <ion-icon name="trash"></ion-icon>
+                    </ion-button>
+
+                    <div class="admin" *ngIf="multiple">
+                        CA
+                        <ion-checkbox [checked]="isAdmin" (ionChange)="ca($event)"></ion-checkbox>
+                    </div>
+
+
+                    <div class="admin">
+                        T. ESTADOS
+                        <ion-checkbox [checked]="isAllStatus" (ionChange)="status($event)"></ion-checkbox>
+                    </div>
+
+                    <ion-button color="diamante" fill="outline" (click)="load()">
+                        <ion-icon name="refresh"></ion-icon>
+                    </ion-button>
+
+                </form>
             </div>
-           
-            <div class="flex" *ngIf="user.isConnect == 0.5">
-             <div>
-              <span class="circle3"></span>
 
-              Descanso 
-             </div>
 
-              <ion-icon  name="cafe-outline" color="light"></ion-icon>
-            
+
+            <div class="table">
+
+                <div *ngIf="!loadActivities">
+                    <ion-row *ngFor="let result of [1,1,1]">
+
+                        <ion-col size="4">
+                            <ion-skeleton-text [animated]="true" style="width: 100%; height: 30px;"></ion-skeleton-text>
+                        </ion-col>
+
+                        <ion-col size="4">
+                            <ion-skeleton-text [animated]="true" style="width: 100%; height: 30px;"></ion-skeleton-text>
+                        </ion-col>
+
+                        <ion-col size="4">
+                            <ion-skeleton-text [animated]="true" style="width: 100%; height: 30px;"></ion-skeleton-text>
+                        </ion-col>
+
+
+
+                    </ion-row>
+                </div>
+
+
+                <table class="tables" *ngIf="loadActivities" mat-table [dataSource]="dataSource">
+
+                    <!-- Name Column -->
+                    <ng-container matColumnDef="estado">
+                        <th style="min-width: 50px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> ESTADO </th>
+                        <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)">
+
+                            <div class="center">
+                                <span [class]="element.acc.estado"></span>
+                            </div>
+
+                            <div class="center"> <br>
+                                <strong style="color: red;">  {{element.acc.Message}}</strong>
+                            </div>
+
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="fecha">
+                        <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> FECHAS </th>
+                        <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)">
+                            <div class="fecha">
+                                <span>S</span>
+                                <strong> {{element.fecha.s}}</strong>
+                            </div>
+                            <div class="fecha" *ngIf="element.fecha.o">
+                                <span>O</span>
+                                <strong> {{element.fecha.o}}</strong>
+                            </div>
+
+                            <div class="fecha" *ngIf="element.fecha.d">
+                                <span>D</span>
+                                <strong> {{element.fecha.d}}</strong>
+                            </div>
+                        </td>
+                    </ng-container>
+
+
+                    <ng-container matColumnDef="recibido">
+                        <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> RECIBIDO POR EL MOVIL </th>
+                        <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> {{element.recibido}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="motivo">
+                        <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> MOTIVO </th>
+                        <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> {{element.motivo}} </td>
+                    </ng-container>
+
+
+                    <ng-container matColumnDef="origen">
+                        <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> ORIGEN </th>
+                        <td style="font-size: 11px;" mat-cell *matCellDef="let element">
+                            <div>{{element.origen}} </div>
+
+                            <ion-button class="btn" fill="outline" mode="ios" (click)="markOrg()">Marcar</ion-button>
+
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="destino">
+                        <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> DESTINO </th>
+                        <td style="font-size: 11px;" mat-cell *matCellDef="let element">
+                            <div>{{element.destino}}</div>
+                            <ion-button class="btn" fill="outline" color="danger" mode="ios">Marcar</ion-button>
+                            <div *ngIf="element.acc.retorno"><strong style="color: green;">Cerrado con retorno</strong></div>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="camillero">
+                        <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> CAMILLERO </th>
+                        <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)">
+
+                            <div class="camillero" *ngIf="element.camillero">{{element.camillero.FirstName}} {{element.camillero.LastName}}</div>
+
+
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="obscentral">
+                        <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> OBSERVACIONES CENTRAL </th>
+                        <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> {{element.obscentral}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="obs">
+                        <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> OBSERVACIONES ADICIONALES </th>
+                        <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)">
+                            <div *ngIf="element.motivo == 'TRANSPORTAR PACIENTE'"><strong>Nombre Paciente:</strong> {{element.obs.paciente}}
+                            </div>
+                            <div *ngIf="element.motivo == 'TRANSPORTAR PACIENTE'"><strong>Recursos:</strong> <span *ngFor="let rec of element.obs.recursos; let i = index">
+                  {{rec}}<span *ngIf="i < (element.obs.recursos.length - 1)">,</span> </span>
+                            </div>
+                            <div *ngIf="element.motivo == 'TRANSPORTAR PACIENTE'"><strong>Aislado:</strong> {{element.obs.aislado}}
+                            </div>
+                            <br>
+                            <div *ngIf="element.obs.obs"><strong>Observaciones:</strong> {{element.obs.obs}}</div>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="obs3">
+                        <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> OBSERVACIONES CAMILLERO </th>
+                        <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> {{element.obs3}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="acc">
+                        <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> ACCIONES </th>
+                        <td style="font-size: 11px;" mat-cell *matCellDef="let element">
+                            <div class="center">
+                                <ion-button *ngIf="isDelete && !element.fecha.o" color="danger" fill="outline" (click)="deleteSolicitud(element.acc)">
+                                    <ion-icon name="trash"></ion-icon>
+                                </ion-button>
+                            </div>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="token">
+                        <th style="min-width: 50px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> TOKEN </th>
+                        <td style="font-size: 11px;" mat-cell *matCellDef="let element">
+
+                            <strong style="color: red;" *ngIf="element.acc.soporte && isAssigment == 1">{{element.acc.soporte}}</strong>
+
+
+                            <div class="flex">
+
+                                <ion-button [cdkCopyToClipboard]="element.token" color="diamante" fill="outline">
+                                    <ion-icon name="copy"></ion-icon>
+                                </ion-button>
+                            </div>
+                        </td>
+                    </ng-container>
+
+
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns;  sticky: true"></tr>
+                    <div *ngIf="isAssigment == 1">
+                        <tr cdkDrag [cdkDragData]="row" (mousedown)="stopIt($event)" (mouseup)="stopOut($event)" mat-row *matRowDef="let row; columns: displayedColumns;" [class]="row.acc.color">
+                            <div *cdkDragPreview class="infoDrag">
+                                <h3>Solicitud Camilleria</h3>
+                                <div><strong>Motivo:</strong> {{row.motivo}}</div>
+                                <div><strong>Fecha:</strong> {{row.fecha.s}}</div>
+                            </div>
+                        </tr>
+                    </div>
+
+                    <div *ngIf="isAssigment != 1">
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class]="row.acc.color"> </tr>
+                    </div>
+
+
+
+
+                </table>
+
+
             </div>
 
-            <div *ngIf="!user.isConnect || user.isConnect == 0 ">
+            <mat-paginator #paginatorHistory [pageSizeOptions]="[50, 100, 150]" showFirstLastButtons aria-label="Seleccionar pagina">
+            </mat-paginator>
 
-              <span class="circle2"></span>
-              Desconectado
+        </div>
+        <div class="users" *ngIf="isAssigment == 1">
+
+            <div class="bannerTitle">
+                <div class="title">
+                    <h3>Camilleros</h3>
+                    <ion-button (click)="getUsers()">
+                        <ion-icon name="refresh" slot="icon-only" color="light"></ion-icon>
+                    </ion-button>
+
+                </div>
+
+                <ion-searchbar mode="ios" placeholder="Buscar camillero" (ionChange)="filterUsers($event)"></ion-searchbar>
+
             </div>
-          </ion-label>
-        
-        </ion-item>
-      </div>
+            <div class="content">
 
+                <ion-item (click)="history(user)" class="user" *ngFor="let user of users2" lines="none" cdkDropList cdkDropListSortingDisabled [cdkDropListData]="user" (cdkDropListDropped)="dropped($event)" [class.opacity]="user.isConnect == 0">
+                    <ion-avatar slot="start">
+                        <img src="/assets/avatar.svg" width="50px">
+                    </ion-avatar>
+                    <ion-label class="ion-text-wrap">
+                        <div class="name">{{user.FirstName}} {{user.LastName}}</div>
+                        <div *ngIf="user.isConnect > 0" style="opacity: .7; font-size: 12px;">Solicitudes ùltima sesiòn ( {{user.count}} )</div>
+                        <div *ngIf="user.isConnect == 1">
+                            <span class="circle"></span> Conectado
+                        </div>
+
+                        <div class="flex" *ngIf="user.isConnect == 0.5">
+                            <div>
+                                <span class="circle3"></span> Descanso
+                            </div>
+
+                            <ion-icon name="cafe-outline" color="light"></ion-icon>
+
+                        </div>
+
+                        <div *ngIf="!user.isConnect || user.isConnect == 0 ">
+
+                            <span class="circle2"></span> Desconectado
+                        </div>
+                    </ion-label>
+
+                </ion-item>
+            </div>
+
+        </div>
     </div>
-  </div>
 
 </ion-content>

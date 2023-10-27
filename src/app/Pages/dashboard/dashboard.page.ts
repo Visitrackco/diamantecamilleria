@@ -63,6 +63,7 @@ export class DashboardPage implements OnInit {
   // usuarios
 
   users = [];
+  users2 = [];
   stop;
 
 
@@ -468,6 +469,7 @@ export class DashboardPage implements OnInit {
           }
 
           this.users = user;
+          this.users2 = user;
 
 
         }
@@ -1155,6 +1157,19 @@ export class DashboardPage implements OnInit {
     })
 
     await modal.present();
+  }
+
+  async markOrg() {
+
+  }
+
+  load() {
+    this.filter = true;
+    this.getSolicitudes()
+  }
+
+  filterUsers(event) {
+    this.users2 = this.users.filter((it) => it.FirstName.includes(event.detail.value))
   }
 
   ionViewWillLeave() {
