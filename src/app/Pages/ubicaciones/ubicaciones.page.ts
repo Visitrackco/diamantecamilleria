@@ -18,7 +18,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class UbicacionesPage implements OnInit {
 
   displayedColumns =
-  ['name', 'tag', 'torre', 'piso', 'acc'];
+  ['name', 'tag', 'torre', 'piso' , 'login' , 'logout', 'acc'];
 dataSource = new MatTableDataSource([]);
 
 @ViewChild('paginatorHistory') paginator: MatPaginator;
@@ -83,6 +83,8 @@ async getHistory() {
             tag: element.TagUID,
             torre: element.Torre,
             piso: element.Piso,
+            login: element.Login == 1 ? true : false,
+            logout: element.Logout == 1 ? true : false,
             acc: element
           }
           fila.push(obj)
@@ -112,6 +114,44 @@ cancel() {
 
   this.dataSource.filter = '';
 }  
+
+async change(event, ele, type) {
+  let val = event.detail.checked ? 1 : 0;
+  const login = await this.stg.getLogin();
+
+    this.loading = true;
+
+    if (login) {
+
+      try {
+        let rs = await this.api.apiPost('markLocation', {
+          _id: ele.acc._id,
+          token: login[0].token,
+          mode: type == 1 ? 'Login' : 'Logout',
+          val
+        })
+
+        if (rs) {
+
+          if (!rs.status) {
+            this.toast.MsgError(rs.err)
+            this.loading = false;
+            return;
+          }
+
+          if (event.detail.checked) {
+         //   this.socket.lockEmit({ '_id': data.acc._id })
+          }
+
+          this.loading = false;
+        }
+      } catch (error) {
+        this.loading = false;
+      }
+
+
+    }
+}
 
 async deletePoint(point) {
 

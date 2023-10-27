@@ -1,0 +1,45 @@
+.tit {
+    background-color: #f1f1f1;
+
+}
+
+ion-col {
+    padding: 10px;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.fecha {
+    display: flex;
+    margin: 5px;
+
+    span {
+        display: inline-block;
+    
+        text-align: center;
+        padding: 5px;
+        font-size: 12px;
+        border-radius: 20px;
+        background-color: #95b5c8;
+        color: #333;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+  }
+
+
+  .verde {
+    background-color: #e3ffd5;
+  }
+
+  .amarillo {
+    background-color: #faffd5;
+  }
+
+  .rojo {
+    background-color: #f7dddd;
+  }
+
+  .center {
+    text-align: center;
+    font-weight: bold;
+  }

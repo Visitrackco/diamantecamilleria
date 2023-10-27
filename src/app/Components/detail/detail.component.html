@@ -1,0 +1,141 @@
+<ion-header class="ion-no-border" [translucent]="true">
+  <ion-toolbar color="diamante">
+    <ion-title>Detalle</ion-title>
+
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content class="ion-padding">
+
+  <h3>{{ data.motivo }}</h3>
+
+
+  <ion-grid>
+    <ion-row>
+      <ion-col class="tit" size="6">Cumplimiento Ans</ion-col>
+      <ion-col [class]="data.acc.info.color + ' center'" size="6">{{ data.acc.info.diff }} min / {{data.acc.info.ans }} min (ANS)</ion-col>
+    </ion-row>
+    <br>
+    <ion-row>
+      <ion-col class="tit" size="6">ORIGEN</ion-col>
+      <ion-col size="6">{{ data.origen }}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col class="tit" size="6">DESTINO</ion-col>
+      <ion-col size="6">{{ data.destino }}</ion-col>
+    </ion-row>
+    <ion-row *ngIf="data.camillero">
+      <ion-col class="tit" size="6">CAMILLERO</ion-col>
+      <ion-col size="6">{{ data.camillero.FirstName }} {{ data.camillero.LastName }}</ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col class="tit" size="6">RECIBIDO POR EL MOVIL</ion-col>
+      <ion-col size="6">{{ data.recibido }}</ion-col>
+    </ion-row>
+
+
+    <ion-row>
+      <ion-col class="tit" size="12">FECHAS</ion-col>
+
+    </ion-row>
+
+
+    <ion-row>
+
+      <ion-col size="12">
+
+
+        <div class="fecha">
+          <span>Solicitud</span>
+          <strong> {{data.fecha.s}}</strong>
+        </div>
+        <div class="fecha" *ngIf="data.fecha.o">
+          <span>Origen</span>
+          <strong> {{data.fecha.o}}</strong>
+        </div>
+
+        <div class="fecha" *ngIf="data.fecha.d">
+          <span>Destino</span>
+          <strong> {{data.fecha.d}}</strong>
+        </div>
+      </ion-col>
+    </ion-row>
+
+
+    <ion-row>
+      <ion-col class="tit" size="12">OBSERVACIONES CENTRAL</ion-col>
+
+    </ion-row>
+    <ion-row>
+
+      <ion-col size="12">{{ data.obscentral }} </ion-col>
+    </ion-row>
+
+
+    <ion-row>
+      <ion-col class="tit" size="12">OBSERVACIONES ADICIONALES</ion-col>
+
+    </ion-row>
+
+
+
+
+    <ion-row>
+
+      <ion-col size="12">
+
+        <div *ngIf="data.motivo == 'TRANSPORTAR PACIENTE'"><strong>Nombre Paciente:</strong>
+          {{data.obs.paciente}}</div>
+        <div *ngIf="data.motivo == 'TRANSPORTAR PACIENTE'"><strong>Recursos:</strong> <span
+            *ngFor="let rec of data.obs.recursos; let i = index">
+            {{rec}}<span *ngIf="i < (data.obs.recursos.length - 1)">,</span> </span></div>
+        <div *ngIf="data.motivo == 'TRANSPORTAR PACIENTE'"><strong>Aislado:</strong> {{data.obs.aislado}}
+        </div>
+        <br>
+        <div *ngIf="data.obs.obs"><strong>Observaciones:</strong> {{data.obs.obs}}</div>
+      </ion-col>
+    </ion-row>
+
+
+
+    <ion-row>
+      <ion-col class="tit" size="12">OBSERVACIONES CAMILLERO</ion-col>
+
+    </ion-row>
+    <ion-row>
+
+      <ion-col size="12">{{ data.obs3 }} </ion-col>
+    </ion-row>
+
+
+    <ion-row *ngIf="data.adicional">
+      <ion-col class="tit" size="6">CAMILLERO ADICIONAL</ion-col>
+      <ion-col class="" size="6">{{ data.adicional}}</ion-col>
+
+    </ion-row>
+  
+
+    <ion-row *ngIf="data.acc.retorno">
+      <ion-col class="tit" size="12">RETORNO </ion-col>
+
+    </ion-row>
+
+    <ion-row *ngIf="data.acc.retorno">
+      <ion-col class="tit" size="4">FECHA</ion-col>
+      <ion-col class="tit" size="4">MOTIVO</ion-col>
+      <ion-col class="tit" size="4">PUNTO</ion-col>
+    </ion-row>
+
+    <ion-row *ngFor="let ret of data.acc.retorno">
+      <ion-col class="" size="4">{{ ret.date }}</ion-col>
+      <ion-col class="" size="4">{{ ret.mov }}</ion-col>
+      <ion-col class="" size="4">{{ ret.tag }}</ion-col>
+    </ion-row>
+
+
+  </ion-grid>
+
+
+</ion-content>

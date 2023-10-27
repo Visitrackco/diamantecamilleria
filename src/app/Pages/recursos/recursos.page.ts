@@ -114,7 +114,7 @@ async deletePoint(point) {
 
   const alert = await this.alertCtrl.create({
     header: 'Eliminar ' + point.Name,
-    message: 'Una vez aceptado, se eliminarà el motivo de forma permanente',
+    message: 'Una vez aceptado, se eliminarà el recurso de forma permanente',
     buttons: [
       {
         text: 'Cancelar',
@@ -147,7 +147,7 @@ async deletePoint(point) {
 
      
       
-                this.toast.MsgOK('Motivo eliminado')
+                this.toast.MsgOK('Recurso eliminado')
               }
             } catch (error) {
               this.loadActivities = true;
@@ -217,7 +217,7 @@ async editPoint(point) {
 
                 this.loading = false;
 
-                this.toast.MsgOK('Motivo modificado')
+                this.toast.MsgOK('Recurso modificado')
       
       
               }
@@ -296,7 +296,7 @@ async create() {
 
     
 
-                this.toast.MsgOK('Motivo creado')
+                this.toast.MsgOK('Recurso creado')
       
       
               }

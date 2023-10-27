@@ -10,6 +10,7 @@ import { HistoryComponent } from './history/history.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
+import { DetailComponent } from './detail/detail.component';
 
 
 @NgModule({
@@ -29,14 +30,16 @@ import { MatTableModule } from '@angular/material/table';
     OptionsComponent,
     PerfilComponent,
     LoadingComponent,
-    HistoryComponent
+    HistoryComponent,
+    DetailComponent
   ],
   exports: [
     MenuComponent,
     OptionsComponent,
     PerfilComponent,
     LoadingComponent,
-    HistoryComponent
+    HistoryComponent,
+    DetailComponent
 ],
 
 })

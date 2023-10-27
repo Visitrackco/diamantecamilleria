@@ -319,8 +319,8 @@ search(value: any) {
             }
 
             this.isClick = false;
-            this.myForm.reset()
-            this.router.navigate(['/dashboard'])
+          //  this.myForm.reset()
+          //  this.router.navigate(['/dashboard'])
 
             this.saving = false;
             

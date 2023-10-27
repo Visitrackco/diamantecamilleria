@@ -116,7 +116,7 @@
           <ng-container matColumnDef="estado">
             <th style="min-width: 50px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
               mat-header-cell *matHeaderCellDef> ESTADO </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element">
+            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)">
 
               <div class="center">
                 <span [class]="element.acc.estado"></span> 
@@ -131,7 +131,7 @@
           <ng-container matColumnDef="fecha">
             <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
               mat-header-cell *matHeaderCellDef> FECHAS </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element">
+            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)">
             <div class="fecha">
               <span>S</span>
               <strong> {{element.fecha.s}}</strong>
@@ -152,32 +152,35 @@
           <ng-container matColumnDef="recibido">
             <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
               mat-header-cell *matHeaderCellDef> RECIBIDO POR EL MOVIL </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element"> {{element.recibido}} </td>
+            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> {{element.recibido}} </td>
           </ng-container>
 
           <ng-container matColumnDef="motivo">
             <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
               mat-header-cell *matHeaderCellDef> MOTIVO </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element"> {{element.motivo}} </td>
+            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> {{element.motivo}} </td>
           </ng-container>
 
 
           <ng-container matColumnDef="origen">
             <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
               mat-header-cell *matHeaderCellDef> ORIGEN </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element"> {{element.origen}} </td>
+            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> {{element.origen}} </td>
           </ng-container>
 
           <ng-container matColumnDef="destino">
             <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
               mat-header-cell *matHeaderCellDef> DESTINO </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element"> {{element.destino}} </td>
+            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> 
+            <div>{{element.destino}}</div>
+            <div *ngIf="element.acc.retorno"><strong style="color: green;">Cerrado con retorno</strong></div>
+            </td>
           </ng-container>
 
           <ng-container matColumnDef="camillero">
             <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
               mat-header-cell *matHeaderCellDef> CAMILLERO </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element"> 
+            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> 
             
               <div class="camillero" *ngIf="element.camillero">{{element.camillero.FirstName}} {{element.camillero.LastName}}</div>
      
@@ -188,13 +191,13 @@
           <ng-container matColumnDef="obscentral">
             <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
               mat-header-cell *matHeaderCellDef> OBSERVACIONES CENTRAL </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element"> {{element.obscentral}} </td>
+            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> {{element.obscentral}} </td>
           </ng-container>
 
           <ng-container matColumnDef="obs">
             <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
               mat-header-cell *matHeaderCellDef> OBSERVACIONES ADICIONALES </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element">
+            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)">
               <div *ngIf="element.motivo == 'TRANSPORTAR PACIENTE'"><strong>Nombre Paciente:</strong>
                 {{element.obs.paciente}}</div>
               <div *ngIf="element.motivo == 'TRANSPORTAR PACIENTE'"><strong>Recursos:</strong> <span
@@ -209,8 +212,8 @@
 
           <ng-container matColumnDef="obs3">
             <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
-              mat-header-cell *matHeaderCellDef> OBSERVACIONES CAMILELRO </th>
-            <td style="font-size: 11px;" mat-cell *matCellDef="let element"> {{element.obs3}} </td>
+              mat-header-cell *matHeaderCellDef> OBSERVACIONES CAMILLERO </th>
+            <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> {{element.obs3}} </td>
           </ng-container>
 
           <ng-container matColumnDef="acc">
@@ -229,6 +232,8 @@
             <th style="min-width: 50px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
               mat-header-cell *matHeaderCellDef> TOKEN </th>
             <td style="font-size: 11px;" mat-cell *matCellDef="let element">
+
+              <strong style="color: red;" *ngIf="element.acc.soporte && isAssigment == 1">{{element.acc.soporte}}</strong>
               
 
               <div class="flex">
@@ -244,17 +249,17 @@
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns;  sticky: true"></tr>
          <div *ngIf="isAssigment == 1">
-          <tr cdkDrag [cdkDragData]="row" (mousedown)="stopIt($event)" (mouseup)="stopOut($event)"  mat-row *matRowDef="let row; columns: displayedColumns;" [class]="row.acc.color"> 
+          <tr cdkDrag [cdkDragData]="row" (mousedown)="stopIt($event)" (mouseup)="stopOut($event)"  mat-row *matRowDef="let row; columns: displayedColumns;" [class]="row.acc.color" > 
             <div *cdkDragPreview class="infoDrag">
               <h3>Solicitud Camilleria</h3>
                <div><strong>Motivo:</strong>  {{row.motivo}}</div>
-               <div><strong>Fecha:</strong>  {{row.fecha}}</div>
+               <div><strong>Fecha:</strong>  {{row.fecha.s}}</div>
             </div>
           </tr>
          </div>
 
          <div *ngIf="isAssigment != 1" >
-          <tr  mat-row *matRowDef="let row; columns: displayedColumns;" [class]="row.acc.color">    </tr>
+          <tr  mat-row *matRowDef="let row; columns: displayedColumns;" [class]="row.acc.color" >    </tr>
          </div>
 
          

@@ -319,6 +319,7 @@ export class FormMedellinPage implements OnInit {
             }
 
             this.isClick = false;
+         
             this.myForm.reset()
 
             this.router.navigate(['/dashboard'])

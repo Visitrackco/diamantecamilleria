@@ -21,6 +21,7 @@ import { MatInput } from '@angular/material/input';
 import { HistoryComponent } from 'src/app/Components/history/history.component';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ObserverService } from 'src/app/Services/observer.service';
+import { DetailComponent } from 'src/app/Components/detail/detail.component';
 
 
 @Component({
@@ -161,18 +162,24 @@ export class DashboardPage implements OnInit {
             element.estado = 'pending'
 
             let actual = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm')
-        
+
             let color: any = this.getColor(element.Motivo.Ans, fechaSolicitud, actual);
+
+            element.info = {
+              color,
+              ans: element.Motivo.Ans,
+              diff: moment(actual).diff(moment(fechaSolicitud), 'minutes')
+            }
 
             if (element.CreatedByID == login[0]._id && login[0].isCentral != 1) {
               color = '';
             }
-          
-          
+
+
             if (element.Activity) {
               color += ' apoyo';
             }
-  
+
             element.color = color;
 
           }
@@ -274,17 +281,17 @@ export class DashboardPage implements OnInit {
     this.obs.$reload.subscribe({
       next: (data) => {
         if (data) {
-         if (this.mot) {
-          this.mot.writeValue('');
-         }
-         if (this.org) {
-          this.org.writeValue('');
-         }
-         if (this.des) {
-          this.des.writeValue('');
-         }
-       
-         
+          if (this.mot) {
+            this.mot.writeValue('');
+          }
+          if (this.org) {
+            this.org.writeValue('');
+          }
+          if (this.des) {
+            this.des.writeValue('');
+          }
+
+
           this.motivoSelect = false;
           this.origenSelec = false;
           this.DestinoSelect = false;
@@ -295,11 +302,11 @@ export class DashboardPage implements OnInit {
           this.filter = true;
           this.isAllStatus = false;
           this.isFilter = false;
-      
-        if (this.myForm) {
-          this.myForm.controls['from'].setValue('');
-          this.myForm.controls['to'].setValue('');
-        }
+
+          if (this.myForm) {
+            this.myForm.controls['from'].setValue('');
+            this.myForm.controls['to'].setValue('');
+          }
           this.users = [];
           this.midata()
         }
@@ -324,15 +331,15 @@ export class DashboardPage implements OnInit {
 
   ionViewWillEnter() {
 
-   moment.locale('en')
+    moment.locale('en')
 
-      this.midata()
+    this.midata()
 
-      this.stop = false;
-   
+    this.stop = false;
 
-      
-    
+
+
+
   }
 
   async midata() {
@@ -343,19 +350,19 @@ export class DashboardPage implements OnInit {
 
     if (login) {
 
-    /*  if (login[0].WorkZone == 6842) {
-        this.tiempos  = {
-          verde: 6,
-          amarillo: 10,
-          rojo: 11
-        }
-      } else {
-        this.tiempos = {
-          verde: 5,
-          amarillo: 8,
-          rojo: 9
-        }
-      } */
+      /*  if (login[0].WorkZone == 6842) {
+          this.tiempos  = {
+            verde: 6,
+            amarillo: 10,
+            rojo: 11
+          }
+        } else {
+          this.tiempos = {
+            verde: 5,
+            amarillo: 8,
+            rojo: 9
+          }
+        } */
 
       if (login[0].isCentral == 1 && login[0].isCentralAdmin == 1) {
         this.multiple = true;
@@ -371,37 +378,37 @@ export class DashboardPage implements OnInit {
       }
 
 
-    this.api.getDate({
-      token: login[0].token,
-      format: 'America/Bogota'
-    }).then((server) => {
+      this.api.getDate({
+        token: login[0].token,
+        format: 'America/Bogota'
+      }).then((server) => {
 
-      this.dateServer = server.date;
+        this.dateServer = server.date;
 
-      this.api.getLocationByZone({
-        WorkZoneID: login[0].WorkZone,
-        token: login[0].token
-      }).then((rs) => {
+        this.api.getLocationByZone({
+          WorkZoneID: login[0].WorkZone,
+          token: login[0].token
+        }).then((rs) => {
 
-        this.locations = rs.response;
-        this.selectedStates = this.locations;
-        this.selectedStates2 = this.locations;
+          this.locations = rs.response;
+          this.selectedStates = this.locations;
+          this.selectedStates2 = this.locations;
 
-        this.api.getWMotivos(login[0].WorkZone, login[0].token
-        ).then((rsMotivo) => {
+          this.api.getWMotivos(login[0].WorkZone, login[0].token
+          ).then((rsMotivo) => {
 
-          this.motivosList = rsMotivo.response;
-          this.motivosList2 = this.motivosList;
+            this.motivosList = rsMotivo.response;
+            this.motivosList2 = this.motivosList;
 
-          this.getSolicitudes();
-          this.getUsers();
+            this.getSolicitudes();
+            this.getUsers();
+          })
+
+
         })
 
-
       })
-
-    })
-  }
+    }
   }
 
 
@@ -411,14 +418,14 @@ export class DashboardPage implements OnInit {
       from: new FormControl('', [
         // validaciones síncronas
 
- 
+
       ]),
       to: new FormControl('', [
         // validaciones síncronas
-    
- 
+
+
       ]),
-     
+
     });
   }
 
@@ -435,13 +442,15 @@ export class DashboardPage implements OnInit {
           console.log(rs.response);
 
           this.users = [];
-       
+
+          let user = [];
+
           for (const ele of rs.response) {
 
-           
+
 
             if (ele.isConnect > 0) {
-              const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id, login[0].token) 
+              const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id, login[0].token)
 
               if (count.status) {
                 ele.count = count.response;
@@ -454,10 +463,12 @@ export class DashboardPage implements OnInit {
               }
             } */
 
-            this.users.push(ele);
+            user.push(ele);
 
           }
-         
+
+          this.users = user;
+
 
         }
       } catch (error) {
@@ -477,33 +488,33 @@ export class DashboardPage implements OnInit {
         token: login[0].token,
         format: 'America/Bogota'
       }).then((server) => {
-  
+
         this.dateServer = server.date;
         this.dateTime = server.time;
         let check = false;
-  
+
         let fecha = moment(event.value).utc().format('YYYY-MM-DD')
         if (type == 1) {
-       //   this.fromTemp = fecha;
+          //   this.fromTemp = fecha;
           this.fechaFrom = moment(fecha + ' ' + '00:00:00').utc().format('YYYY-MM-DD HH:mm:ss');
           this.fromtmp = moment(fecha).add(1, 'hours').format('YYYY-MM-DD')
-       
-        } else {
-        //  this.toTemp = fecha;
 
-        if (fecha < moment(this.dateServer).format('YYYY-MM-DD')) {
-          check = true;
-          this.fechaTo = moment(fecha + ' ' +  '23:59:59').utc().format('YYYY-MM-DD HH:mm:ss');
         } else {
-         
-          this.fechaTo = moment(fecha + ' ' + this.dateTime + ':59').utc().format('YYYY-MM-DD HH:mm:ss');
+          //  this.toTemp = fecha;
+
+          if (fecha < moment(this.dateServer).format('YYYY-MM-DD')) {
+            check = true;
+            this.fechaTo = moment(fecha + ' ' + '23:59:59').utc().format('YYYY-MM-DD HH:mm:ss');
+          } else {
+
+            this.fechaTo = moment(fecha + ' ' + this.dateTime + ':59').utc().format('YYYY-MM-DD HH:mm:ss');
+          }
+
+          this.totmp = moment(fecha).utc().format('YYYY-MM-DD')
+
+
         }
 
-        this.totmp = moment(fecha).utc().format('YYYY-MM-DD')
-
-          
-        }
-    
         if (this.fechaFrom && this.fechaTo) {
           if (check) {
             this.isFilter = true;
@@ -513,10 +524,10 @@ export class DashboardPage implements OnInit {
           this.filter = true;
           this.getSolicitudes();
         }
-  
+
       })
     }
-   
+
 
   }
 
@@ -537,17 +548,17 @@ export class DashboardPage implements OnInit {
     this.getSolicitudes();
   }
 
-    onKey2(value) {
+  onKey2(value) {
     this.motivosList = this.search2(value.target.value);
   }
 
   onKey(value, type) {
     if (type == 1) {
- this.selectedStates = this.search(value.target.value);
+      this.selectedStates = this.search(value.target.value);
     } else {
       this.selectedStates2 = this.search(value.target.value);
     }
-   
+
   }
 
   search2(value: any) {
@@ -615,20 +626,20 @@ export class DashboardPage implements OnInit {
     console.log(verde, amarillo, ans)
 
     if (diff <= verde) {
-      return  'verde';
+      return 'verde';
     } else if (diff > verde && diff <= amarillo) {
-      return  'amarillo';
+      return 'amarillo';
     } else if (diff > amarillo) {
-      return  'rojo'
+      return 'rojo'
     }
 
     return '';
-    
+
   }
 
   async getSolicitudes() {
     this.stop = false;
-    
+
     const login = await this.stg.getLogin();
 
     if (login) {
@@ -637,7 +648,7 @@ export class DashboardPage implements OnInit {
       this.isAssigment = login[0].isCantAssigment
 
       if (this.filter) {
-      
+
         this.loading = true;
         this.dataSource.data = [];
       }
@@ -710,15 +721,21 @@ export class DashboardPage implements OnInit {
           }
 
           let actual = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm')
-      
+
           let color: any = this.getColor(element.Motivo.Ans, fechaSolicitud, actual);
+
+          element.info = {
+            color,
+            ans: element.Motivo.Ans,
+            diff: moment(actual).diff(moment(fechaSolicitud), 'minutes')
+          }
 
           if (element.CreatedByID == login[0]._id && login[0].isCentral != 1) {
             color = '';
           }
 
 
-        
+
           if (element.Activity) {
             color += ' apoyo';
           }
@@ -779,21 +796,44 @@ export class DashboardPage implements OnInit {
 
             let des = element.JSONAnswers.filter((it) => it.apiId == 'FechaLlegadaDestino').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'FechaLlegadaDestino')[0].Value : ''
 
+            element.soporte = element.JSONAnswers.filter((it) => it.apiId == 'SOPORTE').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'SOPORTE')[0].Value : ''
+
+            let retorno = element.JSONAnswers.filter((item) => item.apiId == 'RECORRIDO').length > 0 
+            ? element.JSONAnswers.filter((item) => item.apiId == 'RECORRIDO')[0].Value
+            : [];
+
+            if (retorno.length > 0) {
+              console.log(retorno, 'RETORNO')
+
+
+              retorno.forEach(ele => {
+                  ele.date = moment(ele.date).tz('America/Bogota').format('YYYY-MM-DD HH:mm')
+              });
+
+              element.retorno = retorno;
+            }
+
             let fechaSolicitud = fecha + ' ' + hora;
 
             let exist = fila.findIndex((it) => it.acc._id == element._id);
 
             let actual = org == '' ? moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm') : moment(org).tz('America/Bogota').format('YYYY-MM-DD HH:mm')
-      
+
             let color: any = this.getColor(element.Motivo.Ans, fechaSolicitud, actual);
+
+            element.info = {
+              color,
+              ans: element.Motivo.Ans,
+              diff: moment(actual).diff(moment(fechaSolicitud), 'minutes')
+            }
 
             if (element.CreatedByID == login[0]._id && login[0].isCentral != 1) {
               color = '';
             }
 
-    
-          
-          
+
+
+
             if (element.Activity) {
               color += ' apoyo';
             }
@@ -801,7 +841,7 @@ export class DashboardPage implements OnInit {
             if (org) {
               color = '';
             }
-  
+
             element.color = color;
 
 
@@ -897,7 +937,7 @@ export class DashboardPage implements OnInit {
       if (data) {
         if (data.isConnect != 1) {
           this.toast.MsgError('No puede asignar a este camillero, no se encuentra conectado', 3000)
-       
+
         } else {
           if (event.item.data) {
             const org = event.item.data.acc.JSONAnswers.filter((it) => it.apiId == 'FechallegaOrigen')
@@ -913,7 +953,9 @@ export class DashboardPage implements OnInit {
                 this.toast.MsgOK('El camillero ya tiene esta solicitud asignada');
                 return;
               }
-           
+
+              event.item.data.del = true;
+
             } else {
               if (event.item.data.acc.Activity) {
                 if (event.item.data.acc.UpdatedByID == data._id) {
@@ -975,6 +1017,13 @@ export class DashboardPage implements OnInit {
           this.loading = false;
           return;
         }
+        if (data.del) {
+          this.socket.deleteSolicitud({
+            _id: data.acc.AssignedTo._id,
+            solicitud: data.acc._id,
+          })
+        }
+
 
         this.filter = true;
 
@@ -1034,14 +1083,14 @@ export class DashboardPage implements OnInit {
           return;
         }
 
-        if (rs.response.AssignedTo) {
+        if (rs.response.AssignedTo) {
           this.socket.deleteSolicitud({
             _id: rs.response.AssignedTo._id,
             solicitud: data._id
           })
         }
 
-      
+
 
         this.filter = true;
 
@@ -1096,10 +1145,21 @@ export class DashboardPage implements OnInit {
 
     await modal.present();
   }
+  async detail(data) {
+    const modal = await this.modalCtrl.create({
+      component: DetailComponent,
+      cssClass: '',
+      componentProps: {
+       data
+      }
+    })
+
+    await modal.present();
+  }
 
   ionViewWillLeave() {
     if (this.interval) {
-    //  clearInterval(this.interval);
+      //  clearInterval(this.interval);
     }
     this.mot.writeValue('');
     this.org.writeValue('');
@@ -1118,7 +1178,7 @@ export class DashboardPage implements OnInit {
     this.myForm.controls['from'].setValue('');
     this.myForm.controls['to'].setValue('');
     this.dataSource.data = [];
-   
+
   }
 
 }
