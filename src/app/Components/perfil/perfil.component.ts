@@ -20,6 +20,7 @@ export class PerfilComponent implements OnInit {
 
   zones = [];
   zoneSelect;
+  zoneName = '';
   load;
 
   @Input() dash;
@@ -44,6 +45,11 @@ export class PerfilComponent implements OnInit {
         this.logo = data[0].picture == 1 ? data[0].pictureUrl : '/assets/avatar.svg'
         this.name = data[0].FirstName;
         this.zoneSelect = data[0].WorkZone;
+        if (this.zoneSelect == 6993) {
+          this.zoneName = 'RioNegro'
+        } else  if (this.zoneSelect == 6842) {
+          this.zoneName = 'Medellin'
+        }
         if (data[0].WorkZoneID.length > 1) {
           this.getworkzones(data[0].WorkZoneID)
         }
@@ -149,7 +155,11 @@ export class PerfilComponent implements OnInit {
 
 
 
-    
+      if (this.zoneSelect == 6993) {
+        this.zoneName = 'RioNegro'
+      } else  if (this.zoneSelect == 6842) {
+        this.zoneName = 'Medellin'
+      }
 
       if (login[0].isCentral == 1) {
         this.socketService.hospitalCentral(this.zoneSelect + 'central')

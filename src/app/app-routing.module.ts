@@ -8,7 +8,7 @@ import { PageGuard } from './Guards/page.guard';
 const routes: Routes = [
   {
     path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule),
+    loadChildren: () => import('./home/home.module').then(m => m.HomePageModule),
     canActivate: [LoginGuard]
   },
   {
@@ -18,67 +18,78 @@ const routes: Routes = [
   },
   {
     path: 'rionegroform',
-    loadChildren: () => import('./Pages/form/form.module').then( m => m.FormPageModule),
+    loadChildren: () => import('./Pages/form/form.module').then(m => m.FormPageModule),
     canActivate: [FormRNGGuard]
   },
   {
     path: 'medellinform',
-    loadChildren: () => import('./Pages/form-medellin/form-medellin.module').then( m => m.FormMedellinPageModule),
+    loadChildren: () => import('./Pages/form-medellin/form-medellin.module').then(m => m.FormMedellinPageModule),
     canActivate: [FormMEDGuard]
   },
   {
     path: 'dashboard',
-    loadChildren: () => import('./Pages/dashboard/dashboard.module').then( m => m.DashboardPageModule),
+    loadChildren: () => import('./Pages/dashboard/dashboard.module').then(m => m.DashboardPageModule),
     canActivate: [PageGuard]
   },
   {
     path: 'users',
-    loadChildren: () => import('./Pages/users/users.module').then( m => m.UsersPageModule),
+    loadChildren: () => import('./Pages/users/users.module').then(m => m.UsersPageModule),
     canActivate: [PageGuard]
   },
   {
     path: 'ubicaciones',
-    loadChildren: () => import('./Pages/ubicaciones/ubicaciones.module').then( m => m.UbicacionesPageModule),
+    loadChildren: () => import('./Pages/ubicaciones/ubicaciones.module').then(m => m.UbicacionesPageModule),
     canActivate: [PageGuard]
   },
   {
     path: 'charts',
-    loadChildren: () => import('./Pages/charts/charts.module').then( m => m.ChartsPageModule),
+    loadChildren: () => import('./Pages/charts/charts.module').then(m => m.ChartsPageModule),
     canActivate: [PageGuard]
   },
 
   {
     path: 'error',
-    loadChildren: () => import('./Pages/error/error.module').then( m => m.ErrorPageModule)
+    loadChildren: () => import('./Pages/error/error.module').then(m => m.ErrorPageModule)
   },
   {
     path: 'session',
-    loadChildren: () => import('./Pages/sesiones/sesiones.module').then( m => m.SesionesPageModule),
+    loadChildren: () => import('./Pages/sesiones/sesiones.module').then(m => m.SesionesPageModule),
     canActivate: [PageGuard]
   },
   {
     path: 'account',
-    loadChildren: () => import('./Pages/account/account.module').then( m => m.AccountPageModule)
+    loadChildren: () => import('./Pages/account/account.module').then(m => m.AccountPageModule),
+    canActivate: [PageGuard]
   },
   {
     path: 'control',
-    loadChildren: () => import('./Pages/control/usuarios.module').then( m => m.UsuariosPageModule)
+    loadChildren: () => import('./Pages/control/usuarios.module').then(m => m.UsuariosPageModule),
+    canActivate: [PageGuard]
   },
   {
     path: 'historial/:id/:name',
-    loadChildren: () => import('./Pages/historial/historial.module').then( m => m.HistorialPageModule)
+    loadChildren: () => import('./Pages/historial/historial.module').then(m => m.HistorialPageModule),
+    canActivate: [PageGuard]
   },
   {
     path: 'motivos',
-    loadChildren: () => import('./Pages/motivos/motivos.module').then( m => m.MotivosPageModule)
+    loadChildren: () => import('./Pages/motivos/motivos.module').then(m => m.MotivosPageModule),
+    canActivate: [PageGuard]
   },
   {
     path: 'motivos-form',
-    loadChildren: () => import('./Pages/motivos-form/motivos-form.module').then( m => m.MotivosFormPageModule)
+    loadChildren: () => import('./Pages/motivos-form/motivos-form.module').then(m => m.MotivosFormPageModule),
+    canActivate: [PageGuard]
   },
   {
     path: 'recursos',
-    loadChildren: () => import('./Pages/recursos/recursos.module').then( m => m.RecursosPageModule)
+    loadChildren: () => import('./Pages/recursos/recursos.module').then(m => m.RecursosPageModule),
+    canActivate: [PageGuard]
+  },
+  {
+    path: 'tabla',
+    loadChildren: () => import('./Pages/Reportes/tabla/tabla.module').then(m => m.TablaPageModule),
+    canActivate: [PageGuard]
   },
 ];
 

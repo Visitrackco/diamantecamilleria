@@ -21,9 +21,15 @@ export class DetailComponent  implements OnInit {
     ? this.data.acc.JSONAnswers.filter((item) => item.apiId == 'ADICIONAL')[0].Value
     : '';
 
+
+    let solicitado = this.data.acc.JSONAnswers.filter((item) => item.apiId == 'NOMBRE').length > 0 
+    ? this.data.acc.JSONAnswers.filter((item) => item.apiId == 'NOMBRE')[0].Value
+    : '';
+
    
 
     this.data.adicional = adicional;
+    this.data.solicitado = solicitado;
   }
 
 }

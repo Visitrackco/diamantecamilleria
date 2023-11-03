@@ -42,6 +42,7 @@ export class DashboardPage implements OnInit {
   @ViewChild('ipt') ipt: ElementRef;
 
   loadActivities;
+  clickUsers;
 
   loading;
 
@@ -78,6 +79,7 @@ export class DashboardPage implements OnInit {
 
   isDelete = 0;
   isAssigment = 0;
+  
   isAdmin = false;
   multiple = false;
   isAllStatus = false;
@@ -100,6 +102,8 @@ export class DashboardPage implements OnInit {
 
   fromTemp;
   toTemp;
+
+  myZone;
 
 
   myForm: FormGroup<any>;
@@ -128,7 +132,7 @@ export class DashboardPage implements OnInit {
             return;
           }
 
-          if (this.isAdmin) {
+          if (this.isAdmin && login[0].isCentralAdmin == 1) {
             if (data.data.isAdmin != 1) {
               return;
             }
@@ -154,6 +158,10 @@ export class DashboardPage implements OnInit {
 
           let obs = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1')[0].Value : ''
 
+          let obs2 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES2').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES2')[0].Value : ''
+
+
+          
           let obs3 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3')[0].Value : ''
 
           let fechaSolicitud = fecha + ' ' + hora;
@@ -197,7 +205,7 @@ export class DashboardPage implements OnInit {
             origen: element.Origen.Name,
             destino: element.Destino.Name,
             camillero: element.AssignedTo,
-            obscentral: '',
+            obscentral: obs2,
             obs: {
               paciente,
               recursos,
@@ -351,6 +359,8 @@ export class DashboardPage implements OnInit {
 
     if (login) {
 
+      this.myZone = login[0].WorkZone
+
       /*  if (login[0].WorkZone == 6842) {
           this.tiempos  = {
             verde: 6,
@@ -368,12 +378,18 @@ export class DashboardPage implements OnInit {
       if (login[0].isCentral == 1 && login[0].isCentralAdmin == 1) {
         this.multiple = true;
       } else {
-        if (login[0].isCentral == 1) {
-          this.isAdmin = false;
-        }
+      
 
         if (login[0].isCentralAdmin == 1) {
           this.isAdmin = true;
+        } else {
+          if (login[0].RoleID != 8) {
+            this.isAdmin = true;
+          }
+        }
+
+        if (login[0].isCentral == 1) {
+          this.isAdmin = false;
         }
 
       }
@@ -436,27 +452,54 @@ export class DashboardPage implements OnInit {
 
     if (login) {
       try {
-        const rs = await this.api.apiGet('usersworkzone?WorkZoneID=' + login[0].WorkZone, login[0].token)
+
+        this.clickUsers = true;
+
+        let hab = '0';
+
+        if (login[0].isCentralAdmin == 1 && this.isAdmin) {
+          hab = '1';
+        } 
+
+        const rs = await this.api.apiGet('usersworkzone?WorkZoneID=' + login[0].WorkZone + '&admin=' + hab, login[0].token)
 
         if (rs) {
 
-          console.log(rs.response);
+    
 
           this.users = [];
+          this.users2 = [];
 
           let user = [];
 
-          for (const ele of rs.response) {
+          rs.response = rs.response.sort((a, b) => {
+            if (a.FirstName.trim() > b.FirstName.trim()) {
+              return 1;
+            }
+            if (a.FirstName.trim() < b.FirstName.trim()) {
+              return -1;
+            }
+            return 0;
+          })
 
+          console.log(rs.response)
 
+         
+          let disconnect = rs.response.filter((it) => it.isConnect == 0)
+          let connect = rs.response.filter((it) => it.isConnect == 1)
+          let descanso = rs.response.filter((it) => it.isConnect == 0.5)
 
-            if (ele.isConnect > 0) {
+          rs.response = rs.response.filter((it) => it.isConnect > 0)
+
+          for (const ele of connect) {
+
               const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id, login[0].token)
 
               if (count.status) {
-                ele.count = count.response;
+                ele.count = count.response.count;
+                ele.pendientes = count.response.pendientes;
               }
-            } /*else {
+             /*else {
               const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id + '&logout=yes', login[0].token) 
 
               if (count.status) {
@@ -464,17 +507,47 @@ export class DashboardPage implements OnInit {
               }
             } */
 
-            user.push(ele);
+          //  user.push(ele);
+            this.users.push(ele);
+            this.users2.push(ele);
 
           }
 
-          this.users = user;
-          this.users2 = user;
+          for (const ele of descanso) {
+
+            const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id, login[0].token)
+
+            if (count.status) {
+              ele.count = count.response.count;
+              ele.pendientes = count.response.pendientes;
+            }
+           /*else {
+            const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id + '&logout=yes', login[0].token) 
+
+            if (count.status) {
+              ele.count = count.response;
+            }
+          } */
+
+        //  user.push(ele);
+          this.users.push(ele);
+          this.users2.push(ele);
+
+        }
+
+          disconnect.forEach(element => {
+            this.users.push(element);
+            this.users2.push(element);
+          });
+
+          this.clickUsers = false;
+
+   
 
 
         }
       } catch (error) {
-
+        this.clickUsers = false;
       }
     }
   }
@@ -586,6 +659,7 @@ export class DashboardPage implements OnInit {
   }
 
   clear() {
+    this.stop = false;
     this.mot.writeValue('');
     this.org.writeValue('');
     this.des.writeValue('');
@@ -655,6 +729,8 @@ export class DashboardPage implements OnInit {
         this.dataSource.data = [];
       }
 
+      
+
       this.api.apiPost('searchActivity', {
         token: login[0].token,
         WorkZoneID: login[0].WorkZone,
@@ -709,6 +785,8 @@ export class DashboardPage implements OnInit {
 
           let obs = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1')[0].Value : ''
 
+          let obs2 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES2').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES2')[0].Value : ''
+
           let obs3 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3')[0].Value : ''
 
 
@@ -756,7 +834,7 @@ export class DashboardPage implements OnInit {
             origen: element.Origen.Name,
             destino: element.Destino.Name,
             camillero: element.AssignedTo,
-            obscentral: '',
+            obscentral: obs2,
             obs: {
               paciente,
               recursos,
@@ -791,6 +869,8 @@ export class DashboardPage implements OnInit {
             let aislado = element.JSONAnswers.filter((it) => it.apiId == 'AISLADO').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'AISLADO')[0].Value : ''
 
             let obs = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1')[0].Value : ''
+
+            let obs2 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES2').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES2')[0].Value : ''
 
             let obs3 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3')[0].Value : ''
 
@@ -869,7 +949,7 @@ export class DashboardPage implements OnInit {
               origen: element.Origen.Name,
               destino: element.Destino.Name,
               camillero: element.AssignedTo,
-              obscentral: '',
+              obscentral: obs2,
               obs: {
                 paciente,
                 recursos,
@@ -1124,7 +1204,9 @@ export class DashboardPage implements OnInit {
 
   ca(event) {
     this.isAdmin = event.detail.checked;
+    this.stop = false;
     this.filter = true;
+    this.getUsers();
     this.getSolicitudes()
   }
 
@@ -1157,19 +1239,173 @@ export class DashboardPage implements OnInit {
     })
 
     await modal.present();
+
+    this.stop = false;
   }
 
-  async markOrg() {
+  async markOrg(title,api, id) {
+
+    const alert = await this.alertCtrl.create({
+      header: 'Marcar ' + title,
+      message: '¿Està seguro de marcar ' + title + ' para esta solicitud ?',
+      buttons: [
+        {
+          text: 'cancelar'
+        },
+        {
+          text: 'Aceptar',
+          handler: async () => {
+            const login = await this.stg.getLogin();
+
+            if (login) {
+
+              this.loading = true;
+
+
+              try {
+
+                const dates = await this.api.getDate({
+                  token: login[0].token,
+                  format: 'America/Bogota'
+                })
+
+                this.loading = true;
+                const rs = await this.api.apiPost('EditFields', {
+                  WorkZoneID: login[0].WorkZone,
+                  api: api,
+                  value: dates.utc,
+                  valueUTC: dates.utc,
+                  _id: id,
+                  CompanyStatus: title == 'origen' ? 'SOLICITUD CON CAMILLERO' : 'COMPLETADO',
+                  token: login[0].token
+                })
+
+        
+                if (!rs.status) {
+                  this.toast.MsgError(rs.err)
+                  return;
+                }
+
+                console.log(rs)
+
+                this.toast.MsgOK('Proceso ejecutado correctamente')
+
+                this.filter = true;
+                this.loading = true;
+                
+                this.getSolicitudes();
+
+              } catch (error) {
+                this.loading = true;
+                this.toast.MsgError('No se pudo realizar la solicitud')
+              }
+
+            }
+          }
+        }
+      ]
+    })
+
+    await alert.present();
+
+  }
+
+
+  async obsCentral(desc, id) {
+
+    const alert = await this.alertCtrl.create({
+      header: 'Enviar Observaciones',
+      message: 'Escriba un comentario',
+      inputs: [
+        {
+          type: 'textarea',
+          value: desc,
+          name: 'obs'
+        }
+      ],
+      buttons: [
+        {
+          text: 'cancelar'
+        },
+        {
+          text: 'Aceptar',
+          handler: async (data) => {
+            const login = await this.stg.getLogin();
+
+            if (login) {
+
+              this.loading = true;
+
+
+              try {
+
+                const dates = await this.api.getDate({
+                  token: login[0].token,
+                  format: 'America/Bogota'
+                })
+
+                this.loading = true;
+                const rs = await this.api.apiPost('EditFields', {
+                  WorkZoneID: login[0].WorkZone,
+                  api: 'OBSERVACIONES2',
+                  value: data.obs,
+                  valueUTC: dates.utc,
+                  _id: id,
+                  CompanyStatus: 'SOLICITUD CON CAMILLERO' ,
+                  token: login[0].token
+                })
+
+        
+                if (!rs.status) {
+                  this.toast.MsgError(rs.err)
+                  return;
+                }
+
+       
+                this.toast.MsgOK('Proceso ejecutado correctamente')
+
+                this.filter = true;
+                this.loading = true;
+                
+                this.getSolicitudes();
+
+              } catch (error) {
+                this.loading = true;
+                this.toast.MsgError('No se pudo realizar la solicitud')
+              }
+
+            }
+          }
+        }
+      ]
+    })
+
+    await alert.present();
 
   }
 
   load() {
+    this.stop = false;
     this.filter = true;
     this.getSolicitudes()
   }
 
   filterUsers(event) {
-    this.users2 = this.users.filter((it) => it.FirstName.includes(event.detail.value))
+    console.log('Hola', event)
+    this.users2 = [];
+    if (event.target.value == '') {
+      this.users2 = this.users;
+      return;
+    }
+    this.users2 = this.users.filter((it) => {
+      let name = it.FirstName.toLowerCase() + ' ' + it.LastName.toLowerCase()
+
+      return name.includes(event.target.value.toLowerCase())
+    })
+  }
+
+  filterClear() {
+    this.users2 = this.users;
   }
 
   ionViewWillLeave() {

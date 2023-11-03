@@ -52,9 +52,11 @@ export class SocketService {
             this.socket.on('alert', (data) => {
 
                 console.log(data)
-                
+                if (data.data.Session) {
+                        obs.next(data);
+                }
             
-                obs.next(data);
+            
             })
         })
 

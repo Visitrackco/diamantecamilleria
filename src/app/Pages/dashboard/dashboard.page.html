@@ -73,7 +73,7 @@
 
                     <div class="admin" *ngIf="multiple">
                         CA
-                        <ion-checkbox [checked]="isAdmin" (ionChange)="ca($event)"></ion-checkbox>
+                        <ion-checkbox [disabled]="clickUsers" [checked]="isAdmin" (ionChange)="ca($event)"></ion-checkbox>
                     </div>
 
 
@@ -168,7 +168,12 @@
                         <td style="font-size: 11px;" mat-cell *matCellDef="let element">
                             <div>{{element.origen}} </div>
 
-                            <ion-button class="btn" fill="outline" mode="ios" (click)="markOrg()">Marcar</ion-button>
+                            <div><strong>
+                                <span *ngIf="myZone == 6842">BLOQUE</span>
+                                <span *ngIf="myZone == 6993">TORRE</span>
+                                {{element.acc.Origen.Torre}}  / PISO {{element.acc.Origen.Piso}}</strong></div>
+
+                            <ion-button *ngIf="!element.fecha.o && element.estado == 'SOLICITUD CON CAMILLERO' && isAssigment == 1" class="btn" fill="outline" mode="ios" (click)="markOrg('origen','FechallegaOrigen', element.acc._id)">Marcar</ion-button>
 
                         </td>
                     </ng-container>
@@ -177,7 +182,12 @@
                         <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> DESTINO </th>
                         <td style="font-size: 11px;" mat-cell *matCellDef="let element">
                             <div>{{element.destino}}</div>
-                            <ion-button class="btn" fill="outline" color="danger" mode="ios">Marcar</ion-button>
+                            <div><strong>
+                                <span *ngIf="myZone == 6842">BLOQUE</span>
+                                <span *ngIf="myZone == 6993">TORRE</span>
+                                {{element.acc.Destino.Torre}}  / PISO {{element.acc.Destino.Piso}}</strong></div>
+
+                            <ion-button *ngIf="element.fecha.o && !element.fecha.d && element.estado == 'SOLICITUD CON CAMILLERO' && isAssigment == 1" class="btn" fill="outline" color="danger" mode="ios" (click)="markOrg('destino','FechaLlegadaDestino', element.acc._id)">Marcar</ion-button>
                             <div *ngIf="element.acc.retorno"><strong style="color: green;">Cerrado con retorno</strong></div>
                         </td>
                     </ng-container>
@@ -194,7 +204,17 @@
 
                     <ng-container matColumnDef="obscentral">
                         <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> OBSERVACIONES CENTRAL </th>
-                        <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)"> {{element.obscentral}} </td>
+                        <td style="font-size: 11px;" mat-cell *matCellDef="let element" > 
+                            <div *ngIf="element.estado != 'COMPLETADO' && element.estado != 'SOLICITUD CANCELADA POR DEMORA'" style="text-decoration: underline; color: blue;" (click)="obsCentral(element.obscentral, element.acc._id)">
+                                <span *ngIf="element.obscentral">{{element.obscentral}}</span>
+                                <span *ngIf="!element.obscentral && isAssigment == 1">Enviar comentario</span>
+                            </div>
+
+                            <div *ngIf="element.estado == 'COMPLETADO' || element.estado == 'SOLICITUD CANCELADA POR DEMORA'" >
+                                <span >{{element.obscentral}}</span>
+                            
+                            </div>
+                             </td>
                     </ng-container>
 
                     <ng-container matColumnDef="obs">
@@ -278,26 +298,25 @@
             <div class="bannerTitle">
                 <div class="title">
                     <h3>Camilleros</h3>
-                    <ion-button (click)="getUsers()">
+                    <ion-button [disabled]="clickUsers" (click)="getUsers()">
                         <ion-icon name="refresh" slot="icon-only" color="light"></ion-icon>
                     </ion-button>
 
                 </div>
 
-                <ion-searchbar mode="ios" placeholder="Buscar camillero" (ionChange)="filterUsers($event)"></ion-searchbar>
+                <ion-searchbar mode="ios" placeholder="Buscar camillero" (keyup)="filterUsers($event)" (ionClear)="filterClear()"></ion-searchbar>
 
             </div>
             <div class="content">
 
                 <ion-item (click)="history(user)" class="user" *ngFor="let user of users2" lines="none" cdkDropList cdkDropListSortingDisabled [cdkDropListData]="user" (cdkDropListDropped)="dropped($event)" [class.opacity]="user.isConnect == 0">
-                    <ion-avatar slot="start">
-                        <img src="/assets/avatar.svg" width="50px">
-                    </ion-avatar>
-                    <ion-label class="ion-text-wrap">
+                
+                    <ion-label class="ion-text-wrap" style="text-align: center;">
                         <div class="name">{{user.FirstName}} {{user.LastName}}</div>
-                        <div *ngIf="user.isConnect > 0" style="opacity: .7; font-size: 12px;">Solicitudes ùltima sesiòn ( {{user.count}} )</div>
-                        <div *ngIf="user.isConnect == 1">
-                            <span class="circle"></span> Conectado
+                        <div *ngIf="user.isConnect > 0" style="opacity: .7; font-size: 12px;">Total ( {{user.count}} ) / En curso ( {{user.pendientes}} )</div>
+                    
+                        <div class="flex" *ngIf="user.isConnect == 1">
+                           <div class="status"> <span class="circle"></span> Conectado</div> 
                         </div>
 
                         <div class="flex" *ngIf="user.isConnect == 0.5">
@@ -309,9 +328,9 @@
 
                         </div>
 
-                        <div *ngIf="!user.isConnect || user.isConnect == 0 ">
+                        <div class="flex" *ngIf="!user.isConnect || user.isConnect == 0 ">
 
-                            <span class="circle2"></span> Desconectado
+                           <div class="status"> <span class="circle2"></span> Desconectado</div> 
                         </div>
                     </ion-label>
 

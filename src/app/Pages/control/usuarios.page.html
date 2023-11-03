@@ -79,6 +79,28 @@
         <td mat-cell *matCellDef="let element"> {{element.name}} </td>
       </ng-container>
 
+      <ng-container matColumnDef="login">
+        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+          mat-header-cell *matHeaderCellDef> LOGIN </th>
+        <td mat-cell *matCellDef="let element"> {{element.login}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="clave">
+        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+          mat-header-cell *matHeaderCellDef> CLAVE </th>
+        <td mat-cell *matCellDef="let element"> 
+        <div *ngIf="element.login == 'appdiamante'">********</div>
+        <div style="display: flex; justify-content: space-between;" *ngIf="element.login != 'appdiamante'">
+          
+          <ion-input (ionChange)="changeClave($event, element.acc)" type="number" [value]="element.clave"></ion-input>
+          <ion-button (click)="saveClave(element)" color="warning" fill="outline">
+            <ion-icon name="pencil"></ion-icon>
+          </ion-button>
+        
+        </div>  
+        </td>
+      </ng-container>
+
 
       <ng-container matColumnDef="islock">
         <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
@@ -102,6 +124,18 @@
         <td mat-cell *matCellDef="let element">  <ion-checkbox *ngIf="element.acc.RoleID != 35" [checked]="element.isassigment == 1 ? true : false" (ionChange)="changeAssigment($event,element)"></ion-checkbox> </td>
       </ng-container>
 
+      <ng-container matColumnDef="central">
+        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+          mat-header-cell *matHeaderCellDef> PERMISO / CENTRAL </th>
+        <td mat-cell *matCellDef="let element">  <ion-checkbox *ngIf="element.acc.RoleID == 18" [checked]="element.central == 1 ? true : false" (ionChange)="changeC($event,element)"></ion-checkbox> </td>
+      </ng-container>
+
+      <ng-container matColumnDef="centraladmin">
+        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+          mat-header-cell *matHeaderCellDef> PERMISO / CENTRAL ADMINISTRATIVA </th>
+        <td mat-cell *matCellDef="let element">  <ion-checkbox *ngIf="element.acc.RoleID == 18" [checked]="element.centraladmin == 1 ? true : false" (ionChange)="changeCA($event,element)"></ion-checkbox> </td>
+      </ng-container>
+
       <ng-container matColumnDef="programmer">
         <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
           mat-header-cell *matHeaderCellDef> TURNOS </th>
@@ -114,9 +148,7 @@
         <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
           mat-header-cell *matHeaderCellDef> ACCIONES </th>
         <td mat-cell *matCellDef="let element">
-          <ion-button color="danger" fill="outline">
-            <ion-icon name="trash"></ion-icon>
-          </ion-button>
+       
         
         </td>
       </ng-container>

@@ -224,7 +224,7 @@ export class ApiService {
 
 
     apiGet(service, token) {
-        console.log(service)
+ 
         return fetch('https://diamanteticvisitrack.com/' + service, {
             method: 'GET',
             headers: {
@@ -234,7 +234,7 @@ export class ApiService {
         
         }).then((response) => {
 
-            console.log(response)
+         
         
             if (response.status == 401) {
                 return response.json().then(async (value: any) => {
@@ -262,7 +262,7 @@ export class ApiService {
     }
 
     apiDelete(service, token) {
-        console.log(service)
+      
         return fetch('https://diamanteticvisitrack.com/' + service, {
             method: 'DELETE',
             headers: {
@@ -272,7 +272,7 @@ export class ApiService {
         
         }).then((response) => {
 
-            console.log(response)
+         
         
             if (response.status == 401) {
                 return response.json().then(async (value: any) => {

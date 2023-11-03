@@ -1,0 +1,111 @@
+<ion-header class="ion-no-border" [translucent]="true">
+    <ion-toolbar color="diamante">
+        <ion-title>Reporte Excel</ion-title>
+        <app-options slot="end"></app-options>
+    </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+
+    <div class="loading" *ngIf="loading">
+        <mat-spinner></mat-spinner>
+    </div>
+
+    <div class="main" >
+        <div class="dash" *ngIf="load">
+
+
+
+            <div class="options">
+                <form [formGroup]="myForm" class="flex">
+                    <mat-form-field>
+                        <mat-label>Fecha Desde</mat-label>
+                        <input formControlName="from" [max]="dateServer" (dateChange)="changePicker($event, 1)" readonly
+                            matInput [matDatepicker]="picker">
+
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                        <mat-label>Fecha Hasta</mat-label>
+                        <input formControlName="to" [max]="dateServer" (dateChange)="changePicker($event, 2)" readonly
+                            matInput [matDatepicker]="picker2">
+
+                        <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2></mat-datepicker>
+                    </mat-form-field>
+
+
+
+                    <div class="separador"></div>
+
+
+
+
+                    <ion-button color="danger" fill="outline" (click)="clear()">
+                        <ion-icon name="trash"></ion-icon>
+                    </ion-button>
+
+
+
+                    <ion-button color="diamante" fill="outline">
+                        <ion-icon name="refresh"></ion-icon>
+                    </ion-button>
+
+                    <ion-button color="success" fill="outline"  (click)="exportTableToExcel()">
+                        <ion-icon name="newspaper"></ion-icon>
+                    </ion-button>
+
+                   
+
+                </form>
+            </div>
+
+
+            <div class="table">
+
+                <table id="ExampleMaterialTable" class="tables" *ngIf="loadActivities" mat-table [dataSource]="dataSource">
+
+                    <!-- Name Column -->
+                    <ng-container *ngFor="let item of titles" matColumnDef="{{item.id}}">
+                        <th style="min-width: 200px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;"
+                            mat-header-cell *matHeaderCellDef> {{item.name}} </th>
+                        <td style="font-size: 11px;" mat-cell *matCellDef="let element">
+
+                            {{element[item.id]}}
+
+                        </td>
+                    </ng-container>
+
+
+
+
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns;  sticky: true"></tr>
+
+
+                    <div>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;" > </tr>
+                    </div>
+
+
+
+
+                </table>
+
+         
+
+
+            </div>
+
+            <mat-paginator #paginatorHistory [pageSizeOptions]="[50, 100, 150]" showFirstLastButtons aria-label="Seleccionar pagina">
+            </mat-paginator>
+
+
+        </div>
+
+    </div>
+
+</ion-content>

@@ -8,6 +8,7 @@ import { StorageWebService } from 'src/app/Services/storage.service';
 import { ToastService } from 'src/app/Services/toast.service';
 import * as moment from 'moment-timezone'
 import { AlertController } from '@ionic/angular';
+import { elementAt } from 'rxjs';
 
 
 @Component({
@@ -18,7 +19,7 @@ import { AlertController } from '@ionic/angular';
 export class UsuariosPage implements OnInit {
 
   displayedColumns =
-    ['estado', 'name', 'islock', 'isdelete', 'isassigment', 'programmer', 'acc'];
+    ['estado', 'name', 'login', 'clave', 'islock', 'isdelete', 'isassigment', 'central', 'centraladmin', 'programmer', 'acc'];
   dataSource = new MatTableDataSource([]);
 
   @ViewChild('paginatorHistory') paginator: MatPaginator;
@@ -133,13 +134,18 @@ export class UsuariosPage implements OnInit {
 
         if (rs) {
           let fila = [...this.dataSource.data];
+          rs.response = rs.response.filter((it) => it.RoleID != 38)
           rs.response.forEach(element => {
             let obj = {
               estado: element.isConnect,
               name: element.FirstName + ' ' + element.LastName,
+              login: element.Login,
+              clave: element.Password,
               islock: element.IsLocked,
               isdelete: element.isCantDelete,
               isassigment: element.isCantAssigment,
+              central: element.isCentral,
+              centraladmin: element.isCentralAdmin,
               programmer: element.isCantProgrammer,
               acc: element
             }
@@ -159,6 +165,51 @@ export class UsuariosPage implements OnInit {
     }
   }
 
+  changeClave(event, ele) {
+
+    const idx = this.dataSource.data.findIndex((it) => it.acc._id == ele._id)
+
+    if (idx >= 0) {
+      this.dataSource.data[idx].acc.Password = event.detail.value;
+    }
+
+  }
+
+  async saveClave(ele) {
+
+    const login = await this.stg.getLogin();
+
+    this.loading = true;
+
+    if (login) {
+
+      try {
+        let rs = await this.api.apiPost('changeClave', {
+          _id: ele.acc._id,
+          token: login[0].token,
+          password: ele.acc.Password
+        })
+
+        if (rs) {
+
+          if (!rs.status) {
+            this.toast.MsgError(rs.err)
+            this.loading = false;
+            return;
+          }
+
+          this.toast.MsgOK('Proceso ejecutado correctamente')
+
+          this.loading = false;
+        }
+      } catch (error) {
+        this.loading = false;
+      }
+
+
+    }
+
+  }
 
 
   filtrar(event: Event) {
@@ -252,6 +303,81 @@ export class UsuariosPage implements OnInit {
           _id: data.acc._id,
           token: login[0].token,
           assigment: event.detail.checked ? 1 : 0
+        })
+
+        if (rs) {
+
+          if (!rs.status) {
+            this.toast.MsgError(rs.err)
+            this.loading = false;
+            return;
+          }
+
+          if (event.detail.checked) {
+            //this.socket.lockEmit({ '_id': data.acc._id })
+          }
+
+          this.loading = false;
+        }
+      } catch (error) {
+        this.loading = false;
+      }
+
+
+    }
+
+  }
+
+  async changeC(event, data) {
+    const login = await this.stg.getLogin();
+
+    this.loading = true;
+
+    if (login) {
+
+      try {
+        let rs = await this.api.apiPost('isCentral', {
+          _id: data.acc._id,
+          token: login[0].token,
+          central: event.detail.checked ? 1 : 0
+        })
+
+        if (rs) {
+
+          if (!rs.status) {
+            this.toast.MsgError(rs.err)
+            this.loading = false;
+            return;
+          }
+
+          if (event.detail.checked) {
+            //this.socket.lockEmit({ '_id': data.acc._id })
+          }
+
+          this.loading = false;
+        }
+      } catch (error) {
+        this.loading = false;
+      }
+
+
+    }
+
+  }
+
+
+  async changeCA(event, data) {
+    const login = await this.stg.getLogin();
+
+    this.loading = true;
+
+    if (login) {
+
+      try {
+        let rs = await this.api.apiPost('isCentralAdmin', {
+          _id: data.acc._id,
+          token: login[0].token,
+          centraladmin: event.detail.checked ? 1 : 0
         })
 
         if (rs) {

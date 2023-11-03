@@ -40,7 +40,7 @@ export class ToastService {
           message,
           cssClass: 'alert',
           header: title,
-          duration: duration ? duration : 15000,
+          duration: duration ? duration : 5000,
           position: 'top'
      });
 

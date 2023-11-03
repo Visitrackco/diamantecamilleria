@@ -251,90 +251,122 @@ export class FormMedellinPage implements OnInit {
 
     if (isValid) {
 
-      this.saving = true;
-      let json = [{
-        apiId: 'FECHA',
-        Value: moment(this.myForm.controls['fecha']['value']).format('YYYY-MM-DD')
-      }, {
-        apiId: 'HORA',
-        Value: this.myForm.controls['hora']['value']
-      }, {
-        apiId: 'NOMBRE',
-        Value: this.myForm.controls['solicita']['value']
-      }, {
-        apiId: 'TORREPISO_ORG',
-        Value: this.myForm.controls['origen']['value']['Torre'] + '|' + this.myForm.controls['origen']['value']['Piso']
-      }, {
-        apiId: 'HOSPITAL',
-        Value: 'HOSPITAL DE MEDELLIN'
-      }, {
-        apiId: 'ORIGEN_MEDELLIN',
-        Value: this.myForm.controls['origen']['value']['Name']
-      }, {
-        apiId: 'DESTINO_MEDELLIN',
-        Value: this.myForm.controls['destino']['value']['Name']
-      }, {
-        apiId: 'MOTIVOS_MEDELLIN',
-        Value: this.myForm.controls['motivos']['value']
-      }, {
-        apiId: 'NOMBRE_PACIENTE',
-        Value: this.myForm.controls['nombrepac']['value']
-      }, {
-        apiId: 'RECURSOS',
-        Value: this.myForm.controls['recurso']['value']
-      }, {
-        apiId: 'AISLADO',
-        Value: this.myForm.controls['aislado']['value']
-      }, {
-        apiId: 'OBSERVACIONES1',
-        Value: this.myForm.controls['obs']['value']
-      }]
-
-      if (login) {
-
+      this.api.getDate({
+        token: login[0].token,
+        format: 'America/Bogota'
+      }).then(async (server) => {
         let fecha = moment(this.myForm.controls['fecha']['value']).format('YYYY-MM-DD');
-
-        try {
-          const create = await this.api.CreateActivity({
-            WorkZoneID: login[0].WorkZone,
-            json,
-            date: moment(fecha + ' ' + this.myForm.controls['hora']['value']).format('YYYY-MM-DD HH:mm'),
-            token: login[0].token,
-            Motivo: this.myForm.controls['motivos']['value']._id,
-            Origen: this.myForm.controls['origen']['value']._id,
-            Destino: this.myForm.controls['destino']['value']._id,
-            Format: 'America/Bogota'
-          })
-
-          console.log(create)
+        let hora = this.myForm.controls['hora']['value']
+        let dateOld = moment(fecha + ' ' + hora).format('YYYY-MM-DD HH:mm')
+        let dateNew = moment(server.date).format('YYYY-MM-DD HH:mm')
 
 
+        let diff = moment(dateNew).diff(moment(dateOld), 'minutes')
 
-          if (create.status) {
-            create.response.future = create.future;
-            if (create.response.isAdmin == 1) {
-              this.socket.newActivity(login[0].WorkZone + 'centraladmin', create.response)
+        if (diff >= 0) {
+          this.myForm.controls['fecha'].setValue(server.date)
+          this.dateServer = server.date
+  
+          this.myForm.controls['hora'].setValue(server.time)
+          this.timeServer = server.time
+        } 
+       
+
+
+        this.saving = true;
+        let json = [{
+          apiId: 'FECHA',
+          Value: moment(this.myForm.controls['fecha']['value']).format('YYYY-MM-DD')
+        }, {
+          apiId: 'HORA',
+          Value: this.myForm.controls['hora']['value']
+        }, {
+          apiId: 'NOMBRE',
+          Value: this.myForm.controls['solicita']['value']
+        }, {
+          apiId: 'TORREPISO_ORG',
+          Value: this.myForm.controls['origen']['value']['Torre'] + '|' + this.myForm.controls['origen']['value']['Piso']
+        }, {
+          apiId: 'HOSPITAL',
+          Value: 'HOSPITAL DE MEDELLIN'
+        }, {
+          apiId: 'ORIGEN_MEDELLIN',
+          Value: this.myForm.controls['origen']['value']['Name']
+        }, {
+          apiId: 'DESTINO_MEDELLIN',
+          Value: this.myForm.controls['destino']['value']['Name']
+        }, {
+          apiId: 'MOTIVOS_MEDELLIN',
+          Value: this.myForm.controls['motivos']['value']
+        }, {
+          apiId: 'NOMBRE_PACIENTE',
+          Value: this.myForm.controls['nombrepac']['value']
+        }, {
+          apiId: 'RECURSOS',
+          Value: this.myForm.controls['recurso']['value']
+        }, {
+          apiId: 'AISLADO',
+          Value: this.myForm.controls['aislado']['value']
+        }, {
+          apiId: 'OBSERVACIONES1',
+          Value: this.myForm.controls['obs']['value']
+        }]
+
+        console.log(json)
+  
+    
+  
+        if (login) {
+  
+          let fecha = moment(this.myForm.controls['fecha']['value']).format('YYYY-MM-DD');
+  
+          try {
+            const create = await this.api.CreateActivity({
+              WorkZoneID: login[0].WorkZone,
+              json,
+              date: moment(fecha + ' ' + this.myForm.controls['hora']['value']).format('YYYY-MM-DD HH:mm'),
+              token: login[0].token,
+              Motivo: this.myForm.controls['motivos']['value']._id,
+              Origen: this.myForm.controls['origen']['value']._id,
+              Destino: this.myForm.controls['destino']['value']._id,
+              Format: 'America/Bogota'
+            })
+  
+            console.log(create)
+  
+  
+  
+            if (create.status) {
+              create.response.future = create.future;
+              if (create.response.isAdmin == 1) {
+                this.socket.newActivity(login[0].WorkZone + 'centraladmin', create.response)
+              } else {
+                this.socket.newActivity(login[0].WorkZone + 'central', create.response)
+              }
+  
+              this.isClick = false;
+           
+              this.myForm.reset()
+  
+              this.router.navigate(['/dashboard'])
+  
+              this.saving = false;
+  
             } else {
-              this.socket.newActivity(login[0].WorkZone + 'central', create.response)
+              this.saving = false;
+              this.toast.MsgError(create.err)
             }
-
-            this.isClick = false;
-         
-            this.myForm.reset()
-
-            this.router.navigate(['/dashboard'])
-
+          } catch (error) {
             this.saving = false;
-
-          } else {
-            this.saving = false;
-            this.toast.MsgError(create.err)
+            ///  this.toast.MsgError(error)
           }
-        } catch (error) {
-          this.saving = false;
-          ///  this.toast.MsgError(error)
         }
-      }
+
+      }).catch((err) => {
+        this.toast.MsgError('No se pudo guardar la fecha para la solicitud, recargue el formulario nuevamente')
+      })
+
+    
 
 
 

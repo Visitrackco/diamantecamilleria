@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { MenuController, PopoverController } from '@ionic/angular';
 import { ObserverService } from 'src/app/Services/observer.service';
 import { StorageWebService } from 'src/app/Services/storage.service';
@@ -18,7 +19,8 @@ export class OptionsComponent implements OnInit {
     private menuCtrl: MenuController,
     private stg: StorageWebService,
     private popover: PopoverController,
-    private obs: ObserverService
+    private obs: ObserverService,
+    private router: Router
   ) { 
     this.obs.$LogoObs.subscribe((data) => this.logo = data)
   }
@@ -51,6 +53,27 @@ export class OptionsComponent implements OnInit {
     const data = await pov.onWillDismiss();
 
     if (data.data) {
+
+    }
+  }
+
+  async form() {
+    try {
+      const login = await this.stg.getLogin();
+
+      if (login.length > 0) {
+       
+          let work = login[0].WorkZone;
+
+          if (work == 6842) {
+            this.router.navigate(['/medellinform'])
+          }
+          if (work == 6993) {
+            this.router.navigate(['/rionegroform'])
+          }
+    
+      }
+    } catch (error) {
 
     }
   }
