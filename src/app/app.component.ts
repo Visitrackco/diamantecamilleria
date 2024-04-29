@@ -191,6 +191,10 @@ export class AppComponent {
           if (work == 6993) {
             this.router.navigate(['/rionegroform'])
           }
+
+          if (work == 1001) {
+            this.router.navigate(['/form-pruebas'])
+          }
         
 
         this.menuCtrl.toggle('menu')
@@ -230,7 +234,7 @@ export class AppComponent {
 
   async reportes() {
     this.menuCtrl.toggle('menu')
-    this.router.navigate(['/error'])
+    this.router.navigate(['/tabla'])
   }
 
   async recursos() {

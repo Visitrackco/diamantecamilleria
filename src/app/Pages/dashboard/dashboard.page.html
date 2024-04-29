@@ -228,7 +228,7 @@
                             <div *ngIf="element.motivo == 'TRANSPORTAR PACIENTE'"><strong>Aislado:</strong> {{element.obs.aislado}}
                             </div>
                             <br>
-                            <div *ngIf="element.obs.obs"><strong>Observaciones:</strong> {{element.obs.obs}}</div>
+                            <div style="color: blue; font-weight: bold;" *ngIf="element.obs.obs"><strong>Observaciones:</strong> {{element.obs.obs}}</div>
                         </td>
                     </ng-container>
 
@@ -304,37 +304,54 @@
 
                 </div>
 
+                <div class="title">
+                    <h5 style="font-size: 16px;">Ordenar por pendientes</h5>
+                    <ion-toggle [disabled]="clickUsers" (ionChange)="toogleU($event)" [checked]="toggleUsers">
+                        <ion-icon name="refresh" slot="icon-only" color="light"></ion-icon>
+                    </ion-toggle>
+
+                </div>
+
+                
+
                 <ion-searchbar mode="ios" placeholder="Buscar camillero" (keyup)="filterUsers($event)" (ionClear)="filterClear()"></ion-searchbar>
 
             </div>
             <div class="content">
 
-                <ion-item (click)="history(user)" class="user" *ngFor="let user of users2" lines="none" cdkDropList cdkDropListSortingDisabled [cdkDropListData]="user" (cdkDropListDropped)="dropped($event)" [class.opacity]="user.isConnect == 0">
+                <div class="loading2" *ngIf="loadUsers">
+                    <ion-spinner name="crescent"></ion-spinner>
+                    <h3>Cargando usuarios</h3>
+                </div>
+
+                <div *ngIf="!loadUsers">
+                    <ion-item (click)="history(user)" class="user" *ngFor="let user of users2" lines="none" cdkDropList cdkDropListSortingDisabled [cdkDropListData]="user" (cdkDropListDropped)="dropped($event)" [class.opacity]="user.isConnect == 0">
                 
-                    <ion-label class="ion-text-wrap" style="text-align: center;">
-                        <div class="name">{{user.FirstName}} {{user.LastName}}</div>
-                        <div *ngIf="user.isConnect > 0" style="opacity: .7; font-size: 12px;">Total ( {{user.count}} ) / En curso ( {{user.pendientes}} )</div>
-                    
-                        <div class="flex" *ngIf="user.isConnect == 1">
-                           <div class="status"> <span class="circle"></span> Conectado</div> 
-                        </div>
-
-                        <div class="flex" *ngIf="user.isConnect == 0.5">
-                            <div>
-                                <span class="circle3"></span> Descanso
+                        <ion-label class="ion-text-wrap" style="text-align: center;" *ngIf="user.isConnect > 0">
+                            <div class="name">{{user.FirstName}} {{user.LastName}}</div>
+                            <div *ngIf="user.isConnect > 0" style="opacity: .7; font-size: 12px;">Total ( {{user.count}} ) / En curso ( {{user.pendientes}} )</div>
+                        
+                            <div class="flex" *ngIf="user.isConnect == 1">
+                               <div class="status"> <span class="circle"></span> Conectado</div> 
                             </div>
-
-                            <ion-icon name="cafe-outline" color="light"></ion-icon>
-
-                        </div>
-
-                        <div class="flex" *ngIf="!user.isConnect || user.isConnect == 0 ">
-
-                           <div class="status"> <span class="circle2"></span> Desconectado</div> 
-                        </div>
-                    </ion-label>
-
-                </ion-item>
+    
+                            <div class="flex" *ngIf="user.isConnect == 0.5">
+                                <div>
+                                    <span class="circle3"></span> Descanso
+                                </div>
+    
+                                <ion-icon name="cafe-outline" color="light"></ion-icon>
+    
+                            </div>
+    
+                        <!--    <div class="flex" *ngIf="!user.isConnect || user.isConnect == 0 ">
+    
+                               <div class="status"> <span class="circle2"></span> Desconectado</div> 
+                            </div> -->
+                        </ion-label>
+    
+                    </ion-item>
+                </div>
             </div>
 
         </div>

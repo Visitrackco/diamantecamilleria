@@ -91,6 +91,14 @@ const routes: Routes = [
     loadChildren: () => import('./Pages/Reportes/tabla/tabla.module').then(m => m.TablaPageModule),
     canActivate: [PageGuard]
   },
+  {
+    path: 'form-pruebas',
+    loadChildren: () => import('./Pages/form-pruebas/form-pruebas.module').then( m => m.FormPruebasPageModule)
+  },
+  {
+    path: 'privacidad',
+    loadChildren: () => import('./privacidad/privacidad.module').then( m => m.PrivacidadPageModule)
+  },
 ];
 
 @NgModule({

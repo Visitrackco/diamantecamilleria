@@ -80,7 +80,7 @@
 
                     <mat-form-field>
                         <mat-label>Seleccione fecha</mat-label>
-                        <input readonly matInput [min]="dateServer" [matDatepicker]="picker" formControlName="fecha">
+                        <input readonly matInput [min]="dateServer" [matDatepicker]="picker" formControlName="fecha" (dateChange)="addEvent('change', $event)">
 
                         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
@@ -95,10 +95,12 @@
 
                     <mat-form-field>
                         <mat-label>Seleccione Hora</mat-label>
-                        <input readonly matInput [format]="24" [min]="timeServer" [ngxTimepicker]="pickera" formControlName="hora" />
+                        <input readonly matInput [format]="24" [min]="timeServer" [ngxTimepicker]="pickera"
+                            formControlName="hora" />
 
                         <ngx-material-timepicker-toggle matIconSuffix [for]="pickera"></ngx-material-timepicker-toggle>
-                        <ngx-material-timepicker (timeSet)="timeChanged($event)" color="primary" #pickera></ngx-material-timepicker>
+                        <ngx-material-timepicker (timeSet)="timeChanged($event)" color="primary" #pickera>
+                        </ngx-material-timepicker>
                     </mat-form-field>
                 </ion-col>
             </ion-row>
@@ -146,7 +148,8 @@
                         <mat-select formControlName="destino">
                             <input placeholder="Buscar punto" class="search" (keyup)="onKey2($event)">
 
-                            <mat-option *ngFor="let state of selectedStates2" [value]="state">{{state.Name}}</mat-option>
+                            <mat-option *ngFor="let state of selectedStates2" [value]="state">{{state.Name}}
+                            </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </ion-col>
@@ -173,14 +176,67 @@
                 </ion-col>
             </ion-row>
 
+            <ion-row *ngIf="isInsumos">
+                <ion-col size="12" class="title">NOMBRE DEL INSUMO REQUERIDO</ion-col>
+
+            </ion-row>
+
+            <ion-row *ngIf="isInsumos">
+                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['nominsumo'].value)">
+
+                    <mat-form-field>
+                        <mat-label>Nombre</mat-label>
+
+                        <input formControlName="nominsumo" placeholder="Escriba Nombre" matInput>
+
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
 
 
-            <ion-row *ngIf="isPaciente">
+            <ion-row *ngIf="isInsumos">
+                <ion-col size="12" class="title">NOMBRE DEL SOLICITANTE</ion-col>
+
+            </ion-row>
+
+            <ion-row *ngIf="isInsumos">
+                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['nomsoli'].value)">
+
+                    <mat-form-field>
+                        <mat-label>Nombre</mat-label>
+
+                        <input formControlName="nomsoli" placeholder="Escriba Nombre" matInput>
+
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
+
+            <ion-row *ngIf="isInsumos">
+                <ion-col size="12" class="title">CARGO DEL SOLICITANTE</ion-col>
+
+            </ion-row>
+
+            <ion-row *ngIf="isInsumos">
+                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['cargosoli'].value)">
+
+                    <mat-form-field>
+                        <mat-label>Cargo</mat-label>
+
+                        <input formControlName="cargosoli" placeholder="Escriba Cargo" matInput>
+
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
+
+
+
+
+            <ion-row *ngIf="isPaciente || isInsumos">
                 <ion-col size="12" class="title">NOMBRE DEL PACIENTE</ion-col>
 
             </ion-row>
 
-            <ion-row *ngIf="isPaciente">
+            <ion-row *ngIf="isPaciente || isInsumos">
                 <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['nombrepac'].value)">
 
                     <mat-form-field>

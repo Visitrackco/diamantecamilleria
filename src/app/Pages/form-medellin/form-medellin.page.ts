@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDatepicker, MatDatepickerInputEvent, MatDatepickerModule } from '@angular/material/datepicker';
 import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
 import * as moment from 'moment-timezone';
@@ -24,11 +24,13 @@ export class FormMedellinPage implements OnInit {
   myForm: FormGroup<any>;
 
   isPaciente;
+  isInsumos;
 
   motivosList = [];
 
   dateServer;
   timeServer;
+  timeServerTemp;
 
   saving;
 
@@ -70,6 +72,20 @@ export class FormMedellinPage implements OnInit {
     this.getLocation()
   }
 
+  addEvent(type: string, event: MatDatepickerInputEvent<Date>) {
+    console.log(event.value)
+    console.log()
+
+    let from = moment(this.dateServer).format('YYYY-MM-DD');
+    let to = moment(new Date(event.value).toISOString()).format('YYYY-MM-DD');
+    let diff = moment(to).diff(moment(from), 'days')
+    if (diff > 0) {
+      this.timeServer = '00:00'
+    } else {
+      this.timeServer = this.timeServerTemp
+    }
+  }
+
   async getLocation() {
     const login = await this.stg.getLogin();
 
@@ -85,7 +101,8 @@ export class FormMedellinPage implements OnInit {
         this.dateServer = server.date
 
         this.myForm.controls['hora'].setValue(server.time)
-        this.timeServer = server.time
+        this.timeServer = server.time;
+        this.timeServerTemp = server.time;
 
         this.api.getLocationByZone({
           WorkZoneID: login[0].WorkZone,
@@ -197,7 +214,25 @@ export class FormMedellinPage implements OnInit {
         // validaciones síncronas
 
 
-      ])
+      ]),
+      nominsumo: new FormControl('', [
+        // validaciones síncronas
+
+
+
+      ]),
+      nomsoli: new FormControl('', [
+        // validaciones síncronas
+
+
+
+      ]),
+      cargosoli: new FormControl('', [
+        // validaciones síncronas
+
+
+
+      ]),
     });
   }
 
@@ -310,6 +345,15 @@ export class FormMedellinPage implements OnInit {
         }, {
           apiId: 'OBSERVACIONES1',
           Value: this.myForm.controls['obs']['value']
+        }, {
+          apiId: 'NOMBREINSUMO',
+          Value: this.myForm.controls['nominsumo']['value']
+        }, {
+          apiId: 'NOMSOLI',
+          Value: this.myForm.controls['nomsoli']['value']
+        }, {
+          apiId: 'CARGOSOLI',
+          Value: this.myForm.controls['cargosoli']['value']
         }]
 
         console.log(json)
@@ -389,6 +433,38 @@ export class FormMedellinPage implements OnInit {
 
 
       this.isPaciente = false;
+    }
+
+    
+
+
+
+    if (event.detail.value.Name == 'TRANSPORTE DE INSUMOS LABORATORIO CLINICO') {
+      this.isInsumos = true;
+      if (this.myForm.controls['nominsumo']['value'] == '') {
+        this.myForm.controls['nominsumo'].addValidators([Validators.required])
+        this.invalid = true;
+      }
+
+      if (this.myForm.controls['nomsoli']['value'] == '') {
+        this.myForm.controls['nomsoli'].addValidators([Validators.required])
+        this.invalid = true;
+      }
+
+      if (this.myForm.controls['cargosoli']['value'] == '') {
+        this.myForm.controls['cargosoli'].addValidators([Validators.required])
+        this.invalid = true;
+      }
+      if (this.myForm.controls['nombrepac']['value'] == '') {
+        this.myForm.controls['nombrepac'].addValidators([Validators.required])
+        this.invalid = true;
+      }
+
+    } else {
+
+
+
+      this.isInsumos = false;
     }
   }
 

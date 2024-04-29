@@ -10,12 +10,11 @@ import { StorageWebService } from 'src/app/Services/storage.service';
 import { ToastService } from 'src/app/Services/toast.service';
 
 @Component({
-  selector: 'app-form',
-  templateUrl: './form.page.html',
-  styleUrls: ['./form.page.scss'],
-
+  selector: 'app-form-pruebas',
+  templateUrl: './form-pruebas.page.html',
+  styleUrls: ['./form-pruebas.page.scss'],
 })
-export class FormPage implements OnInit {
+export class FormPruebasPage implements OnInit {
 
   isClick;
 
@@ -36,7 +35,6 @@ export class FormPage implements OnInit {
   saving;
 
   recursos = [];
-
 
   constructor(
     private fb: FormBuilder,
@@ -64,8 +62,7 @@ export class FormPage implements OnInit {
   ];
 
   selectedStates = this.locations;
-  selectedStates2;
-
+  selectedStates2 = this.locations;
 
   invalid;
 
@@ -104,8 +101,8 @@ export class FormPage implements OnInit {
         this.dateServer = server.date
 
         this.myForm.controls['hora'].setValue(server.time)
-        this.timeServer = server.time;
-        this.timeServerTemp = server.time;
+        this.timeServer = server.time
+        this.timeServerTemp = server.time
 
         this.api.getLocationByZone({
           WorkZoneID: login[0].WorkZone,
@@ -149,7 +146,6 @@ export class FormPage implements OnInit {
 
     this.selectedStates2 = this.search(value.target.value);
   }
-
 
   search(value: any) {
 
@@ -253,25 +249,28 @@ export class FormPage implements OnInit {
 
 
     this.isClick = true;
-    console.log(this.myForm.controls['recurso'])
+    console.log(this.myForm.controls['recurso']['value'], 'recursos')
+
+
     let isValid = false;
     if (this.isPaciente) {
       if (this.myForm.controls['nombrepac']['value'] == '') {
         this.invalid = true;
         return;
-        isValid = false;
+
       }
       if (this.myForm.controls['aislado']['value'] == '') {
         this.invalid = true;
         return;
-        isValid = false;
+
       }
       if (this.myForm.controls['recurso']['value'].length == 0) {
         this.invalid = true;
         return;
-        isValid = false;
+
 
       }
+
 
       if (this.myForm.status == 'VALID') {
         isValid = true;
@@ -279,12 +278,11 @@ export class FormPage implements OnInit {
     } else {
       if (this.myForm.status == 'VALID') {
         isValid = true;
+        console.log('hola')
       } else {
         console.log('aqui')
       }
     }
-
-    this.saving = true;
 
     if (isValid) {
 
@@ -305,9 +303,13 @@ export class FormPage implements OnInit {
           this.dateServer = server.date
 
           this.myForm.controls['hora'].setValue(server.time)
-          this.timeServer = server.time
+          this.timeServer = server.time;
+          this.timeServerTemp = server.time;
         }
 
+
+
+        this.saving = true;
         let json = [{
           apiId: 'FECHA',
           Value: moment(this.myForm.controls['fecha']['value']).format('YYYY-MM-DD')
@@ -322,15 +324,15 @@ export class FormPage implements OnInit {
           Value: this.myForm.controls['origen']['value']['Torre'] + '|' + this.myForm.controls['origen']['value']['Piso']
         }, {
           apiId: 'HOSPITAL',
-          Value: 'HOSPITAL DE RIONEGRO'
+          Value: 'HOSPITAL DE MEDELLIN'
         }, {
-          apiId: 'ORIGEN_RIONEGRO',
+          apiId: 'ORIGEN_MEDELLIN',
           Value: this.myForm.controls['origen']['value']['Name']
         }, {
-          apiId: 'DESTINO_RIONEGRO',
+          apiId: 'DESTINO_MEDELLIN',
           Value: this.myForm.controls['destino']['value']['Name']
         }, {
-          apiId: 'MOTIVOS_RIONEGRO',
+          apiId: 'MOTIVOS_MEDELLIN',
           Value: this.myForm.controls['motivos']['value']
         }, {
           apiId: 'NOMBRE_PACIENTE',
@@ -354,6 +356,8 @@ export class FormPage implements OnInit {
           apiId: 'CARGOSOLI',
           Value: this.myForm.controls['cargosoli']['value']
         }]
+
+        console.log(json)
 
 
 
@@ -380,13 +384,15 @@ export class FormPage implements OnInit {
             if (create.status) {
               create.response.future = create.future;
               if (create.response.isAdmin == 1) {
-                this.socket.newActivity((login[0].WorkZone + 'centraladmin').toString(), create.response)
+                this.socket.newActivity(login[0].WorkZone + 'centraladmin', create.response)
               } else {
-                this.socket.newActivity((login[0].WorkZone + 'central').toString(), create.response)
+                this.socket.newActivity(login[0].WorkZone + 'central', create.response)
               }
 
               this.isClick = false;
+
               this.myForm.reset()
+
               this.router.navigate(['/dashboard'])
 
               this.saving = false;
@@ -401,8 +407,11 @@ export class FormPage implements OnInit {
           }
         }
 
-
+      }).catch((err) => {
+        this.toast.MsgError('No se pudo guardar la fecha para la solicitud, recargue el formulario nuevamente')
       })
+
+
 
 
 
@@ -412,6 +421,7 @@ export class FormPage implements OnInit {
 
     console.log(isValid, 'VALID')
   }
+
 
   changeMot(event) {
     if (event.detail.value.Name == 'TRANSPORTAR PACIENTE') {
@@ -452,7 +462,6 @@ export class FormPage implements OnInit {
         this.invalid = true;
       }
 
-
     } else {
 
 
@@ -464,13 +473,19 @@ export class FormPage implements OnInit {
   change(event) {
     let rec = this.myForm.value.recurso.filter((item) => item == event.detail.value)
 
+
+
     if (rec.length > 0) {
       if (!event.detail.checked) {
-        this.myForm.value.recurso = this.myForm.value.recurso.filter((item) => item != event.detail.value)
+        let idx = this.myForm.value.recurso.findIndex((item) => item == event.detail.value)
+
+        this.myForm.value.recurso.splice(idx, 1)
       }
 
       return;
     }
+
+
     this.myForm.value.recurso.push(event.detail.value);
   }
 

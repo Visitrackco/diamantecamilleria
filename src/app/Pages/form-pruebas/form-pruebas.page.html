@@ -1,6 +1,6 @@
 <ion-header class="ion-no-border" [translucent]="true">
     <ion-toolbar color="diamante">
-        <ion-title>Formulario Rionegro</ion-title>
+        <ion-title>Formulario Pruebas</ion-title>
         <app-options slot="end"></app-options>
     </ion-toolbar>
 </ion-header>
@@ -95,10 +95,12 @@
 
                     <mat-form-field>
                         <mat-label>Seleccione Hora</mat-label>
-                        <input readonly matInput [min]="timeServer" [ngxTimepicker]="pickera" formControlName="hora" />
+                        <input readonly matInput [format]="24" [min]="timeServer" [ngxTimepicker]="pickera"
+                            formControlName="hora" />
 
                         <ngx-material-timepicker-toggle matIconSuffix [for]="pickera"></ngx-material-timepicker-toggle>
-                        <ngx-material-timepicker (timeChanged)="timeChanged($event)" color="primary" #pickera></ngx-material-timepicker>
+                        <ngx-material-timepicker (timeSet)="timeChanged($event)" color="primary" #pickera>
+                        </ngx-material-timepicker>
                     </mat-form-field>
                 </ion-col>
             </ion-row>
@@ -146,7 +148,8 @@
                         <mat-select formControlName="destino">
                             <input placeholder="Buscar punto" class="search" (keyup)="onKey2($event)">
 
-                            <mat-option *ngFor="let state of selectedStates2" [value]="state">{{state.Name}}</mat-option>
+                            <mat-option *ngFor="let state of selectedStates2" [value]="state">{{state.Name}}
+                            </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </ion-col>
@@ -155,7 +158,7 @@
 
 
             <ion-row>
-                <ion-col size="12" class="title">MOTIVOS DE SOLICITUD - HOSPITAL DE RIONEGRO</ion-col>
+                <ion-col size="12" class="title">MOTIVOS DE SOLICITUD - HOSPITAL DE PRUEBAS</ion-col>
 
             </ion-row>
             <ion-row>
@@ -168,8 +171,6 @@
                             </ion-radio>
                             <ion-label>{{ motivo.Name }}</ion-label>
                         </ion-item>
-
-
 
                     </ion-radio-group>
                 </ion-col>
@@ -235,7 +236,7 @@
             </ion-row>
 
             <ion-row *ngIf="isPaciente || isInsumos">
-                <ion-col size="12">
+                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['nombrepac'].value)">
 
                     <mat-form-field>
                         <mat-label>Nombre</mat-label>
@@ -252,12 +253,10 @@
             </ion-row>
             <ion-row *ngIf="isPaciente">
                 <ion-col size="12" [class.rojo]="(isClick && invalid)">
-
                     <ion-item lines="none" *ngFor="let rec of recursos">
                         <ion-checkbox [value]="rec.Name" slot="start" (ionChange)="change($event)"></ion-checkbox>
                         <ion-label>{{ rec.Name }}</ion-label>
                     </ion-item>
-
 
                 </ion-col>
             </ion-row>
@@ -268,7 +267,7 @@
 
             </ion-row>
             <ion-row *ngIf="isPaciente">
-                <ion-col size="12" [class.rojo]="(isClick && myForm.controls['aislado']['errors'])">
+                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['aislado'].value)">
 
                     <ion-radio-group formControlName="aislado">
 
@@ -284,8 +283,6 @@
                             <ion-label>NO</ion-label>
                         </ion-item>
 
-
-
                     </ion-radio-group>
                 </ion-col>
             </ion-row>
@@ -293,7 +290,6 @@
 
             <ion-row>
                 <ion-col size="12" class="title">OBSERVACIONES ADICIONALES</ion-col>
-
             </ion-row>
 
             <ion-row>

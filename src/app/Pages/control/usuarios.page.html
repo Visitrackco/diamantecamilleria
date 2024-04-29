@@ -142,6 +142,20 @@
         <td mat-cell *matCellDef="let element">  <ion-checkbox *ngIf="element.acc.RoleID != 35" [checked]="element.programmer == 1 ? true : false" ></ion-checkbox> </td>
       </ng-container>
 
+      <ng-container matColumnDef="zones">
+        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+          mat-header-cell *matHeaderCellDef> ZONAS </th>
+        <td mat-cell *matCellDef="let element">
+          
+          <div *ngFor="let item of element.zones" style="margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <ion-checkbox [checked]="item.check" [value]="{id: item.IDVT, data: element.acc}" (ionChange)="changeWorzone($event)"></ion-checkbox>
+            <ion-label>{{ item.Name }}</ion-label> <br>
+          </div>
+        
+        </td>
+      </ng-container>
+
+
       
 
       <ng-container matColumnDef="acc">

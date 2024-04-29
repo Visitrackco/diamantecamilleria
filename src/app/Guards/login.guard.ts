@@ -28,6 +28,11 @@ export class LoginGuard implements CanActivate {
           }
         
 
+          if (work == 1001) {
+            this.router.navigateRoot(['/form-pruebas'])
+          }
+        
+
 
         return false;
 

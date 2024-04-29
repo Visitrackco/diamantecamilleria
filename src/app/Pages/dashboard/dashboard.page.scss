@@ -1,11 +1,15 @@
 .main {
     width: 100%;
+    height: calc(100vh - 56px);
     display: flex;
+    overflow: hidden;
+
     .dash {
         width: calc(100% - 300px);
-        height: calc(100vh - 56px);
+        height: 100%;
         overflow: hidden;
         overflow-y: scroll;
+
         .options {
             padding: 15px;
             display: flex;
@@ -13,10 +17,12 @@
             overflow-x: scroll;
             width: 100%;
             background-color: rgba(0, 0, 0, 0.1);
+
             form {
                 display: flex;
                 align-items: center;
             }
+
             mat-form-field {
                 font-size: 14px;
                 margin: 0 10px;
@@ -24,17 +30,21 @@
                 width: 180px;
             }
         }
+
         .tables {
             font-size: 10px;
         }
+
         .table {
             overflow: scroll;
             height: calc(100vh - 200px);
+
             .center {
                 display: flex;
                 justify-content: start;
                 align-items: center;
             }
+
             .pending {
                 display: inline-block;
                 width: 15px;
@@ -43,6 +53,7 @@
                 background-color: #E5DC44;
                 margin-right: 10px;
             }
+
             .assigned {
                 display: inline-block;
                 width: 15px;
@@ -51,6 +62,7 @@
                 background-color: #44bcec;
                 margin-right: 10px;
             }
+
             .demora {
                 display: inline-block;
                 width: 15px;
@@ -59,6 +71,7 @@
                 background-color: #e5840c;
                 margin-right: 10px;
             }
+
             .completado {
                 display: inline-block;
                 width: 15px;
@@ -69,31 +82,37 @@
             }
         }
     }
+
     .users {
         width: 300px;
-        height: calc(100vh - 56px);
+        height: 100%;
         box-shadow: 0px 50px 70px 50px rgba(11, 59, 106, 0.287);
         background-color: var(--ion-color-diamante);
         z-index: 100;
         color: #fff;
+        overflow: scroll;
 
         .status {
             font-size: 12px;
-         opacity: .7;
+            opacity: .7;
         }
+
         .user {
             display: flex;
             cursor: pointer;
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             transition: all .5s;
         }
+
         .user:hover {
             transform: scale(0.9);
         }
+
         .bannerTitle {
             background-color: #0b2b3f;
             color: #fff;
             box-shadow: 0px 20px 30px rgba(101, 176, 252, 0.287);
+
             .title {
                 height: 50px;
                 display: flex;
@@ -101,28 +120,34 @@
                 align-items: center;
                 padding: 0 10px;
                 z-index: 100;
+
                 ion-button {
                     background: transparent;
                     --background: transparent;
                 }
+
                 h3 {
                     font-size: 20px;
                     font-weight: bold;
                     margin: 0;
                 }
             }
+
             ion-searchbar {
                 color: #fff;
                 --background: rgba(0, 0, 0, 0.5)
             }
         }
+
         .content {
             height: calc(100% - 50px);
             overflow-y: scroll;
         }
+
         .name {
             font-size: 12px;
         }
+
         .circle {
             display: inline-block;
             width: 10px;
@@ -130,6 +155,7 @@
             background-color: green;
             border-radius: 100%;
         }
+
         .circle2 {
             display: inline-block;
             width: 10px;
@@ -137,6 +163,7 @@
             background-color: red;
             border-radius: 100%;
         }
+
         .circle3 {
             display: inline-block;
             width: 10px;
@@ -178,6 +205,7 @@ mat-label {
 
 .cdk-drag {
     cursor: pointer;
+
     &.cdk-drag-placeholder {
         opacity: 0;
         display: none;
@@ -211,6 +239,7 @@ mat-label {
     background-color: #f1f1f1;
     box-shadow: 0px 20px 50px 10px rgba(0, 0, 0, 0.1);
     color: #000;
+
     h3 {
         margin: 0;
         font-size: 14px;
@@ -220,6 +249,7 @@ mat-label {
 .flex {
     display: flex;
     justify-content: space-between;
+
     ion-icon {
         font-size: 24px;
     }
@@ -249,6 +279,7 @@ mat-label {
     padding: 0 20px;
     font-size: 14px;
     font-weight: bold;
+
     ion-checkbox {
         margin-top: 10px;
     }
@@ -257,6 +288,7 @@ mat-label {
 .fecha {
     display: flex;
     margin: 5px;
+
     span {
         display: inline-block;
         width: 20px;
@@ -287,6 +319,28 @@ mat-label {
     z-index: 100;
 }
 
+.loading2 {
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    margin-top: 50px;
+
+    h3 {
+        opacity: .5;
+    }
+
+    ion-spinner {
+        width: 80px;
+        color: #fff;
+    }
+
+}
+
 .apoyo {
     animation: apoyo 1s infinite alternate-reverse;
 }
@@ -295,6 +349,7 @@ mat-label {
     from {
         transform: scale(1.0);
     }
+
     to {
         transform: scale(0.97);
     }

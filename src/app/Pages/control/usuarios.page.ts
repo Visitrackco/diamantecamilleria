@@ -19,7 +19,7 @@ import { elementAt } from 'rxjs';
 export class UsuariosPage implements OnInit {
 
   displayedColumns =
-    ['estado', 'name', 'login', 'clave', 'islock', 'isdelete', 'isassigment', 'central', 'centraladmin', 'programmer', 'acc'];
+    ['estado', 'name', 'login', 'clave', 'islock', 'isdelete', 'isassigment', 'central', 'centraladmin', 'programmer', 'zones', 'acc'];
   dataSource = new MatTableDataSource([]);
 
   @ViewChild('paginatorHistory') paginator: MatPaginator;
@@ -28,6 +28,8 @@ export class UsuariosPage implements OnInit {
 
 
   loading;
+
+  zones = [6842, 6993, 1001]
 
 
   constructor(
@@ -82,7 +84,7 @@ export class UsuariosPage implements OnInit {
             fila[idx].estado = 0;
           }
 
-    
+
 
           fila = this.orderUser(fila)
 
@@ -130,12 +132,33 @@ export class UsuariosPage implements OnInit {
       try {
 
         this.dataSource.data = [];
+        const zones = await this.api.apiGet('workzones', login[0].token)
+
+        this.zones = zones.response;
+
+
+
         const rs = await this.api.apiGet('usersworkzone?WorkZoneID=' + login[0].WorkZone + '&all=1', login[0].token)
 
         if (rs) {
           let fila = [...this.dataSource.data];
-          rs.response = rs.response.filter((it) => it.RoleID != 38)
+     
+
           rs.response.forEach(element => {
+
+            let nuevo = [];
+            zones.response.forEach((item: any) => {
+
+
+              nuevo.push({
+                Name: item.Name,
+                IDVT: item.IDVT,
+                check: element.WorkZoneID.filter((it) => it === item.IDVT).length > 0 ? true : false
+              })
+
+            })
+
+            console.log(nuevo, element.WorkZoneID, element.FirstName)
             let obj = {
               estado: element.isConnect,
               name: element.FirstName + ' ' + element.LastName,
@@ -147,6 +170,7 @@ export class UsuariosPage implements OnInit {
               central: element.isCentral,
               centraladmin: element.isCentralAdmin,
               programmer: element.isCantProgrammer,
+              zones: nuevo,
               acc: element
             }
             fila.push(obj)
@@ -215,7 +239,56 @@ export class UsuariosPage implements OnInit {
   filtrar(event: Event) {
     const filtro = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filtro.trim().toLowerCase();
-  }  
+  }
+
+  async changeWorzone(event) {
+    const login = await this.stg.getLogin();
+
+    this.loading = true;
+
+    if (login) {
+
+      if (event.detail.checked) {
+        let idx = event.detail.value.data.WorkZoneID.findIndex((it) => it == event.detail.value.id)
+
+        if (idx < 0) {
+          event.detail.value.data.WorkZoneID.push(event.detail.value.id)
+        }
+      } else {
+        let idx = event.detail.value.data.WorkZoneID.findIndex((it) => it == event.detail.value.id)
+
+        if (idx >= 0) {
+          event.detail.value.data.WorkZoneID.splice(idx, 1)
+        }
+      }
+
+      try {
+        let rs = await this.api.apiPost('changeZones', {
+          _id: event.detail.value.data._id,
+          token: login[0].token,
+          zones:  event.detail.value.data.WorkZoneID
+        })
+
+        if (rs) {
+
+          if (!rs.status) {
+            this.toast.MsgError(rs.err)
+            this.loading = false;
+            return;
+          }
+
+   
+
+          this.loading = false;
+        }
+      } catch (error) {
+        this.loading = false;
+      }
+
+
+    }
+
+  }
 
   async changeLock(event, data) {
     const login = await this.stg.getLogin();
@@ -277,7 +350,7 @@ export class UsuariosPage implements OnInit {
           }
 
           if (event.detail.checked) {
-         //   this.socket.lockEmit({ '_id': data.acc._id })
+            //   this.socket.lockEmit({ '_id': data.acc._id })
           }
 
           this.loading = false;

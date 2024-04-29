@@ -45,6 +45,7 @@ export class DashboardPage implements OnInit {
   clickUsers;
 
   loading;
+  loadUsers = false;
 
   interval;
 
@@ -107,6 +108,10 @@ export class DashboardPage implements OnInit {
 
 
   myForm: FormGroup<any>;
+
+
+  toggleUsers = false;
+
   constructor(
     private api: ApiService,
     private stg: StorageWebService,
@@ -446,12 +451,20 @@ export class DashboardPage implements OnInit {
     });
   }
 
+  toogleU(event) {
+    console.log(event.detail)
+    this.toggleUsers = event.detail.checked;
+    this.getUsers()
+  }
+
 
   async getUsers() {
     const login = await this.stg.getLogin();
 
     if (login) {
       try {
+
+        this.loadUsers = true;
 
         this.clickUsers = true;
 
@@ -482,10 +495,17 @@ export class DashboardPage implements OnInit {
             return 0;
           })
 
+
+      
+
+
+         
+        
+
           console.log(rs.response)
 
          
-          let disconnect = rs.response.filter((it) => it.isConnect == 0)
+          let disconnect =[]
           let connect = rs.response.filter((it) => it.isConnect == 1)
           let descanso = rs.response.filter((it) => it.isConnect == 0.5)
 
@@ -513,6 +533,19 @@ export class DashboardPage implements OnInit {
 
           }
 
+          if (this.toggleUsers) {
+ 
+            this.users2 = this.users2.sort((a, b) => {
+              if (a.pendientes > b.pendientes) {
+                return 1;
+              }
+              if (a.pendientes < b.pendientes) {
+                return -1;
+              }
+              return 0;
+            })
+          }
+
           for (const ele of descanso) {
 
             const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id, login[0].token)
@@ -535,6 +568,7 @@ export class DashboardPage implements OnInit {
 
         }
 
+
           disconnect.forEach(element => {
             this.users.push(element);
             this.users2.push(element);
@@ -542,11 +576,12 @@ export class DashboardPage implements OnInit {
 
           this.clickUsers = false;
 
-   
+          this.loadUsers = false;
 
 
         }
       } catch (error) {
+        this.loadUsers = false;
         this.clickUsers = false;
       }
     }

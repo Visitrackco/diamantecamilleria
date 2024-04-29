@@ -34,6 +34,7 @@ export class TablaPage implements OnInit {
   { id: 'camillero', name: 'CAMILLERO' },
   { id: 'obscentral', name: 'OBSERVACION DE LA CENTRAL' },
   { id: 'obsadicional', name: 'OBSERVACIONES ADICIONALES' },
+
   { id: 'paciente', name: 'NOMBRE PACIENTE' },
   { id: 'recursos', name: 'RECURSOS NECESARIOS' },
   { id: 'creacion', name: 'CREACION SOLICITUD FECHA Y HORA' },
@@ -139,6 +140,7 @@ export class TablaPage implements OnInit {
 
   load;
 
+  IsDeleted = false;
 
 
 
@@ -164,22 +166,22 @@ export class TablaPage implements OnInit {
 
     let newArr = [];
 
-    this.dataSource.data.forEach((it) =>{
+    this.dataSource.data.forEach((it) => {
       let obj = {};
       for (const key in it) {
 
-          let idx = this.titles.findIndex((item) => item.id == key)
+        let idx = this.titles.findIndex((item) => item.id == key)
 
-          if (idx >= 0) {
-            obj[this.titles[idx].name]  = it[key]
-          }
-          
-        
+        if (idx >= 0) {
+          obj[this.titles[idx].name] = it[key]
+        }
+
+
       }
 
       newArr.push(obj)
-    } )
-  
+    })
+
     var wb = XLSX.utils.book_new();
     var ws = XLSX.utils.json_to_sheet(newArr, { cellStyles: true });
     XLSX.utils.book_append_sheet(wb, ws, 'Mi data');
@@ -212,7 +214,7 @@ export class TablaPage implements OnInit {
 
     if (login) {
 
-    
+
       this.load = true;
 
       this.myZone = login[0].WorkZone
@@ -381,11 +383,17 @@ export class TablaPage implements OnInit {
     });
   }
 
+  ca(event) {
+    this.isAdmin = event.detail.checked;
+    this.stop = false;
+    this.filter = true;
+    this.getSolicitudes()
+  }
+
+
   clear() {
     this.stop = false;
-    this.mot.writeValue('');
-    this.org.writeValue('');
-    this.des.writeValue('');
+
     this.motivoSelect = false;
     this.origenSelec = false;
     this.DestinoSelect = false;
@@ -397,11 +405,12 @@ export class TablaPage implements OnInit {
     this.isAllStatus = false;
     this.isFilter = false;
 
+
     this.myForm.controls['from'].setValue('');
     this.myForm.controls['to'].setValue('');
 
-
-    this.getSolicitudes();
+    this.dataSource.data = [];
+    //  this.getSolicitudes();
   }
 
 
@@ -440,6 +449,14 @@ export class TablaPage implements OnInit {
     return arr.filter((item) => item.apiId == api).length > 0 ? arr.filter((item) => item.apiId == api)[0].Value : ''
   }
 
+  status(event) {
+    this.IsDeleted = event.detail.checked;
+    this.filter = true;
+    if (this.myForm.controls['from'].value && this.myForm.controls['to'].value) {
+      this.getSolicitudes();
+    }
+  }
+
   async getSolicitudes() {
     this.stop = false;
 
@@ -470,6 +487,7 @@ export class TablaPage implements OnInit {
         Desde: this.fechaFrom,
         Hasta: this.fechaTo,
         isAdmin: this.isAdmin ? 1 : 0,
+        IsDeleted: this.IsDeleted,
         isAllStatus: 1
       }).then((data: any) => {
 
@@ -504,30 +522,117 @@ export class TablaPage implements OnInit {
           }
         })
 
+
+
         countRetornos = countRetornos.sort().reverse();
 
         let CountTotal = countRetornos.length > 0 ? countRetornos[0] : 0
 
+
+
+
         for (let i = 1; i <= CountTotal; i++) {
-          this.titles.push({
-            id: 'retorno' + i,
-            name: 'RETORNO ' + i
-          }, {
-            id: 'destinor' + i,
-            name: 'DESTINO ' + i
-          }, {
-            id: 'fechar' + i,
-            name: 'FECHA ' + i
-          })
+          let idx = this.titles.findIndex((it) => it.id == 'retorno' + i)
+
+          if (idx < 0) {
+            this.titles.push({
+              id: 'retorno' + i,
+              name: 'RETORNO ' + i
+            }, {
+              id: 'destinor' + i,
+              name: 'DESTINO ' + i
+            }, {
+              id: 'fechar' + i,
+              name: 'FECHA ' + i
+            }, {
+              id: 'tecr' + i,
+              name: 'TECNOLOGIA ' + i
+            })
+          }
+
 
         }
+
+
+
+
+
+
+        let idxo = this.titles.findIndex((l) => l.id == 'tecorigen');
+        let idxd = this.titles.findIndex((l) => l.id == 'tecdestino');
+
+        if (idxo < 0) {
+          this.titles.push({
+            id: 'tecorigen',
+            name: 'TECNOLOGIA ORIGEN'
+          })
+        }
+
+        if (idxd < 0) {
+          this.titles.push({
+            id: 'tecdestino',
+            name: 'TECNOLOGIA DESTINO'
+          })
+        }
+
+
+
+        let idx1 = this.titles.findIndex((l) => l.id == 'nombreinsumo');
+        let idx2 = this.titles.findIndex((l) => l.id == 'nomsoli');
+        let idx3 = this.titles.findIndex((l) => l.id == 'cargosoli');
+
+        if (idx1 < 0) {
+          this.titles.push({
+            id: 'nombreinsumo',
+            name: 'NOMBRE INSUMO'
+          })
+        }
+
+        if (idx2 < 0) {
+          this.titles.push({
+            id: 'nomsoli',
+            name: 'NOMBRE SOLICITANTE INSUMO'
+          })
+        }
+
+        if (idx3 < 0) {
+          this.titles.push({
+            id: 'cargosoli',
+            name: 'CARGO SOLICITANTE INSUMO'
+          })
+        }
+
+
+
+
+        let idx = this.titles.findIndex((l) => l.id == 'eliminadapor');
+
+        if (!this.IsDeleted) {
+          //  this.titles.splice(idx, 1)
+        }
+
+        if (idx < 0 && this.IsDeleted) {
+          this.titles.push({
+            id: 'eliminadapor',
+            name: 'ELIMINADA POR '
+          }, {
+            id: 'eliminadaen',
+            name: 'ELIMINADA EN '
+          })
+        }
+
+
+
+
+
 
         let claves = this.titles.map((item) => item.id);
 
         this.displayedColumns = claves;
-  
 
-        console.log(this.titles)
+
+
+
 
         data.response.forEach(element => {
 
@@ -539,9 +644,10 @@ export class TablaPage implements OnInit {
             'origen': element.Origen.Name,
             'destino': element.Destino.Name,
             'solicitado': this.getField(element.JSONAnswers, 'NOMBRE'),
-            'camillero': element.AssignedTo ? element.AssignedTo.FirstName : '',
+            'camillero': element.AssignedTo ? element.AssignedTo.FirstName + ' ' + element.AssignedTo.LastName : '',
             'obscentral': this.getField(element.JSONAnswers, 'OBSERVACIONES1'),
             'obsadicional': this.getField(element.JSONAnswers, 'OBSERVACIONES2'),
+
             'paciente': this.getField(element.JSONAnswers, 'NOMBRE_PACIENTE'),
             'recursos': this.getField(element.JSONAnswers, 'RECURSOS') != '' ? this.getField(element.JSONAnswers, 'RECURSOS').join(',') : '',
             'creacion': moment(element.CreatedOn).tz('America/Bogota').format('YYYY-MM-DD HH:mm'),
@@ -573,27 +679,44 @@ export class TablaPage implements OnInit {
             'retorno': this.getField(element.JSONAnswers, 'RECORRIDO') ? 'SI' : 'NO'
           };
 
-          let rec =  this.getField(element.JSONAnswers, 'RECORRIDO') ?  this.getField(element.JSONAnswers, 'RECORRIDO') : [];
+          let rec = this.getField(element.JSONAnswers, 'RECORRIDO') ? this.getField(element.JSONAnswers, 'RECORRIDO') : [];
 
-      
+
           for (let i = 0; i < rec.length; i++) {
-            obj['retorno' + (i + 1)] = rec[i].mov;
-            obj['destinor' + (i + 1)] = rec[i].tag;
-            obj['fechar' + (i + 1)] = moment(rec[i].date).tz('America/Bogota').format('YYYY-MM-DD HH:mm');
-            
+            try {
+              obj['retorno' + (i + 1)] = rec[i].mov;
+              obj['destinor' + (i + 1)] = rec[i].tag;
+              obj['fechar' + (i + 1)] = moment(rec[i].date).tz('America/Bogota').format('YYYY-MM-DD HH:mm');
+              obj['tecr' + (i + 1)] = rec[i].tec;
+
+            } catch (error) {
+              obj['retorno' + (i + 1)] = '';
+              obj['destinor' + (i + 1)] = '';
+              obj['fechar' + (i + 1)] = '';
+              obj['tecr' + (i + 1)] = '';
+
+            }
           }
-       
 
-          dataConvert.push(obj)
+          obj['eliminadapor'] = element.DeletedBy ? element.DeletedBy.FirstName + ' ' + element.DeletedBy.LastName : ''
+          obj['eliminadaen'] = element.DeletedBy ? moment(element.DeletedOn).tz('America/Bogota').format('YYYY-MM-DD HH:mm') : ''
+
+
+          obj['tecorigen'] = this.getField(element.JSONAnswers, 'TECORIGEN')
+          obj['tecdestino'] = this.getField(element.JSONAnswers, 'TECDESTINO')
+          obj['nombreinsumo'] = this.getField(element.JSONAnswers, 'NOMBREINSUMO')
+          obj['nomsoli'] = this.getField(element.JSONAnswers, 'NOMSOLI')
+          obj['cargosoli'] = this.getField(element.JSONAnswers, 'CARGOSOLI')
+
+
+
+
+          fila.push(obj)
 
 
         });
 
-        dataConvert.forEach(element => {
 
-
-          fila.push(element)
-        });
 
 
         this.dataSource.data = fila;

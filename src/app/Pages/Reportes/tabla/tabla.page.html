@@ -42,6 +42,19 @@
                     <div class="separador"></div>
 
 
+                    <div class="admin">
+                        ELIMINADAS
+                        <ion-checkbox [checked]="IsDeleted" (ionChange)="status($event)"></ion-checkbox>
+                    </div>
+
+
+                    <div class="admin" *ngIf="multiple">
+                        CA
+                        <ion-checkbox [disabled]="clickUsers" [checked]="isAdmin" (ionChange)="ca($event)"></ion-checkbox>
+                    </div>
+                 
+
+
 
 
                     <ion-button color="danger" fill="outline" (click)="clear()">
@@ -49,15 +62,13 @@
                     </ion-button>
 
 
-
-                    <ion-button color="diamante" fill="outline">
-                        <ion-icon name="refresh"></ion-icon>
-                    </ion-button>
-
                     <ion-button color="success" fill="outline"  (click)="exportTableToExcel()">
                         <ion-icon name="newspaper"></ion-icon>
                     </ion-button>
 
+
+
+               
                    
 
                 </form>
