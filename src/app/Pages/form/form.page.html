@@ -95,7 +95,7 @@
 
                     <mat-form-field>
                         <mat-label>Seleccione Hora</mat-label>
-                        <input readonly matInput [min]="timeServer" [ngxTimepicker]="pickera" formControlName="hora" />
+                        <input readonly matInput [format]="24" [min]="timeServer" [ngxTimepicker]="pickera" formControlName="hora" />
 
                         <ngx-material-timepicker-toggle matIconSuffix [for]="pickera"></ngx-material-timepicker-toggle>
                         <ngx-material-timepicker (timeChanged)="timeChanged($event)" color="primary" #pickera></ngx-material-timepicker>
