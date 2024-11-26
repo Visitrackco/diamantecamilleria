@@ -252,8 +252,7 @@ export class FormPage implements OnInit {
     let login = await this.stg.getLogin();
 
 
-    this.isClick = true;
-    console.log(this.myForm.controls['recurso'])
+
     let isValid = false;
     if (this.isPaciente) {
       if (this.myForm.controls['nombrepac']['value'] == '') {
@@ -283,6 +282,11 @@ export class FormPage implements OnInit {
         console.log('aqui')
       }
     }
+
+    this.isClick = true;
+    //console.log(this.myForm.controls['recurso']['value'], 'recursos')
+
+  
 
     this.saving = true;
 
@@ -461,18 +465,39 @@ export class FormPage implements OnInit {
     }
   }
 
+  // change(event) {
+  //   let rec = this.myForm.value.recurso.filter((item) => item == event.detail.value)
+
+  //   if (rec.length > 0) {
+  //     if (!event.detail.checked) {
+  //       this.myForm.value.recurso = this.myForm.value.recurso.filter((item) => item != event.detail.value)
+  //     }
+
+  //     return;
+  //   }
+  //   this.myForm.value.recurso.push(event.detail.value);
+  // }
+
+
   change(event) {
     let rec = this.myForm.value.recurso.filter((item) => item == event.detail.value)
 
+
+
     if (rec.length > 0) {
       if (!event.detail.checked) {
-        this.myForm.value.recurso = this.myForm.value.recurso.filter((item) => item != event.detail.value)
+        let idx =  this.myForm.value.recurso.findIndex((item) => item == event.detail.value)
+      
+        this.myForm.value.recurso.splice(idx, 1) 
       }
 
       return;
     }
+
+
     this.myForm.value.recurso.push(event.detail.value);
   }
+
 
 
 }

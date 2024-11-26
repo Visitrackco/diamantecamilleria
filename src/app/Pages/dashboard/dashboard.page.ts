@@ -513,12 +513,12 @@ export class DashboardPage implements OnInit {
 
           for (const ele of connect) {
 
-              const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id, login[0].token)
+           //   const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id, login[0].token)
 
-              if (count.status) {
-                ele.count = count.response.count;
-                ele.pendientes = count.response.pendientes;
-              }
+             // if (count.status) {
+                ele.count = ele.Total;
+                ele.pendientes = ele.Pendiente;
+         //     }
              /*else {
               const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id + '&logout=yes', login[0].token) 
 
