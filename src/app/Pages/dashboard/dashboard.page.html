@@ -86,6 +86,7 @@
                         <ion-icon name="refresh"></ion-icon>
                     </ion-button>
 
+
                 </form>
             </div>
 
@@ -257,7 +258,7 @@
 
                             <div class="flex">
 
-                                <ion-button [cdkCopyToClipboard]="element.token" color="diamante" fill="outline">
+                                <ion-button [cdkCopyToClipboard]="element.token" color="diamante" fill="outline" (click)="viewVersion(element.acc._id)">
                                     <ion-icon name="copy"></ion-icon>
                                 </ion-button>
                             </div>

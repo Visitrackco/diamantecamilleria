@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar color="diamante">
+    <ion-title>Versiones</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="loading" *ngIf="loading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <h3>Cargando versiones</h3>
+  </div>
+
+
+  <div class="versions">
+    <div class="version" *ngFor="let version of versions; let i = index;">
+      <div class="fields">
+
+        <div class="title">
+          <strong>V({{ versions.length - (i) }}) Campos del formulario</strong>
+          <div style="width: 50%; font-size: 12px; text-align: right;">
+            <strong>{{ version.CreatedOn | date : 'yyyy MM dd HH:mm:ss' }}</strong> <br>ESTADO: {{
+            version.CompanyStatus}}
+          </div>
+        </div>
+        <br>
+        <div class="content" [innerHTML]="version.html"></div> <br>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

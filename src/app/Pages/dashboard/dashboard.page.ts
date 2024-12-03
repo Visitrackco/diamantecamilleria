@@ -22,6 +22,7 @@ import { HistoryComponent } from 'src/app/Components/history/history.component';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ObserverService } from 'src/app/Services/observer.service';
 import { DetailComponent } from 'src/app/Components/detail/detail.component';
+import { VersionActivitiesComponent } from 'src/app/Components/version-activities/version-activities.component';
 
 
 @Component({
@@ -1432,6 +1433,17 @@ export class DashboardPage implements OnInit {
 
       return name.includes(event.target.value.toLowerCase())
     })
+  }
+
+  async viewVersion(activity) {
+    const modal = await this.modalCtrl.create({
+      component: VersionActivitiesComponent,
+      componentProps: {
+        activity
+      }
+    })
+
+    await modal.present()
   }
 
   filterClear() {

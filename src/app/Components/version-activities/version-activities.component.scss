@@ -1,0 +1,48 @@
+
+.versions {
+    padding: 20px;
+    overflow-y: scroll;
+}
+
+.title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f3f3f3;
+}
+
+.item {
+    padding: 10px;
+}
+
+.item:nth-child(odd) {
+    background-color: rgb(191, 229, 246);
+    font-size: 12px;
+    text-transform: capitalize;
+    text-align: center;
+}
+
+
+
+.loading {
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+    color: var(--ion-color-diamante);
+    margin-top: 50px;
+
+    h3 {
+        opacity: .5;
+    }
+
+    ion-spinner {
+        width: 80px;
+        color: var(--ion-color-diamante);
+    }
+
+}

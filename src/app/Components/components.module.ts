@@ -11,6 +11,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { DetailComponent } from './detail/detail.component';
+import { VersionActivitiesComponent } from './version-activities/version-activities.component';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import { DetailComponent } from './detail/detail.component';
     PerfilComponent,
     LoadingComponent,
     HistoryComponent,
-    DetailComponent
+    DetailComponent,
+    VersionActivitiesComponent
   ],
   exports: [
     MenuComponent,
@@ -39,7 +41,8 @@ import { DetailComponent } from './detail/detail.component';
     PerfilComponent,
     LoadingComponent,
     HistoryComponent,
-    DetailComponent
+    DetailComponent,
+    VersionActivitiesComponent
 ],
 
 })
