@@ -1,0 +1,85 @@
+.material-input-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.material-input-container input {
+  width: 100%;
+  padding: 12px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  font-size: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  background: transparent;
+}
+
+.material-input-container input:focus {
+  border-color: #a8b0da; /* Color principal */
+  box-shadow: 0 0 4px rgba(150, 154, 178, 0.5);
+}
+
+.material-input-container label {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: #aaa;
+  background: white;
+  padding: 0 4px;
+  font-size: 16px;
+  pointer-events: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.material-input-container input:focus + label,
+.material-input-container input:not(:placeholder-shown) + label {
+  top: -8px;
+  left: 8px;
+  font-size: 12px;
+  color: #7686d4; /* Color principal */
+}
+
+.material-input-container input:focus {
+  border-width: 2px; /* Bordes más gruesos al enfocar */
+}
+
+.material-input-container input:disabled {
+  background: #f9f9f9;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+
+.material-input-container input[type="time"] {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 30px; /* Espacio para el ícono */
+  }
+  
+  .material-input-container input[type="time"]::after {
+    content: '\1F553'; /* Emoji de reloj como alternativa */
+    font-size: 18px;
+    color: #103750; /* Cambia a tu color deseado */
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .text {
+    line-height: 2;
+    padding: 10px;
+    font-size: 16px;
+  }
+
+  .save {
+    width: 200px;
+    text-align: center;
+    font-size: 14px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    background-color: #103750;
+    color: #fff;
+  }

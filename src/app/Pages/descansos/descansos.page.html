@@ -1,0 +1,138 @@
+<ion-header class="ion-no-border" [translucent]="true">
+  <ion-toolbar color="diamante">
+    <ion-title>Control de Usuarios</ion-title>
+    <app-options slot="end"></app-options>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content class="ion-padding">
+
+
+
+  <div class="loading" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+   </div>
+
+
+
+   <div *ngIf="!loadConfig">
+    <ion-row *ngFor="let result of [1,1,1]">
+
+      <ion-col size="4">
+        <ion-skeleton-text [animated]="true" style="width: 100%; height: 30px;"></ion-skeleton-text>
+      </ion-col>
+
+      <ion-col size="4">
+        <ion-skeleton-text [animated]="true" style="width: 100%; height: 30px;"></ion-skeleton-text>
+      </ion-col>
+
+      <ion-col size="4">
+        <ion-skeleton-text [animated]="true" style="width: 100%; height: 30px;"></ion-skeleton-text>
+      </ion-col>
+
+
+
+    </ion-row>
+  </div>
+
+  
+  <div *ngIf="!withConfig && loadConfig" class="mensajeconfig">
+      <div class="text">Los descansos no estan configurados para este hospital, por favor haga click en configurar para establecer los tiempos y horas de cada item de descanso para los camilleros. </div>
+
+      <button class="btn-config" (click)="openConfig()">Configurar Descansos</button>
+
+      
+  </div>
+
+  <div *ngIf="withConfig && loadConfig" class="mensajeconfig-global">
+    <div class="text">Actualiza los descansos para todos los usuarios </div>
+
+    <button class="btn-config" (click)="openConfig(dataSource.data[0], false)">Configurar Descansos</button>
+
+    
+</div>
+
+
+  <div class="table">
+     
+  
+
+
+    <table *ngIf="withConfig && loadConfig" mat-table [dataSource]="dataSource">
+
+      <!-- Name Column -->
+     
+
+      <ng-container matColumnDef="user">
+        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+          mat-header-cell *matHeaderCellDef> Usuario Camillero </th>
+        <td mat-cell *matCellDef="let element"> {{element.user}} </td>
+      </ng-container>
+      <ng-container matColumnDef="desayuno">
+        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+          mat-header-cell *matHeaderCellDef> Desayuno</th>
+        <td mat-cell *matCellDef="let element"> <div>
+          
+          <!-- <span>Hora: </span> <strong>{{element.desayuno.time }}</strong> / -->
+          
+          <span>Tiempo:</span> <strong>{{element.desayuno.minutes}} min </strong></div>  </td>
+      </ng-container>
+      <ng-container matColumnDef="almuerzo">
+        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+          mat-header-cell *matHeaderCellDef> Almuerzo </th>
+        <td mat-cell *matCellDef="let element"> <div>
+          <!-- <span>Hora: </span> <strong>{{element.almuerzo.time }}</strong> /  -->
+          <span>Tiempo:</span> <strong>{{element.almuerzo.minutes}} min </strong></div>  </td>
+      </ng-container>
+      <ng-container matColumnDef="cena">
+        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+          mat-header-cell *matHeaderCellDef> Cena </th>
+        <td mat-cell *matCellDef="let element"> <div>
+          <!-- <span>Hora: </span> <strong>{{element.cena.time }}</strong> /  -->
+          <span>Tiempo:</span> <strong>{{element.cena.minutes}} min </strong></div>   </td>
+      </ng-container>
+      <ng-container matColumnDef="libre">
+        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+          mat-header-cell *matHeaderCellDef> Tiempo Libre </th>
+        <td mat-cell *matCellDef="let element"> 
+          <div>
+            <!-- <span>Hora: </span> <strong>{{element.libre.time }}</strong> / -->
+             <span>Tiempo:</span> <strong>{{element.libre.minutes}} min </strong></div>  
+        </td>
+      </ng-container>
+
+  
+
+
+      
+
+      <ng-container matColumnDef="acc">
+        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+          mat-header-cell *matHeaderCellDef> ACCIONES </th>
+        <td mat-cell *matCellDef="let element">
+       
+          <ion-button color="primary" mode="ios" fill="outline" (click)="openConfig(element.acc, true)">
+            <ion-icon name="refresh" slot="icon-only"></ion-icon>
+          </ion-button>
+        </td>
+      </ng-container>
+
+   
+
+    
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns;  sticky: true"></tr>
+      <tr    mat-row *matRowDef="let row; columns: displayedColumns;" > 
+       
+      </tr>
+    </table>
+
+
+  </div>
+
+  <!-- <mat-paginator #paginatorHistory [pageSizeOptions]="[50, 100, 150]" showFirstLastButtons
+    aria-label="Seleccionar pagina">
+  </mat-paginator> -->
+ 
+</ion-content>

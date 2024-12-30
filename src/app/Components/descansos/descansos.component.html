@@ -1,0 +1,113 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="blanco">
+    <ion-title>Configuraciòn</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+
+  <p class="text">La configuraciòn para cada item del descanso se aplciara de forma general para cada camillero del hospital</p>
+
+  <form action="" [formGroup]="myForm" (ngSubmit)="onSubmit()">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12">
+          <strong class="title">Desayuno</strong>
+        </ion-col>
+        
+      </ion-row> <br>
+  
+      <ion-row>
+        <ion-col size="12">
+          <div class="material-input-container">
+            <input formControlName="desayunomin" type="number" id="name" placeholder=" " required>
+            <label for="name">Tiempo en minutos</label>
+          </div>
+        </ion-col>
+        <!-- <ion-col size="6">
+          <div class="material-input-container">
+            <input formControlName="desayunotime" type="time" id="name" placeholder=" " required>
+            <label for="name">Intervalo de Hora</label>
+          </div>
+        </ion-col>
+         -->
+      </ion-row>
+  
+      <ion-row>
+        <ion-col size="12">
+          <strong class="title">Almuerzo</strong>
+        </ion-col>
+        
+      </ion-row> <br>
+  
+      <ion-row>
+        <ion-col size="12">
+          <div class="material-input-container">
+            <input formControlName="almuerzomin" type="number" id="name" placeholder=" " required>
+            <label for="name">Tiempo en minutos</label>
+          </div>
+        </ion-col>
+        <!-- <ion-col size="6">
+          <div class="material-input-container">
+            <input formControlName="almuerzotime" type="time" id="name" placeholder=" " required>
+            <label for="name">Intervalo de Hora</label>
+          </div>
+        </ion-col> -->
+        
+      </ion-row>
+  
+      <ion-row>
+        <ion-col size="12">
+          <strong class="title">Cena</strong>
+        </ion-col>
+        
+      </ion-row> <br>
+  
+      <ion-row>
+        <ion-col size="12">
+          <div class="material-input-container">
+            <input formControlName="cenamin" type="number" id="name" placeholder=" " required>
+            <label for="name">Tiempo en minutos</label>
+          </div>
+        </ion-col>
+        <!-- <ion-col size="6">
+          <div class="material-input-container">
+            <input formControlName="cenatime" type="time" id="name" placeholder=" " required>
+            <label for="name">Intervalo de Hora</label>
+          </div>
+        </ion-col>
+         -->
+      </ion-row>
+  
+      <ion-row>
+        <ion-col size="12">
+          <strong class="title">Tiempo Libre</strong>
+        </ion-col>
+        
+      </ion-row> <br>
+  
+      <ion-row>
+        <ion-col size="12">
+          <div class="material-input-container">
+            <input formControlName="libremin" type="number" id="name" placeholder=" " required>
+            <label for="name">Tiempo en minutos</label>
+          </div>
+        </ion-col>
+        <!-- <ion-col size="6">
+          <div class="material-input-container">
+            <input formControlName="libretime" type="time" id="name" placeholder=" " required>
+            <label for="name">Intervalo de Hora</label>
+          </div>
+        </ion-col> -->
+        
+      </ion-row>
+  
+    </ion-grid>
+
+      <button type="submit" class="save">
+    Guardar Cambios
+  </button>
+  </form>
+ 
+
+
+</ion-content>

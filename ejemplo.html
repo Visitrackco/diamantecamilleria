@@ -1,0 +1,262 @@
+<style>
+    .contenedor {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 8px !important;
+      width: 100%;
+      margin: auto;
+    }
+    
+    .none {
+      padding: 0px !important;
+      border: 0px !important;
+    }
+    
+    .logo {
+      margin: auto;
+      display: flex;
+      object-fit: cover !important;
+      width: 60%;
+      background-color: red;
+    }
+  
+    td {
+      border: 1px solid rgb(0, 0, 0);
+    }
+  
+    table {
+      width: 100%;
+      /* border: 1px solid rgb(255, 255, 255); */
+      border: none;
+      border-collapse: collapse;
+    }
+  
+    .td-none {
+      border: none;
+      padding: 0;
+    }
+  
+    .td-r-none {
+      border-right: none;
+    }
+  
+    .td-l-none {
+      border-left: none;
+    }
+  
+    .td-b-none {
+      border-bottom: none;
+    }
+  
+    .td-t-none {
+      border-top: none;
+    }
+  
+    .text-medium {
+      font-size: 11px !important;
+    }
+  
+    .text-center {
+      text-align: center !important;
+    }
+  
+    .text-value {
+      font-size: 12px !important;
+    }
+  
+    .bg-name-colums-blue {
+      font-size: small;
+      background-color: #2f5496;
+      color: white;
+      font-weight: bold;
+    }
+    .border-none {
+      border: none !important;
+    }
+    .td-mn-mx-w-40 {
+      max-width: 40px;
+      min-width: 40px;
+      overflow: hidden;
+    }
+  
+    .fila-categoria-c {
+      background-color: #ffcccc; /* Rojo claro */
+    }
+  
+    .fila-categoria-b {
+      background-color: #ffffcc; /* Amarillo claro */
+    }
+  
+    .fila-categoria-a {
+      background-color: #ccffcc; /* Verde claro */
+    }
+  
+    .display-none {
+      display: none;
+    }
+  
+    .td-min-max-w-header {
+      min-width: 90px !important;
+      max-width: 90px !important;
+    }
+  
+    .td-min-max-w-category {
+      min-width: 130px !important;
+      max-width: 130px !important;
+      word-wrap: break-word;
+      word-break: break-word;
+      white-space: normal;
+      overflow-wrap: break-word;
+      text-align: center;
+    }
+    .bg-5{
+      background-color: #01b150;
+      color: white;
+    }
+    .bg-4{
+      background-color: #93d051;
+      color: white;
+    }
+    .bg-3{
+      background-color: #fec001;
+      color: white;
+    }
+    .bg-2{
+      background-color: #fe0001;
+      color: white;
+    }
+    .bg-1{
+      background-color: #c10001;
+      color: white;
+    }
+    .bg-0{
+      background-color: #585958;
+      color: white;
+    }
+    .bg-na{
+      background-color: #00b0f0;
+      color: white;
+    }
+  </style>
+  
+  <div class="contenedor">
+    <table class="table" cellspacing="0" cellspadding="0">
+      <!-- head -->
+      <head>
+        <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.6/underscore-umd-min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+        <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
+        <script
+          type="text/javascript"
+          src="https://www.gstatic.com/charts/loader.js"
+        ></script>
+      </head>
+  
+     <!-- header -->
+     <thead>
+      <tr>
+        <td class="none">
+          <table class="table">
+            <tr>
+              <td colspan="3">
+                <img
+                  src="https://s3.amazonaws.com/logocompanies/473DF828-F9B8-4BC0-974E-76A20E6D1D4F.jpg"
+                  alt="Logo"
+                  class="logo"
+                />
+              </td>
+              <td colspan="3" class="text-center">
+                <b> FORMATO DE EVALUACIÓN Y REEVALUACIÓN DE PROVEEDORES </b>
+              </td>
+              <td colspan="4">
+                <table class="table border-none">
+                  <tr>
+                    <td class="td-l-none td-t-none text-medium">
+                      <b> Documento: </b>
+                    </td>
+                    <td class="td-l-none td-t-none td-r-none">
+                      <span class="text-medium">COM-FOR-002</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="td-l-none td-t-none text-medium">
+                      <b>Version</b>
+                    </td>
+                    <td class="td-l-none td-t-none td-r-none">
+                      <span class="text-medium"> 001 </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="td-l-none td-t-none td-b-none text-medium">
+                      <b> Fecha: </b>
+                    </td>
+                    <td class="td-l-none td-t-none td-r-none td-b-none">
+                      <span class="text-medium"> Dic 2024 </span>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+     
+    </thead>
+      <!-- body -->
+     <tbody>
+        <tr>
+            <td class="none">
+                <table
+                id="MD_ADMINISTRACION"
+                cellspacing="0"
+                data-api="MD_ADMINISTRACION">
+            
+                  <tr class="bg-name-colums-blue">
+                    <td colspan="1" class="text-medium text-center">CATEGORÍA DE LA EVALUACIÓN</td>
+                    <td class="text-medium text-center">EXPECTATIVAS DE RENDIMIENTO</td>
+                    <td class="text-medium text-center">PUNTAJE</td>
+                    <td class="text-medium text-center">DESCRIPCIÓN DE LA   MEDIDA CORRECTIVA</td>
+                    <td class="text-medium text-center">INFORMACIÓN ADICIONAL  </td>
+                    <td class="text-medium text-center">SEGUIMIENTO</td>
+                    <td class="text-medium text-center">FECHA</td>
+                  </tr>
+                
+                <tbody data-container="true" data-template="true" >
+                  <!-- Fila principal con rowspan -->
+                 
+                    <tr>
+                      <td data-col="Name" class="text-value text-center"></td>
+                      <td data-col="PUNTAJE" class="text-center text-value"></td>
+                      <td data-col="DESCRIPCION_MEDIDA_CORRECTIVA" class="text-value"></td>
+                      <td data-col="INFORMACION_ADICIONAL" class="text-value text-center"></td>
+                      <td data-col="SEGUIMIENTO" class="text-value text-center"></td>
+                      <td data-col="DESEA_CALIFICAR" class="text-value text-center "></td>
+                      <td data-col="FECHA_SEGUIMIENTO" class="text-value text-center"></td>
+                      <td data-col="MD_SEGUIMIENTO"  class="text-value text-center">
+                        <table data-api-md="MD_SEGUIMIENTO">
+                     
+                            <tr>
+                              <td>Foto</td>
+                          
+                            </tr>
+                      
+                          <tbody data-template-md="true">
+                            <tr>
+                        
+                              <td data-col-md="FOTO"></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+            
+                  
+                </tbody>
+              </table>    
+            </td>
+        </tr>
+     </tbody>
+    </table>
+  </div>
+
+  
+  

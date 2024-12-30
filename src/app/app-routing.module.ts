@@ -93,11 +93,16 @@ const routes: Routes = [
   },
   {
     path: 'form-pruebas',
-    loadChildren: () => import('./Pages/form-pruebas/form-pruebas.module').then( m => m.FormPruebasPageModule)
+    loadChildren: () => import('./Pages/form-pruebas/form-pruebas.module').then(m => m.FormPruebasPageModule)
   },
   {
     path: 'privacidad',
-    loadChildren: () => import('./privacidad/privacidad.module').then( m => m.PrivacidadPageModule)
+    loadChildren: () => import('./privacidad/privacidad.module').then(m => m.PrivacidadPageModule)
+  },
+  {
+    path: 'descansos',
+    loadChildren: () => import('./Pages/descansos/descansos.module').then(m => m.DescansosPageModule),
+    canActivate: [PageGuard]
   },
 ];
 

@@ -113,6 +113,10 @@ export class DashboardPage implements OnInit {
 
   toggleUsers = false;
 
+  dragActive = false;
+
+  filtermob = false;
+
   constructor(
     private api: ApiService,
     private stg: StorageWebService,
@@ -327,6 +331,15 @@ export class DashboardPage implements OnInit {
         }
       }
     })
+  }
+
+
+  filtermobile() {
+    this.filtermob = !this.filtermob;
+  }
+
+  activeDrag(event) {
+    this.dragActive = event.detail.checked;
   }
 
   orderUser() {
@@ -548,6 +561,16 @@ export class DashboardPage implements OnInit {
           }
 
           for (const ele of descanso) {
+
+            console.log(ele, 'descansos')
+
+           if (ele.EstadoDesc) {
+            const diff = moment(ele.EstadoDesc.end).diff(moment(moment().format('YYYY-MM-DD HH:mm:ss')), 'seconds')
+
+            console.log(ele.EstadoDesc.end, ele.EstadoDesc.init)
+
+            ele.time = diff
+           }
 
             
            /*else {
@@ -1127,7 +1150,9 @@ export class DashboardPage implements OnInit {
 
         if (!rs.status) {
           this.toast.MsgError(rs.err);
+       
           this.loading = false;
+          this.getUsers();
           return;
         }
         if (data.del) {
@@ -1254,11 +1279,20 @@ export class DashboardPage implements OnInit {
       componentProps: {
         hidden: true,
         id: user._id,
-        user: user.FirstName + ' ' + user.LastName
+        user: user.FirstName + ' ' + user.LastName,
+        descanso: true
       }
     })
 
     await modal.present();
+
+    const rs = await modal.onWillDismiss()
+
+    if (rs.data) {
+      if (rs.data.reload) {
+        this.getUsers()
+      }
+    }
   }
   async detail(data) {
     const modal = await this.modalCtrl.create({
@@ -1473,5 +1507,9 @@ export class DashboardPage implements OnInit {
     this.dataSource.data = [];
 
   }
+
+
+
+  
 
 }

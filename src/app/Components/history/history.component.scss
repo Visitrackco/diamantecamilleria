@@ -1,0 +1,68 @@
+.material-input-container {
+    position: relative;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .material-input-container input {
+    width: 50%;
+    padding: 12px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background: transparent;
+  }
+  
+  .material-input-container input:focus {
+    border-color: #a8b0da; /* Color principal */
+    box-shadow: 0 0 4px rgba(150, 154, 178, 0.5);
+  }
+  
+
+  .material-input-container input:focus {
+    border-width: 2px; /* Bordes más gruesos al enfocar */
+  }
+  
+  .material-input-container input:disabled {
+    background: #f9f9f9;
+    color: #aaa;
+    cursor: not-allowed;
+  }
+  
+  
+
+    
+
+    .text {
+      line-height: 2;
+      padding: 10px;
+      font-size: 16px;
+    }
+  
+    .save {
+      width: 200px;
+      text-align: center;
+      font-size: 14px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      background-color: #113c56;
+      color: rgb(255, 255, 255);
+      margin: 10px;
+    }
+
+    .validation {
+      width: 90%;
+      padding: 10px;
+      border: 2px solid red;
+      background-color: rgb(249, 198, 198);
+      color: red;
+      text-align: center;
+      border-radius: 10px;
+      margin: 10px auto;
+      font-size: 12px;
+
+    }

@@ -19,6 +19,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule, MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import {ClipboardModule} from '@angular/cdk/clipboard';
+import { CdTimerModule } from 'angular-cd-timer';
 
 @NgModule({
 
@@ -40,7 +41,9 @@ import {ClipboardModule} from '@angular/cdk/clipboard';
     MatNativeDateModule,
     MatInputModule,
     ReactiveFormsModule,
-    ClipboardModule
+    ClipboardModule,
+    CdTimerModule
+    
   ],
   declarations: [DashboardPage]
 })

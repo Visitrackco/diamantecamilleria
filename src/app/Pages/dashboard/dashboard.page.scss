@@ -37,7 +37,7 @@
 
         .table {
             overflow: scroll;
-            height: calc(100vh - 200px);
+            height: calc(100vh - 250px);
 
             .center {
                 display: flex;
@@ -81,6 +81,12 @@
                 margin-right: 10px;
             }
         }
+
+      
+    }
+
+    .tablamax {
+        width: 100%;
     }
 
     .users {
@@ -91,6 +97,7 @@
         z-index: 100;
         color: #fff;
         overflow: scroll;
+        transition: all .5s;
 
         .status {
             font-size: 12px;
@@ -102,6 +109,8 @@
             cursor: pointer;
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             transition: all .5s;
+            padding: 10px;
+            
         }
 
         .user:hover {
@@ -171,6 +180,11 @@
             background-color: orange;
             border-radius: 100%;
         }
+    }
+
+    .outside {
+        position: absolute;
+        right: -300px;
     }
 }
 
@@ -246,12 +260,57 @@ mat-label {
     }
 }
 
+.user {
+    display: flex;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    transition: all .5s;
+    font-size: 14px;
+    padding: 10px;
+    
+}
+
+.info {
+    width: 100%;
+}
+
 .flex {
     display: flex;
     justify-content: space-between;
 
     ion-icon {
         font-size: 24px;
+    }
+}
+
+
+.flexColumn {
+    display: flex;
+    flex-direction: column;
+
+    ion-icon {
+        font-size: 24px;
+    }
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+
+    .child {
+        display: flex;
+    }
+}
+
+.barMiddle {
+    background-color: #ccc;
+    padding: 5px 20px;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+
+    strong {
+        margin-right: 10px;
     }
 }
 
