@@ -35,7 +35,7 @@ export class DashboardPage implements OnInit {
 
 
   displayedColumns =
-    ['estado', 'fecha', 'recibido', 'motivo', 'origen', 'destino', 'camillero', 'obscentral', 'obs', 'obs3', 'acc', 'token'];
+    ['estado', 'fecha', 'recibido', 'motivo', 'origen', 'destino', 'camillero', 'obscentral', 'obs', 'obs3', 'acc', 'obssolicitante', 'token'];
   dataSource = new MatTableDataSource([]);
 
   @ViewChild('paginatorHistory') paginator: MatPaginator;
@@ -81,6 +81,7 @@ export class DashboardPage implements OnInit {
 
   isDelete = 0;
   isAssigment = 0;
+  loginid = '';
   
   isAdmin = false;
   multiple = false;
@@ -171,6 +172,7 @@ export class DashboardPage implements OnInit {
           let obs2 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES2').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES2')[0].Value : ''
 
 
+          let obs4 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES4').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES4')[0].Value : ''
           
           let obs3 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3')[0].Value : ''
 
@@ -224,6 +226,7 @@ export class DashboardPage implements OnInit {
             },
             obs3,
             acc: element,
+            obssolicitante: obs4,
             token: element._id
           };
 
@@ -377,6 +380,8 @@ export class DashboardPage implements OnInit {
     const login = await this.stg.getLogin();
 
     if (login) {
+
+      this.loginid = login[0]._id;
 
       this.myZone = login[0].WorkZone
 
@@ -840,7 +845,9 @@ export class DashboardPage implements OnInit {
           let obs = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1')[0].Value : ''
 
           let obs2 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES2').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES2')[0].Value : ''
-
+          
+          let obs4 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES4').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES4')[0].Value : ''
+          
           let obs3 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3')[0].Value : ''
 
 
@@ -897,6 +904,7 @@ export class DashboardPage implements OnInit {
             },
             obs3: obs3,
             acc: element,
+            obssolicitante: obs4,
             token: element._id
           };
 
@@ -925,7 +933,9 @@ export class DashboardPage implements OnInit {
             let obs = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1')[0].Value : ''
 
             let obs2 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES2').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES2')[0].Value : ''
-
+          
+            let obs4 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES4').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES4')[0].Value : ''
+          
             let obs3 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3')[0].Value : ''
 
             let org = element.JSONAnswers.filter((it) => it.apiId == 'FechallegaOrigen').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'FechallegaOrigen')[0].Value : ''
@@ -1013,6 +1023,7 @@ export class DashboardPage implements OnInit {
               obs3,
               acc: element,
               token: element._id,
+              obssolicitante: obs4,
               UpdatedOn: element.UpdatedOn
             };
 
@@ -1413,6 +1424,79 @@ export class DashboardPage implements OnInit {
                 const rs = await this.api.apiPost('EditFields', {
                   WorkZoneID: login[0].WorkZone,
                   api: 'OBSERVACIONES2',
+                  value: data.obs,
+                  valueUTC: dates.utc,
+                  _id: id,
+                  CompanyStatus: 'SOLICITUD CON CAMILLERO' ,
+                  token: login[0].token
+                })
+
+        
+                if (!rs.status) {
+                  this.toast.MsgError(rs.err)
+                  return;
+                }
+
+       
+                this.toast.MsgOK('Proceso ejecutado correctamente')
+
+                this.filter = true;
+                this.loading = true;
+                
+                this.getSolicitudes();
+
+              } catch (error) {
+                this.loading = true;
+                this.toast.MsgError('No se pudo realizar la solicitud')
+              }
+
+            }
+          }
+        }
+      ]
+    })
+
+    await alert.present();
+
+  }
+
+  async obsSolicitante(desc, id) {
+
+    const alert = await this.alertCtrl.create({
+      header: 'Enviar Observaciones',
+      message: 'Escriba un comentario',
+      inputs: [
+        {
+          type: 'textarea',
+          value: desc,
+          name: 'obs'
+        }
+      ],
+      buttons: [
+        {
+          text: 'cancelar'
+        },
+        {
+          text: 'Aceptar',
+          handler: async (data) => {
+            const login = await this.stg.getLogin();
+
+            if (login) {
+
+              this.loading = true;
+
+
+              try {
+
+                const dates = await this.api.getDate({
+                  token: login[0].token,
+                  format: 'America/Bogota'
+                })
+
+                this.loading = true;
+                const rs = await this.api.apiPost('EditFields', {
+                  WorkZoneID: login[0].WorkZone,
+                  api: 'OBSERVACIONES4',
                   value: data.obs,
                   valueUTC: dates.utc,
                   _id: id,

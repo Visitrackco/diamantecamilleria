@@ -34,6 +34,7 @@ export class TablaPage implements OnInit {
   { id: 'camillero', name: 'CAMILLERO' },
   { id: 'obscentral', name: 'OBSERVACION DE LA CENTRAL' },
   { id: 'obsadicional', name: 'OBSERVACIONES ADICIONALES' },
+  { id: 'obssolicitante', name: 'OBSERVACION DEL SOLICITANTE' },
 
   { id: 'paciente', name: 'NOMBRE PACIENTE' },
   { id: 'recursos', name: 'RECURSOS NECESARIOS' },
@@ -665,8 +666,9 @@ export class TablaPage implements OnInit {
             'destino': element.Destino.Name,
             'solicitado': this.getField(element.JSONAnswers, 'NOMBRE'),
             'camillero': element.AssignedTo ? element.AssignedTo.FirstName + ' ' + element.AssignedTo.LastName : '',
-            'obscentral': this.getField(element.JSONAnswers, 'OBSERVACIONES1'),
-            'obsadicional': this.getField(element.JSONAnswers, 'OBSERVACIONES2'),
+            'obscentral': this.getField(element.JSONAnswers, 'OBSERVACIONES2'),
+            'obsadicional': this.getField(element.JSONAnswers, 'OBSERVACIONES1'),
+            'obssolicitante': this.getField(element.JSONAnswers, 'OBSERVACIONES4'),
 
             'paciente': this.getField(element.JSONAnswers, 'NOMBRE_PACIENTE'),
             'recursos': this.getField(element.JSONAnswers, 'RECURSOS') != '' ? this.getField(element.JSONAnswers, 'RECURSOS').join(',') : '',
