@@ -104,6 +104,10 @@ const routes: Routes = [
     loadChildren: () => import('./Pages/descansos/descansos.module').then(m => m.DescansosPageModule),
     canActivate: [PageGuard]
   },
+  {
+    path: 'custom-options',
+    loadChildren: () => import('./Pages/custom-options/custom-options.module').then( m => m.CustomOptionsPageModule)
+  },
 ];
 
 @NgModule({

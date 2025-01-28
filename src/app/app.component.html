@@ -72,6 +72,14 @@
             </ion-item>
 
 
+            <ion-item routerLink="custom-options" color="banner" *ngIf="role && role.Listas == 1">
+                <ion-icon name="cafe" slot="start"></ion-icon>
+                <ion-label>Preguntas personalizadas</ion-label>
+                <ion-icon name="chevron-forward"></ion-icon>
+            </ion-item>
+
+
+
             <ion-item (click)="reportes()" color="banner" *ngIf="role && role.Reportes == 1">
                 <ion-icon name="bar-chart" slot="start"></ion-icon>
                 <ion-label>Reportes</ion-label>

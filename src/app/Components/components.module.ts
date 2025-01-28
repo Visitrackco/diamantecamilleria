@@ -13,6 +13,12 @@ import { MatTableModule } from '@angular/material/table';
 import { DetailComponent } from './detail/detail.component';
 import { VersionActivitiesComponent } from './version-activities/version-activities.component';
 import { DescansosComponent } from './descansos/descansos.component';
+import { CustomOptionComponent } from './asociative/asociative.component';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 
 
 @NgModule({
@@ -24,7 +30,15 @@ import { DescansosComponent } from './descansos/descansos.component';
     MatTableModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+
+    MatSelectModule,
+    MatFormFieldModule,
+    MatInputModule,
+
+    MatDatepickerModule,
+    MatNativeDateModule
+
     
   ],
 
@@ -36,7 +50,8 @@ import { DescansosComponent } from './descansos/descansos.component';
     HistoryComponent,
     DetailComponent,
     VersionActivitiesComponent,
-    DescansosComponent
+    DescansosComponent,
+    CustomOptionComponent
   ],
   exports: [
     MenuComponent,
@@ -46,7 +61,8 @@ import { DescansosComponent } from './descansos/descansos.component';
     HistoryComponent,
     DetailComponent,
     VersionActivitiesComponent,
-    DescansosComponent
+    DescansosComponent,
+    CustomOptionComponent
 ],
 
 })

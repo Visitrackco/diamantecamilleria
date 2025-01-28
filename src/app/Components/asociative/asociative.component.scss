@@ -1,0 +1,39 @@
+
+.table {
+    padding: 10px;
+}
+mat-form-field {
+    width: 100%;
+    font-size: 14px;
+}
+
+mat-label {
+    font-size: 14px;
+}
+
+ion-row {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+}
+
+.btn {
+    width: 200px;
+    outline: none;
+    padding: 10px;
+    color: #fff;
+    background-color: var(--ion-color-diamante);
+    border: 1px solid rgba(0,0,0,0.1);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.search {
+    width: 100%;
+    outline: none;
+    padding: 10px;
+    color: #000;
+    background-color: #f1f1f1;
+    border: 1px solid rgba(0,0,0,0.1);
+    font-size: 14px;
+    font-weight: bold;
+}
