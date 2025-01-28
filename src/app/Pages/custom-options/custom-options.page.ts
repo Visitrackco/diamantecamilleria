@@ -182,6 +182,12 @@ export class CustomOptionsPage implements OnInit {
 
     await modal.present()
 
+    const rs = await modal.onWillDismiss();
+
+    if (rs.data) {
+      this.getHistory()
+    }
+
   }
 
 
@@ -193,6 +199,12 @@ export class CustomOptionsPage implements OnInit {
     })
 
     await modal.present()
+
+    const rs = await modal.onWillDismiss();
+
+    if (rs.data) {
+      this.getHistory()
+    }
   }
 
   change(event, i) {

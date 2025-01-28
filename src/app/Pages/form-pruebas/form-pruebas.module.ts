@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -16,6 +16,7 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { ComponentsModule } from 'src/app/Components/components.module';
 
 @NgModule({
+  schemas:[CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     CommonModule,
     FormsModule,

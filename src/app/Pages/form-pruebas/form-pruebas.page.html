@@ -95,8 +95,7 @@
 
                     <mat-form-field>
                         <mat-label>Seleccione Hora</mat-label>
-                        <input readonly matInput [format]="24" [min]="timeServer" [ngxTimepicker]="pickera"
-                            formControlName="hora" />
+                        <input readonly matInput [format]="24" [min]="timeServer" [ngxTimepicker]="pickera" formControlName="hora" />
 
                         <ngx-material-timepicker-toggle matIconSuffix [for]="pickera"></ngx-material-timepicker-toggle>
                         <ngx-material-timepicker (timeSet)="timeChanged($event)" color="primary" #pickera>
@@ -286,6 +285,33 @@
                     </ion-radio-group>
                 </ion-col>
             </ion-row>
+
+            <div *ngFor="let option of myQuestion">
+                <ion-row>
+                    <ion-col size="12" class="title">{{ option.Name }}</ion-col>
+
+                </ion-row>
+                <ion-row>
+                    <ion-col size="12" [class.rojo]="(isClick && !myForm.controls[option.Api.toString().toLowerCase()].value)">
+
+                        <ion-radio-group formControlName="{{option.Api.toString().toLowerCase()}}">
+
+                            <ion-item lines="none">
+                                <ion-radio value="SI" slot="start">
+                                </ion-radio>
+                                <ion-label>SI</ion-label>
+                            </ion-item>
+
+                            <ion-item lines="none">
+                                <ion-radio value="NO" slot="start">
+                                </ion-radio>
+                                <ion-label>NO</ion-label>
+                            </ion-item>
+
+                        </ion-radio-group>
+                    </ion-col>
+                </ion-row>
+            </div>
 
 
             <ion-row>

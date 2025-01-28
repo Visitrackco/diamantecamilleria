@@ -520,7 +520,27 @@ export class TablaPage implements OnInit {
 
             }
           }
+
+          const custom = element.JSONAnswers.filter((l) => l.apiId.includes('CUSTOMAPI'))
+          console.log(custom.reverse())
+
+          custom.reverse().forEach(c => {
+
+            let idx = this.titles.findIndex((it) => it.id == c.apiId.toString().toLowerCase())
+            let idxStart = this.titles.findIndex((it) => it.id == 'origen')
+
+
+            if (idx < 0) {
+              this.titles.splice((idxStart),0,{
+                id: c.apiId.toString().toLowerCase(),
+                name: c.title
+              })
+            }
+          });
+
         })
+
+        console.log(this.titles)
 
 
 
@@ -697,6 +717,13 @@ export class TablaPage implements OnInit {
 
             }
           }
+
+          const custom = element.JSONAnswers.filter((l) => l.apiId.includes('CUSTOMAPI'))
+
+          custom.forEach(c => {
+            obj[c.apiId.toString().toLowerCase()] = c.Value
+
+          });
 
           obj['eliminadapor'] = element.DeletedBy ? element.DeletedBy.FirstName + ' ' + element.DeletedBy.LastName : ''
           obj['eliminadaen'] = element.DeletedBy ? moment(element.DeletedOn).tz('America/Bogota').format('YYYY-MM-DD HH:mm') : ''

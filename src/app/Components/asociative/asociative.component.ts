@@ -167,7 +167,7 @@ export class CustomOptionComponent implements OnInit {
         const rs = await this.api.apiPost(this.data ? 'customoptionsEdit' : 'customoptions', {
           token: login[0].token,
           Name: this.myForm.controls['name'].value,
-          Api: this.myForm.controls['ref'].value.toString().toUpperCase().trim(),
+          Api: (this.myForm.controls['ref'].value + 'CUSTOMAPI').toString().toUpperCase().trim(),
           Motivo: this.myForm.controls['motivo'].value._id,
           WorkZoneID: login[0].WorkZone,
           _id: this.data ? this.data.acc._id : false

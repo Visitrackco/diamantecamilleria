@@ -36,6 +36,11 @@ export class FormPruebasPage implements OnInit {
 
   recursos = [];
 
+  customQuestion = []
+  myQuestion = []
+  selectMotivo = false;
+
+
   constructor(
     private fb: FormBuilder,
     private menuCtrl: MenuController,
@@ -90,6 +95,20 @@ export class FormPruebasPage implements OnInit {
     const login = await this.stg.getLogin();
 
     if (login) {
+
+      try {
+        const options = await this.api.apiGet('customoptions?WorkZoneID=' + login[0].WorkZone, login[0].token)
+
+        if (options) {
+
+          this.customQuestion = options.response
+
+        }
+      } catch (error) {
+
+      }
+
+      console.log(this.customQuestion)
 
       this.myForm.controls['solicita'].setValue(login[0].FirstName + ' ' + login[0].LastName)
 
@@ -257,7 +276,6 @@ export class FormPruebasPage implements OnInit {
       if (this.myForm.controls['nombrepac']['value'] == '') {
         this.invalid = true;
         return;
-
       }
       if (this.myForm.controls['aislado']['value'] == '') {
         this.invalid = true;
@@ -284,8 +302,9 @@ export class FormPruebasPage implements OnInit {
       }
     }
 
-    if (isValid) {
 
+
+    if (isValid) {
       this.api.getDate({
         token: login[0].token,
         format: 'America/Bogota'
@@ -310,7 +329,7 @@ export class FormPruebasPage implements OnInit {
 
 
         this.saving = true;
-        let json = [{
+        let json: any = [{
           apiId: 'FECHA',
           Value: moment(this.myForm.controls['fecha']['value']).format('YYYY-MM-DD')
         }, {
@@ -357,9 +376,16 @@ export class FormPruebasPage implements OnInit {
           Value: this.myForm.controls['cargosoli']['value']
         }]
 
-        console.log(json)
+        this.myQuestion.forEach((l) => {
+          json.push({
+            apiId: l.Api.toString(),
+            title: l.Name,
+            Value: this.myForm.controls[l.Api.toString().toLowerCase()]['value']
+          })
+     
+        })
 
-
+      
 
         if (login) {
 
@@ -376,10 +402,6 @@ export class FormPruebasPage implements OnInit {
               Destino: this.myForm.controls['destino']['value']._id,
               Format: 'America/Bogota'
             })
-
-            console.log(create)
-
-
 
             if (create.status) {
               create.response.future = create.future;
@@ -424,6 +446,20 @@ export class FormPruebasPage implements OnInit {
 
 
   changeMot(event) {
+    this.selectMotivo = true;
+    // eleimino los ya existentes
+    this.myQuestion.forEach((l) => {
+      this.myForm.removeControl(l.Api.toString().toLowerCase())
+    })
+
+    // agrego los campos o preguntas relacionadas al motivo
+    this.myQuestion = this.customQuestion.filter((l) => l.Motivo.Name == event.detail.value.Name)
+    console.log(this.myQuestion)
+    this.myQuestion.forEach(l => {
+      this.myForm.addControl(l.Api.toString().toLowerCase(), new FormControl('', [
+        Validators.required
+      ]))
+    })
     if (event.detail.value.Name == 'TRANSPORTAR PACIENTE') {
       this.isPaciente = true;
       if (this.myForm.controls['recurso']['value'].length == 0) {

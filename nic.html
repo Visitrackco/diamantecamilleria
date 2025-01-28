@@ -1,0 +1,767 @@
+<style>
+    .contenedor {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 11px;
+        width: 95%;
+        margin: 0 auto;
+        /* margin: 50px auto; */
+    }
+    
+    .contenedor td {
+        border: 1px solid #333;
+        padding: 5px;
+    }
+    
+    .t {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .t td {
+        border: 1px solid #333;
+        padding: 5px;
+    }
+    
+    .none {
+        padding: 0px !important;
+        border: 0px !important;
+    }
+    
+    .titulo {
+        padding: 0 8px;
+        font-size: 11px;
+    }
+    
+    .titulo {
+        background: #fafafa;
+    }
+    
+    .firma {
+        width: 80px;
+        height: 80px;
+        padding: 5px;
+    }
+    
+    .auto-style1 {
+        height: 146px;
+    }
+    
+    .center {
+        text-align: center;
+    }
+    
+    .bold {
+        font-weight: bold;
+    }
+    
+    .t {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .t tr {
+        page-break-inside: avoid;
+    }
+    
+    .cc1 .vt_signature {
+        width: 150px !important;
+    }
+    
+    .cc1 .vt_picture {
+        width: 150px !important;
+    }
+    
+    .cc2 .vt_picture {
+        width: 150px !important;
+    }
+    
+    .mitad {
+        width: 50%;
+    }
+    
+    .verde {
+        background: #E2EFD9;
+    }
+    
+    .colorVerde {
+        color: #385624;
+    }
+    
+    .o td {
+        border: 0px !important;
+    }
+    
+    .colorBorder {
+        border-top: 2px solid #F1134E;
+    }
+    
+    .campo {
+        width: 500px;
+        border: 0px;
+        outline: none;
+        border-radius: 10px;
+        background: #f3f3f3;
+        text-align: center;
+        padding: 10px;
+    }
+    
+    .cuer tr:nth-child(even) {
+        background: #f1f1f1;
+    }
+    
+    .lista tr:nth-child(even) {
+        background: #fafafa;
+    }
+    
+    #tabla2 {
+        background: #fff;
+        height: 0px;
+    }
+    
+    #tabla2 h3 {
+        opacity: .5;
+        font-size: 30;
+    }
+    
+    .tit {
+        background: #f1f1f1;
+        text-align: center;
+    }
+</style>
+<div class="contenedor">
+
+    <table style="width: 100%;">
+
+        <thead>
+            <tr>
+                <td class="none">
+                    <table class="t">
+
+                        <tr>
+                            <td rowspan="2" style="width: 180px;" class="center">
+                                <img src="https://s3.amazonaws.com/logocompanies/5C83B942-360F-4FD9-858D-65DFA3D0A9E8.jpeg" width="150px" alt="">
+                            </td>
+                            <td colspan="3" class="center" style="font-size: 20px">CONSOLIDADO DE INGRESOS Y SALIDAS
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="center" style="background: #f1f1f1;" id="rango"></td>
+                        </tr>
+                        <tr>
+
+                            <td style="border: 0px; text-align: center;">
+                                <table>
+                                    <tr>
+                                        <td colspan="2" class="center"><b>Usuarios:</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 0px; text-align: center;">
+                                            <select name="" id="cliente" class="campo">
+                                                <option value="Seleccionar Cliente">Seleccione usuario</option>
+                                                <option value="todas">todos</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+
+                            <td style="border: 0px; text-align: center;">
+                                <table>
+                                    <tr>
+                                        <td colspan="2" class="center"><b>Clientes:</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 0px; text-align: center;">
+                                            <select name="" id="empresa" class="campo">
+                                                <option value="Seleccionar Empresa">Seleccione cliente</option>
+                                                <option value="todos">todos</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <td class="none">
+                    <table class="t">
+                        <tr>
+                            <td style="border: 0px;">
+                                <div class="colorBorder"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td class="none">
+                    <table class="t o">
+                        <tr>
+                            <td class="right opacity" style="border: 0px;"><b>Dirección:</b> </td>
+                        </tr>
+                        <tr>
+                            <td class="right opacity" style="border: 0px;"><b>Teléfono:</b> - <b>Celular:</b> </td>
+                        </tr>
+                        <tr>
+                            <td class="right opacity" style="border: 0px;"><b>Email:</b> </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 5px;" style="border: 0px;"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </tfoot>
+
+
+        <tbody>
+
+            <tr>
+                <td style="border: 0px; padding: 5px;"></td>
+            </tr>
+
+
+            <tr>
+                <td class="none">
+                    <table class="t">
+                        <tr style="font-size: 9px !important;">
+                            <td class="center bold" style="background-color: #f1f1f1; width: 200px;">CLIENTE</td>
+                            <td class="center bold" style="background-color: #f1f1f1; width: 200px;">NOMBRE</td>
+                            <td class="center bold" style="background-color: #f1f1f1;">INGRESO</td>
+                            <td class="center bold" style="background-color: #f1f1f1;">SALIDA
+                            </td>
+                            <!-- <td class="center bold" style="background-color: #f1f1f1; width: 50px;">UBICACION</td> -->
+                        </tr>
+
+                        <tbody id="general">
+                        </tbody>
+
+                        <!-- <tr>
+                            <td colspan="10" style="background: #f1f1f1; padding: 5px; ">
+                                <div id="container" style="width: 100%; height: 520px;">
+                                </div>
+                            </td>
+                        </tr> -->
+                    </table>
+                </td>
+            </tr>
+
+            <tr style="page-break-after: always;">
+                <td style="border: 0px; padding: 5px;"></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="none">
+                    <table class="t">
+                        <tr style="font-size: 9px !important;">
+                            <td class="center bold" style="background-color: #f1f1f1;">USUARIOS SIN REGISTRO DE ENTREDA Y SALIDA </td>
+                        </tr>
+
+                        <tbody id="general2">
+                        </tbody>
+
+                        <!-- <tr>
+                            <td colspan="10" style="background: #f1f1f1; padding: 5px; ">
+                                <div id="container" style="width: 100%; height: 520px;">
+                                </div>
+                            </td>
+                        </tr> -->
+                    </table>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+
+
+</div>
+
+<script type="text/template" id="planilla">
+
+    <tr style="background-color:<%= item10 %>;">
+
+        <td style="width: 200px;">
+            <%= nombre %>
+        </td>
+        <td style="width: 200px;">
+            <%= quien %>
+        </td>
+        <td>
+            <%= ingreso %>
+        </td>
+        <td>
+            <%= salida %>
+        </td>
+
+
+    </tr>
+
+</script>
+
+<script type="text/template" id="planilla2">
+
+    <tr>
+        <td>
+            <%= nombre %>
+        </td>
+
+    </tr>
+
+</script>
+
+
+<script type="text/javascript">
+    function LoadMyCustoms(response, lan, filters) {
+        try {
+            google.charts.load('45', {
+                'packages': ['corechart'],
+                'language': lan
+            });
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+                app.isHtml = true;
+                moment.locale('es');
+
+                console.log(filters)
+                var usuarios = [];
+                var clientes = [];
+
+                usuarios = filters.EntitiesData.filter(function(dat) {
+                    return dat.WorkZoneID === "-1";
+                });
+
+                clientes = filters.EntitiesData.filter(function(dat) {
+                    return dat.WorkZoneID !== "-1";
+                });
+
+                var usuariosSimplificados = usuarios.map(function(usuario) {
+                    var cedula = "";
+                    var cargo = "";
+                    if (usuario.Values && usuario.Values.length > 0) {
+                        var cedulaObj = usuario.Values.find(function(value) {
+                            return value.apiId === 'CEDULA';
+                        });
+                        if (cedulaObj) {
+                            cedula = cedulaObj.Value;
+                        }
+
+                        var cargoObj = usuario.Values.find(function(value) {
+                            return value.apiId === 'CARGO';
+                        });
+                        if (cargoObj) {
+                            cargo = cargoObj.Value;
+                        }
+                    }
+                    return {
+                        Name: usuario.Name,
+                        Cedula: cedula,
+                        cargo
+                    };
+                });
+
+                var clientesSimplificados = clientes.map(function(cliente) {
+                    return {
+                        Name: cliente.Name
+                    };
+                });
+
+
+                var desde = moment(filters.datefrom).format('LL')
+                var hasta = moment(filters.dateto).format('LL')
+
+                $("#rango").html('Desde ' + desde + ' Hasta ' + hasta)
+
+                var cliente = _.unique(_.map(response[0].data, function(l) {
+                    return l.frm_createdby;
+                }));
+
+                cliente.sort(function(a, b) {
+                    var nameA = a.toUpperCase();
+                    var nameB = b.toUpperCase();
+                    if (nameA < nameB) {
+                        return -1;
+                    }
+                    if (nameA > nameB) {
+                        return 1;
+                    }
+                    return 0;
+                });
+
+                $.each(cliente, function(i, item) {
+                    $("#cliente").append('<option value="' + item + '">' + item.toUpperCase() + '</option>');
+                });
+
+                var empresas = _.unique(_.map(clientesSimplificados, function(l) {
+                    return l.Name;
+                }));
+
+                // console.log("empresas filtro --->", empresas)
+
+                $.each(empresas, function(i, item) {
+                    $("#empresa").append('<option value="' + item + '">' + item.toUpperCase() + '</option>');
+                });
+
+                $("#cliente").on('change', function(e) {
+                    filtrarInformacion(1);
+                });
+
+                $("#empresa").on('change', function(e) {
+                    filtrarInformacion(2);
+                });
+
+                function filtrarInformacion(type) {
+
+                    // $("#cliente option[value='" + $(this).val() + "']").attr('selected', 'selected');
+                    var clienteSeleccionado = $("#cliente").val();
+
+                    // $("#empresa option[value='" + $(this).val() + "']").attr('selected', 'selected');
+                    var empresaSeleccionada = $("#empresa").val();
+
+
+                    // Realizar filtrado de datos basado en cliente y empresa seleccionados
+                    var datosFiltrados = response[0].data;
+
+                    if (clienteSeleccionado && clienteSeleccionado !== 'todas') {
+                        datosFiltrados = _.where(datosFiltrados, {
+                            "frm_createdby": clienteSeleccionado
+                        });
+                    }
+
+                    if (empresaSeleccionada && empresaSeleccionada !== 'todos') {
+                        datosFiltrados = _.where(datosFiltrados, {
+                            "loc_name": empresaSeleccionada
+                        });
+                    }
+
+                    // Limpiar contenido anterior
+
+                    // Renderizar los datos filtrados
+                    renderizarDatos(datosFiltrados);
+                }
+
+                function renderizarDatos(datos) {
+                    $("#general").html("");
+                    $("#general2").html("");
+
+                    if (datos.length > 0) {
+
+                        // datos.sort(function(a, b) {
+                        //     var nameA = a.frm_createdby.toUpperCase(); // Ignorar mayúsculas y minúsculas
+                        //     var nameB = b.frm_createdby.toUpperCase(); // Ignorar mayúsculas y minúsculas
+                        //     if (nameA < nameB) {
+                        //         return -1;
+                        //     }
+                        //     if (nameA > nameB) {
+                        //         return 1;
+                        //     }
+
+                        //     // Los nombres son iguales
+                        //     return 0;
+                        // });
+
+                        var users = _.unique(_.map(datos, function(l) {
+                            return l.frm_createdby
+                        }))
+
+                        console.log(users, 'USUARIOS')
+
+                        function drawRow(dat) {
+                            var html = '';
+
+                            var color = '';
+
+
+
+                            const latitud = dat.act_ubicacion_lat;
+                            const longitud = dat.act_ubicacion_lng;
+
+                            var frm = {
+                                lat1: dat.act_ubicacion_lat,
+                                lon1: dat.act_ubicacion_lng,
+                                lat2: dat.loc_latitude,
+                                lon2: dat.loc_longitude
+                            }
+
+                            // console.log("distancias:", frm);
+                            var distancia = parseFloat(app.findDistance(frm).km);
+                            // console.log("distancia:", distancia);
+
+                            var turnos = dat.act_turnos;
+                            var actHora = dat.act_hora;
+                            var tipoIngreso = dat.act_tipo_ingreso;
+                            var horaIngreso;
+                            var horaSalida;
+                            switch (turnos) {
+                                case '7:00am a 3:20pm con media hora de almuerzo':
+                                    horaIngreso = '7:00';
+                                    horaSalida = '15:20';
+                                    break;
+                                case '7:00 am 3:50pm con una hora de almuerzo':
+                                    horaIngreso = '7:00';
+                                    horaSalida = '15:50';
+                                    break;
+                                case '7:00am a 4;00pm con una hora de almuerzo':
+                                    horaIngreso = '7:00';
+                                    horaSalida = '16:00';
+                                    break;
+                                case '8:00am a 4:20pm con media hora de almuerzo':
+                                    horaIngreso = '8:00';
+                                    horaSalida = '16:20';
+                                    break;
+                                case '8:00am a 4:50pm con una hora de almuerzo':
+                                    horaIngreso = '8:00';
+                                    horaSalida = '16:50';
+                                    break;
+                                case '8:00 am a 5:00pm con una hora de almuerzo':
+                                    horaIngreso = '8:00';
+                                    horaSalida = '17:00';
+                                    break;
+                                case '10:00am a 7:00pm con una hora de almuerzo':
+                                    horaIngreso = '10:00';
+                                    horaSalida = '19:00';
+                                    break;
+                                case '11:00am a 7:00pm con una hora de almuerzo':
+                                    horaIngreso = '11:00';
+                                    horaSalida = '19:00';
+                                    break;
+
+                                default:
+                                    horaIngreso = '';
+                                    horaSalida = '';
+                                    break;
+                            }
+
+                            var diferenciaMinutos = '';
+                            var msg = '';
+                            var turno = '';
+
+
+                            if (actHora && turnos && turnos != 'OTRO') {
+
+                                if (tipoIngreso == 'INGRESO') {
+                                    // Convertir las horas en objetos Moment
+                                    var horaIngresoMoment = moment(horaIngreso, 'HH:mm');
+                                    var actHoraMoment = moment(actHora, 'HH:mm');
+
+                                    // Calcular la diferencia en minutos
+                                    var diferenciaMinutos = actHoraMoment.diff(horaIngresoMoment, 'minutes');
+
+                                    if (diferenciaMinutos < 0) {
+                                        msg = 'LLegó temprano ' + (diferenciaMinutos * -1) + 'min'
+                                    } else if (diferenciaMinutos == 0) {
+                                        msg = 'LLegó a tiempo '
+                                    } else {
+                                        msg = 'LLegó tarde ' + diferenciaMinutos + 'min'
+                                    }
+                                    turno = 'Hora Entrada:' + horaIngreso
+
+                                    // console.log('La diferencia es de ' + diferenciaMinutos + ' minutos.');
+                                } else if (tipoIngreso == 'SALIDA') {
+                                    // Convertir las horas en objetos Moment
+                                    var horaSalidaMoment = moment(horaSalida, 'HH:mm');
+                                    var actHoraMoment = moment(actHora, 'HH:mm');
+
+                                    // Calcular la diferencia en minutos
+                                    var diferenciaMinutos = actHoraMoment.diff(horaSalidaMoment, 'minutes');
+
+                                    if (diferenciaMinutos < 0) {
+                                        msg = 'Salió tarde ' + (diferenciaMinutos * -1) + 'min'
+                                    } else if (diferenciaMinutos == 0) {
+                                        msg = 'Salió a tiempo '
+                                    } else {
+                                        msg = 'Salió temprano ' + diferenciaMinutos + 'min'
+                                    }
+
+                                    turno = 'Hora Salida:' + horaSalida
+
+                                    // console.log('La diferencia es de ' + diferenciaMinutos + ' minutos.');
+                                }
+
+                            }
+
+
+
+
+
+
+                            html += '<div>Fecha: ' + dat.act_fecha + ' ' + dat.act_hora + '</div>' +
+                                '<div>' + turno + '</div>' +
+                                '<div>Estado: ' + msg + '</div>' +
+                                '<table class="t"><tr><td style="border: 0px;">Georeferencia:</td><td style="width: 20px; border: 0px;">  <div style="width: 1rem; height: 1rem; border-radius: 100%; background-color:  ' + (distancia > 10 ? 'red' : 'green') + ';"></div></td></tr></table>' +
+                                ' <a class="fila" marker="' + dat.MarkerID + '" guid="' + dat.frm_activityguid + '" style="pointer-events: auto; cursor: pointer;">' + dat.MarkerID + '</a>'
+
+                            // console.log(html)
+
+                            return html;
+
+                        }
+
+                        $.each(users, function(j, user) {
+                            var dataUser = datos.filter(function(l) {
+                                return l.frm_createdby == user
+                            })
+                            var fechas = _.unique(_.map(dataUser, function(l) {
+                                return l.act_fecha
+                            }))
+
+                            console.log(fechas)
+
+                            $.each(fechas, function(ii, fec) {
+                                var dataFecha = dataUser.filter(function(l) {
+                                    return l.act_fecha == fec
+                                })
+
+                                var clientes = _.unique(_.map(dataFecha, function(l) {
+                                    return l.loc_name
+                                }))
+
+                                $.each(clientes, function(ii, cli) {
+                                    var dataCliente = dataFecha.filter(function(l) {
+                                        return l.loc_name == cli
+                                    })
+
+                                    var ingreso = '';
+                                    var salida = '';
+                                    var turno = '';
+
+                                    var dataIngreso = dataCliente.filter(function(dat) {
+                                        return dat.act_tipo_ingreso == 'INGRESO'
+                                    })
+
+                                    var dataSalida = dataCliente.filter(function(dat) {
+                                        return dat.act_tipo_ingreso == 'SALIDA'
+                                    })
+
+                                    if (dataIngreso.length > 0) {
+                                        ingreso = drawRow(dataIngreso[0])
+                                    }
+
+                                    if (dataSalida.length > 0) {
+                                        salida = drawRow(dataSalida[0])
+                                    }
+
+                                    var usuario = usuariosSimplificados.find(function(u) {
+                                        return u.Name === user;
+                                    });
+
+
+                                    var template = _.template($("#planilla").html(), {
+                                        item1: '---- ',
+                                        item9: ' .---- ',
+                                        item10: '',
+                                        nombre: cli,
+                                        ingreso: ingreso,
+                                        salida: salida,
+                                        // fecha: dat.act_fecha,
+                                        // hora: dat.act_hora,
+                                        quien: '<div>' + user + '</div><div>CC: ' + (usuario ? usuario.Cedula : '') + '</div>'
+                                            // cedula: cedula,
+                                            // tipo: dat.act_tipo_ingreso,
+                                            // turno: dat.act_turnos,
+                                            // otro: dat.act_cual,
+                                            // diferencia: diferenciaMinutos,
+                                            // observaciones: dat.act_observaciones,
+                                            //      geolocation: ''
+                                    })
+                                    $("#general").append(template);
+
+
+
+                                })
+
+
+
+                            })
+
+
+                            $.each(dataUser, function(i, dat) {
+                                // console.log("data acomodada:", dat);
+
+
+                                // var template = _.template($("#planilla").html(), {
+                                //     item1: dat.MarkerID,
+                                //     item9: dat.frm_activityguid,
+                                //     item10: color,
+                                //     nombre: dat.act_lugar,
+                                //     ingreso: '',
+                                //     salida: '',
+                                //     // fecha: dat.act_fecha,
+                                //     // hora: dat.act_hora,
+                                //     quien: dat.frm_createdby,
+                                //     // cedula: cedula,
+                                //     // tipo: dat.act_tipo_ingreso,
+                                //     // turno: dat.act_turnos,
+                                //     // otro: dat.act_cual,
+                                //     // diferencia: diferenciaMinutos,
+                                //     // observaciones: dat.act_observaciones,
+                                //     geolocation: distancia > 10 ? 'red' : 'green'
+                                // })
+                                // $("#general").append(template);
+                                // console.log("template:" , template);
+
+                            });
+
+                        })
+
+
+                        // Filtrar los nombres no encontrados después de procesar todos los datos
+                        var nombresNoEncontrados = usuariosSimplificados.filter(function(u) {
+                            return !datos.some(function(d) {
+                                return d.frm_createdby === u.Name;
+                            });
+                        });
+
+                        nombresNoEncontrados.forEach(function(nombreObj) {
+                            var template2 = _.template($("#planilla2").html(), {
+                                nombre: '<div>Nombre: ' + nombreObj.Name + '</div>' + '<div>CC: ' + nombreObj.Cedula + '</div>' + '<div>Cargo: ' + nombreObj.cargo + '</div>'
+
+                            });
+                            $("#general2").append(template2);
+                        });
+
+
+                        $(document).on('click', '.fila', function() {
+                            var guid = $(this).attr('guid');
+                            var marker = $(this).attr('marker');
+
+                            app.RenderActiviy(guid, marker, function(r) {
+                                console.log(r);
+                            })
+                        });
+
+                        $(document).on('click', '.fila2', function() {
+                            var MarkerID = $(this).attr('MarkerID');
+
+                            app.StatusHistory(MarkerID);
+                        });
+
+                    } else {
+
+                    }
+
+                    app.isHtml = true;
+                }
+
+            }
+
+
+        } catch (exc) {
+            console.log("ucmycustoms_report", "ppal", exc);
+        }
+
+    }
+    app.AfterLoadMyCustom = function(response, lan, filters) {
+        try {
+            return LoadMyCustoms(response, lan, filters);
+        } catch (exc) {
+            app.excManager("ucmycustoms_report", "AfterLoad", exc);
+        }
+    }
+</script>
