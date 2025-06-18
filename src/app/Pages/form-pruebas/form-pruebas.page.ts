@@ -266,7 +266,9 @@ export class FormPruebasPage implements OnInit {
 
     let login = await this.stg.getLogin();
 
-
+    if (this.isClick) {
+      return;
+    }
     this.isClick = true;
     console.log(this.myForm.controls['recurso']['value'], 'recursos')
 
@@ -275,15 +277,18 @@ export class FormPruebasPage implements OnInit {
     if (this.isPaciente) {
       if (this.myForm.controls['nombrepac']['value'] == '') {
         this.invalid = true;
+        this.isClick = false;
         return;
       }
       if (this.myForm.controls['aislado']['value'] == '') {
         this.invalid = true;
+        this.isClick = false;
         return;
 
       }
       if (this.myForm.controls['recurso']['value'].length == 0) {
         this.invalid = true;
+        this.isClick = false;
         return;
 
 
@@ -382,10 +387,10 @@ export class FormPruebasPage implements OnInit {
             title: l.Name,
             Value: this.myForm.controls[l.Api.toString().toLowerCase()]['value']
           })
-     
+
         })
 
-      
+
 
         if (login) {
 
@@ -420,16 +425,19 @@ export class FormPruebasPage implements OnInit {
               this.saving = false;
 
             } else {
+              this.isClick = false;
               this.saving = false;
               this.toast.MsgError(create.err)
             }
           } catch (error) {
+            this.isClick = false;
             this.saving = false;
             ///  this.toast.MsgError(error)
           }
         }
 
       }).catch((err) => {
+        this.isClick = false;
         this.toast.MsgError('No se pudo guardar la fecha para la solicitud, recargue el formulario nuevamente')
       })
 
@@ -438,6 +446,7 @@ export class FormPruebasPage implements OnInit {
 
 
     } else {
+      this.isClick = false;
       this.saving = false;
     }
 

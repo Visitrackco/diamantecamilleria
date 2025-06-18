@@ -1387,7 +1387,15 @@ export class DashboardPage implements OnInit {
   }
 
 
-  async obsCentral(desc, id) {
+  async obsCentral(desc, id, acc) {
+
+    const session = await this.stg.getLogin();
+
+    if (session) {
+      if (session[0].isCentral != 1) {
+        return;
+      }
+    }
 
     const alert = await this.alertCtrl.create({
       header: 'Enviar Observaciones',
@@ -1460,7 +1468,16 @@ export class DashboardPage implements OnInit {
 
   }
 
-  async obsSolicitante(desc, id) {
+  async obsSolicitante(desc, id, acc) {
+
+    const session = await this.stg.getLogin();
+
+    if (session) {
+      console.log(session, acc)
+      if (session[0]._id != acc.CreatedByID) {
+        return;
+      }
+    }
 
     const alert = await this.alertCtrl.create({
       header: 'Enviar Observaciones',
@@ -1591,6 +1608,8 @@ export class DashboardPage implements OnInit {
     this.dataSource.data = [];
 
   }
+
+
 
 
 

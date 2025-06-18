@@ -36,6 +36,10 @@ export class FormMedellinPage implements OnInit {
 
   recursos = [];
 
+  customQuestion = []
+  myQuestion = []
+  selectMotivo = false;
+
   constructor(
     private fb: FormBuilder,
     private menuCtrl: MenuController,
@@ -90,6 +94,18 @@ export class FormMedellinPage implements OnInit {
     const login = await this.stg.getLogin();
 
     if (login) {
+
+      try {
+        const options = await this.api.apiGet('customoptions?WorkZoneID=' + login[0].WorkZone, login[0].token)
+
+        if (options) {
+
+          this.customQuestion = options.response
+
+        }
+      } catch (error) {
+
+      }
 
       this.myForm.controls['solicita'].setValue(login[0].FirstName + ' ' + login[0].LastName)
 
@@ -247,7 +263,9 @@ export class FormMedellinPage implements OnInit {
 
     let login = await this.stg.getLogin();
 
-
+    if (this.isClick) {
+      return;
+    }
     this.isClick = true;
     console.log(this.myForm.controls['recurso']['value'], 'recursos')
 
@@ -256,16 +274,19 @@ export class FormMedellinPage implements OnInit {
     if (this.isPaciente) {
       if (this.myForm.controls['nombrepac']['value'] == '') {
         this.invalid = true;
+         this.isClick = false;
         return;
 
       }
       if (this.myForm.controls['aislado']['value'] == '') {
         this.invalid = true;
+         this.isClick = false;
         return;
 
       }
       if (this.myForm.controls['recurso']['value'].length == 0) {
         this.invalid = true;
+         this.isClick = false;
         return;
 
 
@@ -309,7 +330,7 @@ export class FormMedellinPage implements OnInit {
 
 
         this.saving = true;
-        let json = [{
+        let json: any = [{
           apiId: 'FECHA',
           Value: moment(this.myForm.controls['fecha']['value']).format('YYYY-MM-DD')
         }, {
@@ -356,8 +377,15 @@ export class FormMedellinPage implements OnInit {
           Value: this.myForm.controls['cargosoli']['value']
         }]
 
-        console.log(json)
-  
+        this.myQuestion.forEach((l) => {
+          json.push({
+            apiId: l.Api.toString(),
+            title: l.Name,
+            Value: this.myForm.controls[l.Api.toString().toLowerCase()]['value']
+          })
+     
+        })
+
     
   
         if (login) {
@@ -376,7 +404,7 @@ export class FormMedellinPage implements OnInit {
               Format: 'America/Bogota'
             })
   
-            console.log(create)
+       
   
   
   
@@ -397,16 +425,19 @@ export class FormMedellinPage implements OnInit {
               this.saving = false;
   
             } else {
+              this.isClick = false;
               this.saving = false;
               this.toast.MsgError(create.err)
             }
           } catch (error) {
+            this.isClick = false;
             this.saving = false;
             ///  this.toast.MsgError(error)
           }
         }
 
       }).catch((err) => {
+        this.isClick = false;
         this.toast.MsgError('No se pudo guardar la fecha para la solicitud, recargue el formulario nuevamente')
       })
 
@@ -415,6 +446,7 @@ export class FormMedellinPage implements OnInit {
 
 
     } else {
+      this.isClick = false;
       this.saving = false;
     }
 
@@ -422,6 +454,23 @@ export class FormMedellinPage implements OnInit {
   }
 
   changeMot(event) {
+
+    this.selectMotivo = true;
+    // eleimino los ya existentes
+    this.myQuestion.forEach((l) => {
+      this.myForm.removeControl(l.Api.toString().toLowerCase())
+    })
+
+    // agrego los campos o preguntas relacionadas al motivo
+    this.myQuestion = this.customQuestion.filter((l) => l.Motivo.Name == event.detail.value.Name)
+    console.log(this.myQuestion)
+    this.myQuestion.forEach(l => {
+      this.myForm.addControl(l.Api.toString().toLowerCase(), new FormControl('', [
+        Validators.required
+      ]))
+    })
+
+    
     if (event.detail.value.Name == 'TRANSPORTAR PACIENTE') {
       this.isPaciente = true;
       if (this.myForm.controls['recurso']['value'].length == 0) {

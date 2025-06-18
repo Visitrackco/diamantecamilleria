@@ -65,15 +65,15 @@
                 <ion-icon name="chevron-forward"></ion-icon>
             </ion-item>
 
-            <ion-item routerLink="descansos" color="banner" *ngIf="role && role.Listas == 1">
+            <ion-item (click)="descansos()"  color="banner" *ngIf="role && role.Listas == 1">
                 <ion-icon name="cafe" slot="start"></ion-icon>
                 <ion-label>Descansos</ion-label>
                 <ion-icon name="chevron-forward"></ion-icon>
             </ion-item>
 
 
-            <ion-item routerLink="custom-options" color="banner" *ngIf="role && role.Listas == 1">
-                <ion-icon name="cafe" slot="start"></ion-icon>
+            <ion-item (click)="custom()"  color="banner" *ngIf="role && role.Listas == 1">
+                <ion-icon name="help-circle" slot="start"></ion-icon>
                 <ion-label>Preguntas personalizadas</ion-label>
                 <ion-icon name="chevron-forward"></ion-icon>
             </ion-item>

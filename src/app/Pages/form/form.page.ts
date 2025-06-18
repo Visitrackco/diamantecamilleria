@@ -37,6 +37,9 @@ export class FormPage implements OnInit {
 
   recursos = [];
 
+  customQuestion = []
+  myQuestion = []
+  selectMotivo = false;
 
   constructor(
     private fb: FormBuilder,
@@ -93,6 +96,18 @@ export class FormPage implements OnInit {
     const login = await this.stg.getLogin();
 
     if (login) {
+
+      try {
+        const options = await this.api.apiGet('customoptions?WorkZoneID=' + login[0].WorkZone, login[0].token)
+
+        if (options) {
+
+          this.customQuestion = options.response
+
+        }
+      } catch (error) {
+
+      }
 
       this.myForm.controls['solicita'].setValue(login[0].FirstName + ' ' + login[0].LastName)
 
@@ -251,24 +266,31 @@ export class FormPage implements OnInit {
 
     let login = await this.stg.getLogin();
 
+    if (this.isClick) {
+      return;
+    }
 
+    this.isClick = true;
 
     let isValid = false;
     if (this.isPaciente) {
       if (this.myForm.controls['nombrepac']['value'] == '') {
         this.invalid = true;
+        this.isClick = false;
         return;
-        isValid = false;
+
       }
       if (this.myForm.controls['aislado']['value'] == '') {
         this.invalid = true;
+        this.isClick = false;
         return;
-        isValid = false;
+
       }
       if (this.myForm.controls['recurso']['value'].length == 0) {
         this.invalid = true;
+        this.isClick = false;
         return;
-        isValid = false;
+
 
       }
 
@@ -286,7 +308,7 @@ export class FormPage implements OnInit {
     this.isClick = true;
     //console.log(this.myForm.controls['recurso']['value'], 'recursos')
 
-  
+
 
     this.saving = true;
 
@@ -312,7 +334,7 @@ export class FormPage implements OnInit {
           this.timeServer = server.time
         }
 
-        let json = [{
+        let json: any = [{
           apiId: 'FECHA',
           Value: moment(this.myForm.controls['fecha']['value']).format('YYYY-MM-DD')
         }, {
@@ -359,6 +381,15 @@ export class FormPage implements OnInit {
           Value: this.myForm.controls['cargosoli']['value']
         }]
 
+        this.myQuestion.forEach((l) => {
+          json.push({
+            apiId: l.Api.toString(),
+            title: l.Name,
+            Value: this.myForm.controls[l.Api.toString().toLowerCase()]['value']
+          })
+
+        })
+
 
 
         if (login) {
@@ -377,7 +408,7 @@ export class FormPage implements OnInit {
               Format: 'America/Bogota'
             })
 
-            console.log(create)
+            
 
 
 
@@ -396,28 +427,49 @@ export class FormPage implements OnInit {
               this.saving = false;
 
             } else {
+              this.isClick = false;
               this.saving = false;
               this.toast.MsgError(create.err)
             }
           } catch (error) {
+            this.isClick = false;
             this.saving = false;
             ///  this.toast.MsgError(error)
           }
         }
 
 
+      }).catch(() => {
+        this.isClick = false;
       })
 
 
 
     } else {
+      this.isClick = false;
       this.saving = false;
     }
 
-    console.log(isValid, 'VALID')
   }
 
   changeMot(event) {
+
+    this.selectMotivo = true;
+    // eleimino los ya existentes
+    this.myQuestion.forEach((l) => {
+      this.myForm.removeControl(l.Api.toString().toLowerCase())
+    })
+
+    // agrego los campos o preguntas relacionadas al motivo
+    this.myQuestion = this.customQuestion.filter((l) => l.Motivo.Name == event.detail.value.Name)
+    console.log(this.myQuestion)
+    this.myQuestion.forEach(l => {
+      this.myForm.addControl(l.Api.toString().toLowerCase(), new FormControl('', [
+        Validators.required
+      ]))
+    })
+
+
     if (event.detail.value.Name == 'TRANSPORTAR PACIENTE') {
       this.isPaciente = true;
       if (this.myForm.controls['recurso']['value'].length == 0) {
@@ -486,9 +538,9 @@ export class FormPage implements OnInit {
 
     if (rec.length > 0) {
       if (!event.detail.checked) {
-        let idx =  this.myForm.value.recurso.findIndex((item) => item == event.detail.value)
-      
-        this.myForm.value.recurso.splice(idx, 1) 
+        let idx = this.myForm.value.recurso.findIndex((item) => item == event.detail.value)
+
+        this.myForm.value.recurso.splice(idx, 1)
       }
 
       return;

@@ -143,6 +143,7 @@
 
                             <div class="center">
                                 <span [class]="element.acc.estado"></span>
+                                <ion-icon *ngIf="element.obssolicitante" class="chatbubble" name="chatbubble-ellipses"></ion-icon>
                             </div>
 
                             <div class="center"> <br>
@@ -229,7 +230,7 @@
                     <ng-container matColumnDef="obscentral">
                         <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> OBSERVACIONES CENTRAL </th>
                         <td style="font-size: 11px;" mat-cell *matCellDef="let element">
-                            <div *ngIf="element.estado != 'COMPLETADO' && element.estado != 'SOLICITUD CANCELADA POR DEMORA'" style="text-decoration: underline; color: blue;" (click)="obsCentral(element.obscentral, element.acc._id)">
+                            <div *ngIf="element.estado != 'COMPLETADO' && element.estado != 'SOLICITUD CANCELADA POR DEMORA'" style="text-decoration: underline; color: blue;" (click)="obsCentral(element.obscentral, element.acc._id, element.acc)">
                                 <span *ngIf="element.obscentral">{{element.obscentral}}</span>
                                 <span *ngIf="!element.obscentral && isAssigment == 1">Enviar comentario</span>
                             </div>
@@ -280,7 +281,7 @@
                         <th style="min-width: 200px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> OBSERVACIONES SOLICITANTE </th>
                         <td style="font-size: 11px;" mat-cell *matCellDef="let element">
 
-                            <div *ngIf="element.estado != 'COMPLETADO' && element.estado != 'SOLICITUD CANCELADA POR DEMORA'" style="text-decoration: underline; color: blue;" (click)="obsSolicitante(element.obssolicitante, element.acc._id)">
+                            <div *ngIf="element.estado != 'COMPLETADO' && element.estado != 'SOLICITUD CANCELADA POR DEMORA'" style="text-decoration: underline; color: blue;" (click)="obsSolicitante(element.obssolicitante, element.acc._id, element.acc)">
                                 <span *ngIf="element.obssolicitante">{{element.obssolicitante}}</span>
                                 <span *ngIf="!element.obssolicitante && element.acc.CreatedByID == loginid">Enviar comentario</span>
                             </div>
@@ -311,7 +312,7 @@
 
                     <tr mat-header-row *matHeaderRowDef="displayedColumns;  sticky: true"></tr>
                     <div *ngIf="isAssigment == 1">
-                        <tr cdkDrag [cdkDragDisabled]="dragActive" [cdkDragData]="row" (mousedown)="stopIt($event)" (mouseup)="stopOut($event)" mat-row *matRowDef="let row; columns: displayedColumns;" [class]="row.acc.color">
+                        <tr cdkDrag [cdkDragDisabled]="dragActive" [cdkDragData]="row" (mousedown)="stopIt($event)" (mouseup)="stopOut($event)" mat-row *matRowDef="let row; columns: displayedColumns;" [class]="row.acc.color" [class.alerta]="row.obssolicitante && row.acc.CreatedByID != loginid">
                             <div *cdkDragPreview class="infoDrag">
                                 <h3>Solicitud Camilleria</h3>
                                 <div><strong>Motivo:</strong> {{row.motivo}}</div>
@@ -321,11 +322,8 @@
                     </div>
 
                     <div *ngIf="isAssigment != 1">
-                        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class]="row.acc.color"> </tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class]="row.acc.color"  [class.alerta]="row.obssolicitante && row.acc.CreatedByID != loginid"> </tr>
                     </div>
-
-
-
 
                 </table>
 
@@ -389,7 +387,7 @@
 
 
                                 <div *ngIf="user.EstadoDesc && user.time >= 0">Retorno en =>
-                                    <cd-timer [startTime]="user.time" [countdown]="true"></cd-timer>
+                                    <cd-timer (onComplete)="getUsers()" [startTime]="user.time" [countdown]="true"></cd-timer>
                                 </div> <br>
 
 

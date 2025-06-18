@@ -404,7 +404,28 @@ mat-label {
     animation: apoyo 1s infinite alternate-reverse;
 }
 
+
+.alerta {
+    animation: apoyo 1s infinite alternate-reverse;
+ 
+}
+
+.chatbubble {
+    font-size: 24px;
+    color: #44bcec;
+}
+
 @keyframes apoyo {
+    from {
+        transform: scale(1.0);
+    }
+
+    to {
+        transform: scale(0.97);
+    }
+}
+
+@keyframes alerta {
     from {
         transform: scale(1.0);
     }

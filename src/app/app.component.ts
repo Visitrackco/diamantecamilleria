@@ -237,6 +237,16 @@ export class AppComponent {
     this.router.navigate(['/tabla'])
   }
 
+  async descansos() {
+    this.menuCtrl.toggle('menu')
+    this.router.navigate(['/descansos'])
+  }
+
+  async custom() {
+    this.menuCtrl.toggle('menu')
+    this.router.navigate(['/custom-options'])
+  }
+
   async recursos() {
     this.menuCtrl.toggle('menu')
     this.router.navigate(['/recursos'])

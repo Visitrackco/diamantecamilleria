@@ -2,11 +2,12 @@
     position: relative;
     margin-bottom: 5px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
   }
   
   .material-input-container input {
+    display: flex;
+    justify-content: start;
     width: 50%;
     padding: 12px 12px;
     border: 1px solid #ccc;
@@ -15,6 +16,7 @@
     font-size: 16px;
     transition: border-color 0.3s, box-shadow 0.3s;
     background: transparent;
+    margin-right: 20px;
   }
   
   .material-input-container input:focus {
