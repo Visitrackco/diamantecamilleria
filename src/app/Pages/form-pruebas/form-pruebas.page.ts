@@ -220,6 +220,14 @@ export class FormPruebasPage implements OnInit {
 
 
       ]),
+      idpac: new FormControl('', [
+        // validaciones síncronas
+
+        Validators.minLength(4),
+        Validators.required
+
+
+      ]),
       recurso: new FormArray([], [
         // validaciones síncronas
 
@@ -280,19 +288,26 @@ export class FormPruebasPage implements OnInit {
         this.isClick = false;
         return;
       }
+
+      if (this.myForm.controls['idpac']['value'] == '') {
+        this.invalid = true;
+        this.isClick = false;
+        return;
+      }
+
       if (this.myForm.controls['aislado']['value'] == '') {
         this.invalid = true;
         this.isClick = false;
         return;
 
       }
-      if (this.myForm.controls['recurso']['value'].length == 0) {
-        this.invalid = true;
-        this.isClick = false;
-        return;
+      // if (this.myForm.controls['recurso']['value'].length == 0) {
+      //   this.invalid = true;
+      //   this.isClick = false;
+      //   return;
 
 
-      }
+      // }
 
 
       if (this.myForm.status == 'VALID') {
@@ -361,6 +376,9 @@ export class FormPruebasPage implements OnInit {
         }, {
           apiId: 'NOMBRE_PACIENTE',
           Value: this.myForm.controls['nombrepac']['value']
+        }, {
+          apiId: 'ID_PACIENTE',
+          Value: this.myForm.controls['idpac']['value']
         }, {
           apiId: 'RECURSOS',
           Value: this.myForm.controls['recurso']['value']
@@ -475,6 +493,11 @@ export class FormPruebasPage implements OnInit {
         this.invalid = true;
       }
 
+      if (this.myForm.controls['idpac']['value'] == '') {
+        this.myForm.controls['idpac'].addValidators([Validators.required])
+        this.invalid = true;
+      }
+
     } else {
 
 
@@ -506,6 +529,7 @@ export class FormPruebasPage implements OnInit {
         this.myForm.controls['nombrepac'].addValidators([Validators.required])
         this.invalid = true;
       }
+
 
     } else {
 

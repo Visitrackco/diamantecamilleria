@@ -247,6 +247,8 @@
                         <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)">
                             <div *ngIf="element.motivo == 'TRANSPORTAR PACIENTE'"><strong>Nombre Paciente:</strong> {{element.obs.paciente}}
                             </div>
+                             <div *ngIf="element.motivo == 'TRANSPORTAR PACIENTE'"><strong>ID Paciente:</strong> {{element.obs.idpaciente}}
+                            </div>
                             <div *ngIf="element.motivo == 'TRANSPORTAR PACIENTE'"><strong>Recursos:</strong> <span *ngFor="let rec of element.obs.recursos; let i = index">
                                     {{rec}}<span *ngIf="i < (element.obs.recursos.length - 1)">,</span> </span>
                             </div>

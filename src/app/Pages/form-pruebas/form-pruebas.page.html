@@ -80,7 +80,8 @@
 
                     <mat-form-field>
                         <mat-label>Seleccione fecha</mat-label>
-                        <input readonly matInput [min]="dateServer" [matDatepicker]="picker" formControlName="fecha" (dateChange)="addEvent('change', $event)">
+                        <input readonly matInput [min]="dateServer" [matDatepicker]="picker" formControlName="fecha"
+                            (dateChange)="addEvent('change', $event)">
 
                         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
@@ -95,7 +96,8 @@
 
                     <mat-form-field>
                         <mat-label>Seleccione Hora</mat-label>
-                        <input readonly matInput [format]="24" [min]="timeServer" [ngxTimepicker]="pickera" formControlName="hora" />
+                        <input readonly matInput [format]="24" [min]="timeServer" [ngxTimepicker]="pickera"
+                            formControlName="hora" />
 
                         <ngx-material-timepicker-toggle matIconSuffix [for]="pickera"></ngx-material-timepicker-toggle>
                         <ngx-material-timepicker (timeSet)="timeChanged($event)" color="primary" #pickera>
@@ -247,11 +249,45 @@
             </ion-row>
 
             <ion-row *ngIf="isPaciente">
+                <ion-col size="12" class="title">Número de identificación del paciente(Cédula, Tarjeta de Identidad, Registro Civil o Pasaporte. Para pacientes NN digite 0000)</ion-col>
+
+            </ion-row>
+
+            <ion-row *ngIf="isPaciente">
+                <ion-col size="12">
+                    <div class="help" style="padding: 10px; background-color: rgb(255, 253, 207);">
+                        <strong>Si es un paciente NN, por favor digite 0000, </strong>
+                    </div>
+                </ion-col>
+            </ion-row>
+
+            <ion-row *ngIf="isPaciente">
+                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['idpac'].value)">
+
+                    <mat-form-field>
+                   
+
+                        <input formControlName="idpac" placeholder="Ingrese el ID del paciente" matInput>
+
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
+
+             <ion-row *ngIf="isPaciente && myForm.controls['idpac'].errors">
+                <ion-col size="12">
+                    <div +ngIf="(myForm.controls['idpac'].errors | json).includes('minlength')" style="padding: 10px; background-color: rgb(255, 207, 207); color: red;">
+                        <strong>Debe ingresar como mínimo 4 carácteres</strong>
+               
+                    </div>
+                </ion-col>
+            </ion-row>
+
+            <ion-row *ngIf="isPaciente">
                 <ion-col size="12" class="title">RECURSOS NECESARIOS</ion-col>
 
             </ion-row>
             <ion-row *ngIf="isPaciente">
-                <ion-col size="12" [class.rojo]="(isClick && invalid)">
+                <ion-col size="12" >
                     <ion-item lines="none" *ngFor="let rec of recursos">
                         <ion-checkbox [value]="rec.Name" slot="start" (ionChange)="change($event)"></ion-checkbox>
                         <ion-label>{{ rec.Name }}</ion-label>
@@ -292,7 +328,8 @@
 
                 </ion-row>
                 <ion-row>
-                    <ion-col size="12" [class.rojo]="(isClick && !myForm.controls[option.Api.toString().toLowerCase()].value)">
+                    <ion-col size="12"
+                        [class.rojo]="(isClick && !myForm.controls[option.Api.toString().toLowerCase()].value)">
 
                         <ion-radio-group formControlName="{{option.Api.toString().toLowerCase()}}">
 

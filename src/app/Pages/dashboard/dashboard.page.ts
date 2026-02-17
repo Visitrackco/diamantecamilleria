@@ -82,7 +82,7 @@ export class DashboardPage implements OnInit {
   isDelete = 0;
   isAssigment = 0;
   loginid = '';
-  
+
   isAdmin = false;
   multiple = false;
   isAllStatus = false;
@@ -173,7 +173,7 @@ export class DashboardPage implements OnInit {
 
 
           let obs4 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES4').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES4')[0].Value : ''
-          
+
           let obs3 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3')[0].Value : ''
 
           let fechaSolicitud = fecha + ' ' + hora;
@@ -402,7 +402,7 @@ export class DashboardPage implements OnInit {
       if (login[0].isCentral == 1 && login[0].isCentralAdmin == 1) {
         this.multiple = true;
       } else {
-      
+
 
         if (login[0].isCentralAdmin == 1) {
           this.isAdmin = true;
@@ -491,13 +491,13 @@ export class DashboardPage implements OnInit {
 
         if (login[0].isCentralAdmin == 1 && this.isAdmin) {
           hab = '1';
-        } 
+        }
 
         const rs = await this.api.apiGet('usersworkzone?WorkZoneID=' + login[0].WorkZone + '&admin=' + hab, login[0].token)
 
         if (rs) {
 
-    
+
 
           this.users = [];
           this.users2 = [];
@@ -515,16 +515,16 @@ export class DashboardPage implements OnInit {
           })
 
 
-      
 
 
-         
-        
+
+
+
 
           console.log(rs.response)
 
-         
-          let disconnect =[]
+
+          let disconnect = []
           let connect = rs.response.filter((it) => it.isConnect == 1)
           let descanso = rs.response.filter((it) => it.isConnect == 0.5)
 
@@ -532,28 +532,28 @@ export class DashboardPage implements OnInit {
 
           for (const ele of connect) {
 
-           //   const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id, login[0].token)
+            //   const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id, login[0].token)
 
-             // if (count.status) {
-                ele.count = ele.Total;
-                ele.pendientes = ele.Pendiente;
-         //     }
-             /*else {
-              const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id + '&logout=yes', login[0].token) 
+            // if (count.status) {
+            ele.count = ele.Total;
+            ele.pendientes = ele.Pendiente;
+            //     }
+            /*else {
+             const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id + '&logout=yes', login[0].token) 
 
-              if (count.status) {
-                ele.count = count.response;
-              }
-            } */
+             if (count.status) {
+               ele.count = count.response;
+             }
+           } */
 
-          //  user.push(ele);
+            //  user.push(ele);
             this.users.push(ele);
             this.users2.push(ele);
 
           }
 
           if (this.toggleUsers) {
- 
+
             this.users2 = this.users2.sort((a, b) => {
               if (a.pendientes > b.pendientes) {
                 return 1;
@@ -569,28 +569,28 @@ export class DashboardPage implements OnInit {
 
             console.log(ele, 'descansos')
 
-           if (ele.EstadoDesc) {
-            const diff = moment(ele.EstadoDesc.end).diff(moment(moment().format('YYYY-MM-DD HH:mm:ss')), 'seconds')
+            if (ele.EstadoDesc) {
+              const diff = moment(ele.EstadoDesc.end).diff(moment(moment().format('YYYY-MM-DD HH:mm:ss')), 'seconds')
 
-            console.log(ele.EstadoDesc.end, ele.EstadoDesc.init)
+              console.log(ele.EstadoDesc.end, ele.EstadoDesc.init)
 
-            ele.time = diff
-           }
-
-            
-           /*else {
-            const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id + '&logout=yes', login[0].token) 
-
-            if (count.status) {
-              ele.count = count.response;
+              ele.time = diff
             }
-          } */
 
-        //  user.push(ele);
-          this.users.push(ele);
-          this.users2.push(ele);
 
-        }
+            /*else {
+             const count = await this.api.apiGet('countSolicitudes?WorkZoneID=' + login[0].WorkZone + '&user=' + ele._id + '&logout=yes', login[0].token) 
+ 
+             if (count.status) {
+               ele.count = count.response;
+             }
+           } */
+
+            //  user.push(ele);
+            this.users.push(ele);
+            this.users2.push(ele);
+
+          }
 
 
           disconnect.forEach(element => {
@@ -788,7 +788,7 @@ export class DashboardPage implements OnInit {
         this.dataSource.data = [];
       }
 
-      
+
 
       this.api.apiPost('searchActivity', {
         token: login[0].token,
@@ -838,6 +838,8 @@ export class DashboardPage implements OnInit {
 
           let paciente = element.JSONAnswers.filter((it) => it.apiId == 'NOMBRE_PACIENTE').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'NOMBRE_PACIENTE')[0].Value : ''
 
+          let idpaciente = element.JSONAnswers.filter((it) => it.apiId == 'ID_PACIENTE').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'ID_PACIENTE')[0].Value : ''
+
           let recursos = element.JSONAnswers.filter((it) => it.apiId == 'RECURSOS').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'RECURSOS')[0].Value : ''
 
           let aislado = element.JSONAnswers.filter((it) => it.apiId == 'AISLADO').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'AISLADO')[0].Value : ''
@@ -845,9 +847,9 @@ export class DashboardPage implements OnInit {
           let obs = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1')[0].Value : ''
 
           let obs2 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES2').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES2')[0].Value : ''
-          
+
           let obs4 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES4').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES4')[0].Value : ''
-          
+
           let obs3 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3')[0].Value : ''
 
 
@@ -898,6 +900,7 @@ export class DashboardPage implements OnInit {
             obscentral: obs2,
             obs: {
               paciente,
+              idpaciente,
               recursos,
               aislado,
               obs
@@ -926,6 +929,8 @@ export class DashboardPage implements OnInit {
 
             let paciente = element.JSONAnswers.filter((it) => it.apiId == 'NOMBRE_PACIENTE').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'NOMBRE_PACIENTE')[0].Value : ''
 
+            let idpaciente = element.JSONAnswers.filter((it) => it.apiId == 'ID_PACIENTE').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'ID_PACIENTE')[0].Value : ''
+
             let recursos = element.JSONAnswers.filter((it) => it.apiId == 'RECURSOS').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'RECURSOS')[0].Value : ''
 
             let aislado = element.JSONAnswers.filter((it) => it.apiId == 'AISLADO').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'AISLADO')[0].Value : ''
@@ -933,9 +938,9 @@ export class DashboardPage implements OnInit {
             let obs = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES1')[0].Value : ''
 
             let obs2 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES2').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES2')[0].Value : ''
-          
+
             let obs4 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES4').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES4')[0].Value : ''
-          
+
             let obs3 = element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'OBSERVACIONES3')[0].Value : ''
 
             let org = element.JSONAnswers.filter((it) => it.apiId == 'FechallegaOrigen').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'FechallegaOrigen')[0].Value : ''
@@ -944,16 +949,16 @@ export class DashboardPage implements OnInit {
 
             element.soporte = element.JSONAnswers.filter((it) => it.apiId == 'SOPORTE').length > 0 ? element.JSONAnswers.filter((it) => it.apiId == 'SOPORTE')[0].Value : ''
 
-            let retorno = element.JSONAnswers.filter((item) => item.apiId == 'RECORRIDO').length > 0 
-            ? element.JSONAnswers.filter((item) => item.apiId == 'RECORRIDO')[0].Value
-            : [];
+            let retorno = element.JSONAnswers.filter((item) => item.apiId == 'RECORRIDO').length > 0
+              ? element.JSONAnswers.filter((item) => item.apiId == 'RECORRIDO')[0].Value
+              : [];
 
             if (retorno.length > 0) {
               console.log(retorno, 'RETORNO')
 
 
               retorno.forEach(ele => {
-                  ele.date = moment(ele.date).tz('America/Bogota').format('YYYY-MM-DD HH:mm')
+                ele.date = moment(ele.date).tz('America/Bogota').format('YYYY-MM-DD HH:mm')
               });
 
               element.retorno = retorno;
@@ -1016,6 +1021,7 @@ export class DashboardPage implements OnInit {
               obscentral: obs2,
               obs: {
                 paciente,
+                idpaciente,
                 recursos,
                 aislado,
                 obs
@@ -1048,7 +1054,10 @@ export class DashboardPage implements OnInit {
 
 
         this.dataSource.data = fila;
-        this.dataSource.paginator = this.paginator;
+        setTimeout(() => {
+          this.dataSource.paginator = this.paginator;
+          this.paginator._intl.itemsPerPageLabel = 'Listado de Solicitudes'
+        }, 100);
         this.loadActivities = true;
 
       })
@@ -1161,7 +1170,7 @@ export class DashboardPage implements OnInit {
 
         if (!rs.status) {
           this.toast.MsgError(rs.err);
-       
+
           this.loading = false;
           this.getUsers();
           return;
@@ -1310,7 +1319,7 @@ export class DashboardPage implements OnInit {
       component: DetailComponent,
       cssClass: '',
       componentProps: {
-       data
+        data
       }
     })
 
@@ -1319,7 +1328,7 @@ export class DashboardPage implements OnInit {
     this.stop = false;
   }
 
-  async markOrg(title,api, id) {
+  async markOrg(title, api, id) {
 
     const alert = await this.alertCtrl.create({
       header: 'Marcar ' + title,
@@ -1356,7 +1365,7 @@ export class DashboardPage implements OnInit {
                   token: login[0].token
                 })
 
-        
+
                 if (!rs.status) {
                   this.toast.MsgError(rs.err)
                   return;
@@ -1368,7 +1377,7 @@ export class DashboardPage implements OnInit {
 
                 this.filter = true;
                 this.loading = true;
-                
+
                 this.getSolicitudes();
 
               } catch (error) {
@@ -1392,7 +1401,7 @@ export class DashboardPage implements OnInit {
     const session = await this.stg.getLogin();
 
     if (session) {
-      if (session[0].isCentral != 1) {
+      if (session[0].isCentral != 1 && session[0].isCentralAdmin != 1) {
         return;
       }
     }
@@ -1435,22 +1444,22 @@ export class DashboardPage implements OnInit {
                   value: data.obs,
                   valueUTC: dates.utc,
                   _id: id,
-                  CompanyStatus: 'SOLICITUD CON CAMILLERO' ,
+                  CompanyStatus: 'SOLICITUD CON CAMILLERO',
                   token: login[0].token
                 })
 
-        
+
                 if (!rs.status) {
                   this.toast.MsgError(rs.err)
                   return;
                 }
 
-       
+
                 this.toast.MsgOK('Proceso ejecutado correctamente')
 
                 this.filter = true;
                 this.loading = true;
-                
+
                 this.getSolicitudes();
 
               } catch (error) {
@@ -1517,22 +1526,22 @@ export class DashboardPage implements OnInit {
                   value: data.obs,
                   valueUTC: dates.utc,
                   _id: id,
-                  CompanyStatus: 'SOLICITUD CON CAMILLERO' ,
+                  CompanyStatus: 'SOLICITUD CON CAMILLERO',
                   token: login[0].token
                 })
 
-        
+
                 if (!rs.status) {
                   this.toast.MsgError(rs.err)
                   return;
                 }
 
-       
+
                 this.toast.MsgOK('Proceso ejecutado correctamente')
 
                 this.filter = true;
                 this.loading = true;
-                
+
                 this.getSolicitudes();
 
               } catch (error) {
@@ -1613,6 +1622,6 @@ export class DashboardPage implements OnInit {
 
 
 
-  
+
 
 }

@@ -532,7 +532,7 @@ export class TablaPage implements OnInit {
 
 
             if (idx < 0) {
-              this.titles.splice((idxStart),0,{
+              this.titles.splice((idxStart), 0, {
                 id: c.apiId.toString().toLowerCase(),
                 name: c.title
               })
@@ -565,10 +565,13 @@ export class TablaPage implements OnInit {
             }, {
               id: 'fechar' + i,
               name: 'FECHA ' + i
-            }, {
-              id: 'tecr' + i,
-              name: 'TECNOLOGIA ' + i
-            })
+            }
+              // , {
+              //   id: 'tecr' + i,
+              //   name: 'TECNOLOGIA ' + i
+              // }
+
+            )
           }
 
 
@@ -601,6 +604,14 @@ export class TablaPage implements OnInit {
         let idx1 = this.titles.findIndex((l) => l.id == 'nombreinsumo');
         let idx2 = this.titles.findIndex((l) => l.id == 'nomsoli');
         let idx3 = this.titles.findIndex((l) => l.id == 'cargosoli');
+
+
+
+        let idx4 = this.titles.findIndex((l) => l.id == 'id_paciente');
+
+        if (idx4 > 0) {
+          this.titles.splice(idx4, 1)
+        }
 
         if (idx1 < 0) {
           this.titles.push({
@@ -643,6 +654,15 @@ export class TablaPage implements OnInit {
         }
 
 
+
+
+        this.titles.push({
+          id: 'id_paciente',
+          name: 'ID PACIENTE'
+        })
+
+
+        console.log(this.titles, 'titles')
 
 
 
@@ -736,6 +756,8 @@ export class TablaPage implements OnInit {
           obj['nombreinsumo'] = this.getField(element.JSONAnswers, 'NOMBREINSUMO')
           obj['nomsoli'] = this.getField(element.JSONAnswers, 'NOMSOLI')
           obj['cargosoli'] = this.getField(element.JSONAnswers, 'CARGOSOLI')
+
+          obj['id_paciente'] = this.getField(element.JSONAnswers, 'ID_PACIENTE')
 
 
 

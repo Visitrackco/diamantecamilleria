@@ -23,7 +23,8 @@ export class ApiService {
         private router: Router
     ) { }
 
-// https://diamanteticvisitrack.com
+// https://diamanteticvisitrack.comm
+//https://diamanteticvisitrack.com
     postUser(data: any) {
         return fetch('https://diamanteticvisitrack.com/users', {
             method: 'POST',
