@@ -18,7 +18,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class MotivosFormPage implements OnInit {
 
   displayedColumns =
-    ['name', 'ans', 'admin', 'acc'];
+    ['name', 'ans', 'admin', 'coh', 'critico', 'acc'];
   dataSource = new MatTableDataSource([]);
 
   @ViewChild('paginatorHistory') paginator: MatPaginator;
@@ -82,6 +82,8 @@ export class MotivosFormPage implements OnInit {
               name: element.Name,
               ans: element.Ans,
               admin: element.Admin,
+              coh: element.COH || 0,
+              critico: element.Critico || 0,
               acc: element
             }
             fila.push(obj)
@@ -305,9 +307,73 @@ export class MotivosFormPage implements OnInit {
     if (idx >= 0) {
       fila[idx].admin = event.detail.checked ? 1 : 0;
 
-  
+
 
       this.dataSource.data = fila;
+    }
+  }
+
+  async changeCOH(event, i) {
+    const login = await this.stg.getLogin();
+    if (login) {
+      try {
+        const COH = event.detail.checked ? 1 : 0;
+        const rs = await this.api.apiPost('motivosCOH', {
+          _id: i._id,
+          COH: COH,
+          token: login[0].token
+        });
+
+        if (rs) {
+          if (!rs['status']) {
+            this.toast.MsgError(rs['err']);
+            return;
+          }
+
+          let fila = [...this.dataSource.data];
+          let idx = fila.findIndex((it) => it.acc._id == i._id);
+          if (idx >= 0) {
+            fila[idx].coh = COH;
+            this.dataSource.data = fila;
+          }
+
+          this.toast.MsgOK('COH actualizado');
+        }
+      } catch (error) {
+        this.toast.MsgError('Error al actualizar COH');
+      }
+    }
+  }
+
+  async changeCritico(event, i) {
+    const login = await this.stg.getLogin();
+    if (login) {
+      try {
+        const Critico = event.detail.checked ? 1 : 0;
+        const rs = await this.api.apiPost('motivosCritico', {
+          _id: i._id,
+          Critico: Critico,
+          token: login[0].token
+        });
+
+        if (rs) {
+          if (!rs['status']) {
+            this.toast.MsgError(rs['err']);
+            return;
+          }
+
+          let fila = [...this.dataSource.data];
+          let idx = fila.findIndex((it) => it.acc._id == i._id);
+          if (idx >= 0) {
+            fila[idx].critico = Critico;
+            this.dataSource.data = fila;
+          }
+
+          this.toast.MsgOK('Crítico actualizado');
+        }
+      } catch (error) {
+        this.toast.MsgError('Error al actualizar Crítico');
+      }
     }
   }
 

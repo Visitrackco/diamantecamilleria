@@ -1,0 +1,191 @@
+$orange: #c2410c;
+$diamante: #0E3651;
+
+.pub-content {
+  --background: #f1f5f9;
+}
+
+/* Encabezado (color diamante del dashboard) */
+.pub-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 14px;
+
+  .pub-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+
+    > ion-icon {
+      font-size: 26px;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.14);
+      border-radius: 9px;
+      padding: 6px;
+      flex-shrink: 0;
+    }
+
+    .pub-brand-txt { display: flex; flex-direction: column; min-width: 0; }
+    .pub-brand-title {
+      font-size: 15px; font-weight: 800; color: #fff;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pub-brand-sub { font-size: 11px; color: rgba(255, 255, 255, 0.7); }
+  }
+
+  .pub-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 700; color: #fff;
+    background: rgba(255, 255, 255, 0.16);
+    padding: 5px 11px; border-radius: 999px; white-space: nowrap;
+    ion-icon { font-size: 14px; }
+  }
+}
+
+.pub-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pub-estado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 60px 20px;
+  color: #64748b;
+  text-align: center;
+
+  .pub-err-icon { font-size: 42px; color: #dc2626; }
+  p { margin: 0; font-size: 14px; }
+}
+
+.pub-clave {
+  max-width: 360px;
+  margin: 60px auto;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 28px 24px;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+
+  .pub-lock { font-size: 40px; color: $diamante; }
+  h3 { margin: 0; font-size: 16px; color: #1f2937; }
+
+  input {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    outline: none;
+    &:focus { border-color: $diamante; }
+  }
+
+  .pub-error { color: #dc2626; font-size: 13px; margin: 0; }
+
+  .pub-btn {
+    width: 100%;
+    background: $diamante;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 11px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    &:disabled { opacity: .5; }
+  }
+}
+
+/* Barra de filtros interactivos */
+.pub-filtros {
+  position: relative;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .pub-filtros-head {
+    display: flex; align-items: center; gap: 10px;
+    .pf-titulo {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 800; color: #334155;
+      ion-icon { font-size: 15px; color: $diamante; }
+    }
+    .pf-activos {
+      font-size: 11px; font-weight: 700; color: #fff; background: $orange;
+      padding: 2px 9px; border-radius: 999px;
+    }
+  }
+
+  .pub-filtros-row {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;
+  }
+
+  .pub-filtro {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1 1 150px;
+    min-width: 140px;
+
+    label {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: .3px;
+      .dot { width: 8px; height: 8px; border-radius: 50%; background: $orange; display: inline-block; }
+    }
+    select {
+      border: 1px solid #d1d5db; border-radius: 7px; padding: 8px 10px;
+      font-size: 13px; background: #fff; color: #1f2937; outline: none; width: 100%;
+      &:focus { border-color: $diamante; }
+    }
+
+    /* Indicador de filtro activo */
+    &.activo {
+      label { color: $orange; }
+      select { border-color: $orange; background: #fff7ed; font-weight: 600; }
+    }
+  }
+
+  .pub-recargando {
+    display: flex; align-items: center; padding-bottom: 6px;
+    ion-spinner { width: 20px; height: 20px; color: $diamante; }
+  }
+
+  /* Chips de filtros aplicados */
+  .pub-chips {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    .chip {
+      font-size: 11px; font-weight: 600; color: #9a3412;
+      background: #ffedd5; border: 1px solid #fed7aa;
+      padding: 3px 10px; border-radius: 999px;
+    }
+  }
+}
+
+.pub-body { background: transparent; }
+
+.pub-foot {
+  text-align: center;
+  font-size: 11px;
+  color: #94a3b8;
+  padding: 8px 0 20px;
+}

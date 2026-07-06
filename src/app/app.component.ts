@@ -237,6 +237,36 @@ export class AppComponent {
     this.router.navigate(['/tabla'])
   }
 
+  async reporteFormularios() {
+    this.menuCtrl.toggle('menu')
+    this.router.navigate(['/reporte-formularios'])
+  }
+
+  async perfiles() {
+    this.menuCtrl.toggle('menu')
+    this.router.navigate(['/perfiles'])
+  }
+
+  async configuracion() {
+    this.menuCtrl.toggle('menu')
+    this.router.navigate(['/configuracion'])
+  }
+
+  async programadas() {
+    this.menuCtrl.toggle('menu')
+    this.router.navigate(['/programadas'])
+  }
+
+  async indicadores() {
+    this.menuCtrl.toggle('menu')
+    this.router.navigate(['/indicadores'])
+  }
+
+  async adminLinks() {
+    this.menuCtrl.toggle('menu')
+    this.router.navigate(['/links'])
+  }
+
   async descansos() {
     this.menuCtrl.toggle('menu')
     this.router.navigate(['/descansos'])

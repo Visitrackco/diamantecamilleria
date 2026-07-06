@@ -1,0 +1,183 @@
+// Paleta tipo el tablero de Power BI
+$bi-pink: #c2410c;   // naranja oscuro (antes rosado)
+$bi-bg: #f5f6f8;
+$bi-sidebar-bg: #ffffff;
+$bi-border: #e5e7eb;
+$bi-text: #374151;
+
+.bi {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background: $bi-bg;
+}
+
+/* ===== Sidebar ===== */
+.bi-sidebar {
+  flex-shrink: 0;
+  width: 230px;
+  background: $bi-sidebar-bg;
+  border-right: 1px solid $bi-border;
+  display: flex;
+  flex-direction: column;
+  transition: width .2s ease;
+  overflow: hidden;
+
+  &.collapsed {
+    width: 56px;
+  }
+
+  .bi-sidebar-head {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px 0 16px;
+    border-bottom: 1px solid $bi-border;
+
+    .bi-sidebar-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #6b7280;
+      letter-spacing: .4px;
+    }
+
+    .bi-collapse {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #9ca3af;
+      display: flex;
+      align-items: center;
+
+      ion-icon { font-size: 18px; }
+    }
+  }
+
+  .bi-pages {
+    list-style: none;
+    margin: 0;
+    padding: 8px 0;
+    overflow-y: auto;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 13px;
+      color: $bi-text;
+      border-left: 3px solid transparent;
+      transition: background .15s, border-color .15s;
+
+      .bi-page-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #cbd5e1;
+        flex-shrink: 0;
+      }
+
+      .bi-page-label {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      &:hover {
+        background: #f9fafb;
+      }
+
+      &.active {
+        background: rgba(230, 68, 122, 0.08);
+        border-left-color: $bi-pink;
+        font-weight: 700;
+        color: #111827;
+
+        .bi-page-dot { background: $bi-pink; }
+      }
+    }
+  }
+}
+
+/* ===== Contenido ===== */
+.bi-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bi-topbar {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  background: #ffffff;
+  border-bottom: 1px solid $bi-border;
+
+  .bi-logo {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  .bi-title {
+    flex: 1;
+    text-align: center;
+    margin: 0;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: $bi-pink;
+  }
+
+  .bi-topbar-spacer {
+    width: 40px;
+  }
+}
+
+.bi-canvas {
+  flex: 1;
+  padding: 20px;
+  overflow: auto;
+}
+
+.bi-placeholder {
+  height: 100%;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 2px dashed #d1d5db;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #9ca3af;
+
+  ion-icon {
+    font-size: 48px;
+    margin-bottom: 6px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 16px;
+    color: #6b7280;
+
+    strong { color: $bi-pink; }
+  }
+
+  span {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 640px) {
+  .bi-sidebar { width: 56px; }
+  .bi-sidebar .bi-page-label,
+  .bi-sidebar .bi-sidebar-title { display: none; }
+  .bi-title { font-size: 18px; }
+}

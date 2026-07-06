@@ -78,9 +78,18 @@ export class SocketService {
 
     
 
-    hospitalCentral(WorkZoneID) {
+    async hospitalCentral(WorkZoneID) {
+        let UserID = null;
+        try {
+            const user = await this.stg.get('login');
+            if (user && user.length > 0) {
+                UserID = user[0]._id;
+            }
+        } catch (e) { }
+
         this.socket.emit('hospitalCentral', {
-            WorkZoneID
+            WorkZoneID,
+            UserID
         })
     }
 

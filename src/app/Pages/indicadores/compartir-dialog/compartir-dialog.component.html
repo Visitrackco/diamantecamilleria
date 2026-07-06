@@ -1,0 +1,92 @@
+<div class="cmp-overlay" *ngIf="st?.abierto" (click)="cerrar()">
+  <div class="cmp-card" (click)="$event.stopPropagation()">
+
+    <!-- Encabezado -->
+    <div class="cmp-head">
+      <div class="cmp-title">
+        <ion-icon name="share-social-outline"></ion-icon>
+        <span>Compartir tablero</span>
+      </div>
+      <button class="cmp-x" (click)="cerrar()" aria-label="Cerrar">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </div>
+
+    <!-- Paso 1: formulario -->
+    <div class="cmp-body" *ngIf="st?.paso === 'form'">
+      <p class="cmp-desc">
+        Se genera un link de <b>solo lectura</b> con los filtros actuales. Nadie podrá
+        modificar los datos ni cambiar los filtros.
+      </p>
+
+      <label class="cmp-label">Nombre <span>(opcional)</span></label>
+      <input class="cmp-input" type="text" [ngModel]="st?.nombre"
+        (ngModelChange)="onNombre($event)" placeholder="Ej. Cumplimiento junio - Gerencia" />
+
+      <!-- Switch de Material: público / con clave -->
+      <div class="cmp-switch">
+        <div class="cmp-switch-txt">
+          <span class="cmp-switch-title">{{ st?.publico ? 'Público' : 'Requiere clave' }}</span>
+          <span class="cmp-switch-sub">
+            {{ st?.publico ? 'Cualquiera con el link puede verlo.' : 'Se pedirá una clave para verlo.' }}
+          </span>
+        </div>
+        <mat-slide-toggle color="primary" [ngModel]="st?.publico"
+          (ngModelChange)="togglePublico($event)"></mat-slide-toggle>
+      </div>
+
+      <!-- Clave (solo si NO es público) -->
+      <div class="cmp-pass" *ngIf="!st?.publico">
+        <label class="cmp-label">Clave</label>
+        <input class="cmp-input" type="password" [ngModel]="st?.password"
+          (ngModelChange)="onPassword($event)" placeholder="Clave para acceder"
+          (keyup.enter)="generar()" />
+      </div>
+
+      <!-- Filtros que el público podrá cambiar (por default todos bloqueados) -->
+      <div class="cmp-inter" *ngIf="st?.filtrosDisponibles?.length">
+        <div class="cmp-inter-head">
+          <span class="cmp-label">Filtros interactivos</span>
+          <span class="cmp-inter-hint">La fecha siempre queda fija.</span>
+        </div>
+        <div class="cmp-inter-row" *ngFor="let f of st?.filtrosDisponibles">
+          <span class="cmp-inter-name">{{ f.label }}</span>
+          <mat-slide-toggle color="primary" [ngModel]="st?.interactivos[f.key]"
+            (ngModelChange)="toggleInteractivo(f.key, $event)"></mat-slide-toggle>
+        </div>
+      </div>
+
+      <p class="cmp-error" *ngIf="st?.error">{{ st?.error }}</p>
+
+      <div class="cmp-actions">
+        <button class="cmp-btn cmp-btn-sec" (click)="cerrar()" [disabled]="st?.generando">Cancelar</button>
+        <button class="cmp-btn cmp-btn-pri" (click)="generar()" [disabled]="st?.generando">
+          <ion-spinner name="crescent" *ngIf="st?.generando"></ion-spinner>
+          <span *ngIf="!st?.generando">Generar link</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Paso 2: link generado -->
+    <div class="cmp-body" *ngIf="st?.paso === 'listo'">
+      <div class="cmp-ok">
+        <ion-icon name="checkmark-circle" class="cmp-ok-icon"></ion-icon>
+        <span>Link generado {{ st?.publico ? '(público)' : '(con clave)' }}</span>
+      </div>
+
+      <div class="cmp-linkbox">
+        <span class="cmp-linktxt">{{ st?.link }}</span>
+        <button class="cmp-copy" (click)="copiar()" title="Copiar link">
+          <ion-icon name="copy-outline"></ion-icon>
+        </button>
+      </div>
+
+      <p class="cmp-copiado" *ngIf="st?.copiado">✓ Copiado al portapapeles</p>
+
+      <div class="cmp-actions">
+        <button class="cmp-btn cmp-btn-pri" (click)="cerrar()">Listo</button>
+      </div>
+    </div>
+
+  </div>
+</div>

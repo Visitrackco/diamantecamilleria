@@ -1,0 +1,74 @@
+<ion-header class="ion-no-border" [translucent]="true">
+  <ion-toolbar color="diamante">
+    <ion-title>Indicadores</ion-title>
+    <app-options slot="end"></app-options>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="bi">
+
+    <!-- Menú lateral de páginas (estilo Power BI) -->
+    <aside class="bi-sidebar" [class.collapsed]="collapsed">
+
+      <div class="bi-sidebar-head">
+        <span class="bi-sidebar-title" *ngIf="!collapsed">Páginas</span>
+        <button class="bi-collapse" (click)="toggleSidebar()">
+          <ion-icon [name]="collapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
+        </button>
+      </div>
+
+      <ul class="bi-pages">
+        <li *ngFor="let p of pages" [class.active]="p.key === selectedPage" (click)="select(p.key)"
+          [title]="p.label">
+          <span class="bi-page-dot"></span>
+          <span class="bi-page-label" *ngIf="!collapsed">{{ p.label }}</span>
+        </li>
+      </ul>
+
+    </aside>
+
+    <!-- Contenido / lienzo -->
+    <section class="bi-content">
+
+      <header class="bi-topbar">
+        <img class="bi-logo" src="/assets/diamante.png" alt="logo" />
+        <h1 class="bi-title">{{ currentLabel }}</h1>
+        <div class="bi-topbar-spacer"></div>
+      </header>
+
+      <div class="bi-canvas">
+
+        <!-- Página CAMILLERIA (primera, con datos reales) -->
+        <app-bi-camilleria *ngIf="selectedPage === 'camilleria'"></app-bi-camilleria>
+
+        <!-- Página CAMILLERIA 2 (métricas por turno día/noche) -->
+        <app-bi-camilleria2 *ngIf="selectedPage === 'camilleria2'"></app-bi-camilleria2>
+
+        <!-- Página MAPA DE CALOR (hora x día) -->
+        <app-bi-mapacalor *ngIf="selectedPage === 'mapacalor'"></app-bi-mapacalor>
+
+        <!-- Página MAPA DE CUMPLIMIENTO (hora x día, %) -->
+        <app-bi-mapacumplimiento *ngIf="selectedPage === 'mapacumplimiento'"></app-bi-mapacumplimiento>
+
+        <!-- Página CAMILLERIA 4 (cumplimiento por ubicación: destino y origen) -->
+        <app-bi-camilleria4 *ngIf="selectedPage === 'camilleria4'"></app-bi-camilleria4>
+
+        <!-- Resto de páginas: placeholder hasta construir su diseño -->
+        <div class="bi-placeholder"
+          *ngIf="selectedPage !== 'camilleria' && selectedPage !== 'camilleria2' && selectedPage !== 'mapacalor' && selectedPage !== 'mapacumplimiento' && selectedPage !== 'camilleria4'">
+          <ion-icon name="bar-chart-outline"></ion-icon>
+          <p>Indicadores de <strong>{{ currentLabel }}</strong></p>
+          <span>El diseño de esta página se construirá aquí.</span>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- Diálogo para compartir links públicos (shareScreen) -->
+  <app-compartir-dialog></app-compartir-dialog>
+
+</ion-content>

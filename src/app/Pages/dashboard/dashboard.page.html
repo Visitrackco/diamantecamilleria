@@ -18,6 +18,11 @@
         <mat-spinner></mat-spinner>
     </div>
 
+    <div class="coh-banner" *ngIf="isCOH">
+        <ion-icon name="shield-checkmark"></ion-icon>
+        <span>Modo {{ perfilName || 'COH' }} activo</span>
+    </div>
+
     <div class="main" cdkDropListGroup>
         <div class="dash" [ngClass]="{'tablamax': filtermob}" [class.cien]="isAssigment != 1" cdkDropListSortingDisabled cdkDropList (cdkDropListDropped)="dropped($event)">
 
@@ -243,7 +248,7 @@
                     </ng-container>
 
                     <ng-container matColumnDef="obs">
-                        <th style="min-width: 150px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> OBSERVACIONES ADICIONALES </th>
+                        <th style="min-width: 320px; background-color: #f1f1f1; color: #000; font-size: 11px; font-weight: bold;" mat-header-cell *matHeaderCellDef> OBSERVACIONES ADICIONALES </th>
                         <td style="font-size: 11px;" mat-cell *matCellDef="let element" (click)="detail(element)">
                             <div *ngIf="element.motivo == 'TRANSPORTAR PACIENTE'"><strong>Nombre Paciente:</strong> {{element.obs.paciente}}
                             </div>

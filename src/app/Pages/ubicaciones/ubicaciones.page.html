@@ -79,6 +79,19 @@
         <td mat-cell *matCellDef="let element">         {{element.piso}}  </td>
       </ng-container>
 
+      <ng-container matColumnDef="grupo">
+        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+          mat-header-cell *matHeaderCellDef> GRUPO / UNIDAD </th>
+        <td mat-cell *matCellDef="let element">
+          <ion-select [value]="element.grupo" placeholder="Sin grupo" interface="popover"
+            (ionChange)="changeGrupo($event, element)">
+            <ion-select-option [value]="''">Sin grupo</ion-select-option>
+            <ion-select-option value="Infantil">Infantil</ion-select-option>
+            <ion-select-option value="Adultos">Adultos</ion-select-option>
+          </ion-select>
+        </td>
+      </ng-container>
+
       <ng-container matColumnDef="login">
         <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
           mat-header-cell *matHeaderCellDef>ENTRADA</th>

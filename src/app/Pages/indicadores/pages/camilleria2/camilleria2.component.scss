@@ -1,0 +1,234 @@
+$orange: #c2410c;
+$filtro-bg: #fdf3e7;
+$border: #e5e7eb;
+
+.cam2 {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+/* Barra superior */
+.cam-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  .cam-toolbar-right { display: flex; gap: 8px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+
+    ion-icon { font-size: 16px; }
+    &:disabled { opacity: .5; }
+  }
+
+  .btn-recargar { background: $orange; }
+  .btn-limpiar { background: #64748b; }
+  .btn-compartir { background: #0369a1; }
+  .btn-excel { background: #1d7044; }
+}
+
+/* Filtros */
+.cam-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.filtro {
+  background: $filtro-bg;
+  border: 1px solid #f5e0c8;
+  border-radius: 8px;
+  padding: 10px 12px;
+  flex: 1 1 160px;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6b7280;
+    letter-spacing: .3px;
+  }
+
+  select, input[type="date"] {
+    border: 1px solid #dcc3a0;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 12px;
+    background: #fff;
+    color: #374151;
+    outline: none;
+    width: 100%;
+  }
+
+  .rango { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+}
+
+.fecha-filtro { flex: 1 1 260px; min-width: 220px; }
+.fecha-field {
+  flex: 1 1 110px;
+  min-width: 0;
+  font-size: 12px;
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
+  ::ng-deep .mat-mdc-text-field-wrapper { background: #fff; }
+  ::ng-deep .mat-mdc-form-field-infix { min-height: 42px; }
+}
+
+.slicer .opts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    cursor: pointer;
+    font-size: 12px;
+    color: #4b5563;
+
+    &:hover .chk { border-color: $orange; }
+
+    .chk {
+      width: 15px;
+      height: 15px;
+      border: 1.5px solid #d19a5e;
+      border-radius: 3px;
+      background: #fff;
+      flex-shrink: 0;
+      position: relative;
+
+      &.on {
+        background: $orange;
+        border-color: $orange;
+        &::after {
+          content: '';
+          position: absolute;
+          left: 4px; top: 1px;
+          width: 4px; height: 8px;
+          border: solid #fff;
+          border-width: 0 2px 2px 0;
+          transform: rotate(45deg);
+        }
+      }
+    }
+    .txt { white-space: nowrap; }
+  }
+}
+
+/* KPIs por turno + ilustración central */
+.turnos {
+  display: grid;
+  grid-template-columns: 1fr 0.9fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.col-imagen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+
+  img {
+    width: 100%;
+    max-width: 340px;
+    height: auto;
+  }
+}
+
+.col-turno {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .turno-head {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    padding: 8px;
+    border-radius: 8px;
+    color: #fff;
+
+    &.dia { background: #f59e0b; }
+    &.noche { background: #3f51b5; }
+  }
+}
+
+.kpi {
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+
+  .kpi-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+    text-align: center;
+    letter-spacing: .3px;
+  }
+
+  .kpi-value {
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.1;
+    margin-top: 6px;
+
+    &.tiempo { font-variant-numeric: tabular-nums; }
+  }
+}
+
+.kpi-gauge apx-chart {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+}
+
+.cam-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.5);
+  z-index: 5;
+}
+
+@media (max-width: 900px) {
+  .turnos { grid-template-columns: 1fr; }
+  .col-imagen { order: -1; img { max-width: 260px; } }
+}
+
+@media (max-width: 640px) {
+  .filtro, .fecha-filtro { flex: 1 1 100%; min-width: 0; }
+  .cam-toolbar .btn { flex: 1; }
+}

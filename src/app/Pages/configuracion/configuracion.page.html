@@ -1,0 +1,112 @@
+<ion-header class="ion-no-border" [translucent]="true">
+  <ion-toolbar color="diamante">
+    <ion-title>Configuración del Tablero</ion-title>
+    <app-options slot="end"></app-options>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="loading" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div class="config-wrap">
+
+    <div class="config-head">
+      <h1>Variables del Tablero</h1>
+      <p>Define la meta de cumplimiento y los horarios de los turnos. Estos valores se usan en los indicadores del tablero y reportes.</p>
+    </div>
+
+    <div *ngIf="!loaded" class="skeleton">
+      <ion-skeleton-text [animated]="true" style="width: 100%; height: 160px; border-radius: 16px;"></ion-skeleton-text>
+      <ion-skeleton-text [animated]="true" style="width: 100%; height: 160px; border-radius: 16px;"></ion-skeleton-text>
+    </div>
+
+    <div *ngIf="loaded" class="grid">
+
+      <!-- Meta de cumplimiento -->
+      <mat-card class="card meta">
+        <div class="card-icon meta-icon">
+          <ion-icon name="flag"></ion-icon>
+        </div>
+        <div class="card-body">
+          <h2>Meta de Cumplimiento</h2>
+          <span class="hint">Porcentaje objetivo de cumplimiento</span>
+
+          <div class="meta-row">
+            <div class="meta-ring" [style.background]="'conic-gradient(#1565c0 ' + (config.MetaCumplimiento * 3.6) + 'deg, #e2e8f0 0deg)'">
+              <div class="meta-ring-inner">{{ config.MetaCumplimiento || 0 }}%</div>
+            </div>
+
+            <mat-form-field appearance="outline" class="meta-field">
+              <mat-label>Meta (%)</mat-label>
+              <input matInput type="number" min="0" max="100" [(ngModel)]="config.MetaCumplimiento" />
+              <span matSuffix>%</span>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-card>
+
+      <!-- Turno Día -->
+      <mat-card class="card">
+        <div class="card-icon dia-icon">
+          <ion-icon name="sunny"></ion-icon>
+        </div>
+        <div class="card-body">
+          <h2>Turno Día</h2>
+          <span class="hint">Horario del turno diurno</span>
+
+          <div class="time-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Desde</mat-label>
+              <input matInput type="time" [(ngModel)]="config.TurnoDiaInicio" />
+            </mat-form-field>
+
+            <span class="dash">—</span>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Hasta</mat-label>
+              <input matInput type="time" [(ngModel)]="config.TurnoDiaFin" />
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-card>
+
+      <!-- Turno Noche -->
+      <mat-card class="card">
+        <div class="card-icon noche-icon">
+          <ion-icon name="moon"></ion-icon>
+        </div>
+        <div class="card-body">
+          <h2>Turno Noche</h2>
+          <span class="hint">Horario del turno nocturno</span>
+
+          <div class="time-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Desde</mat-label>
+              <input matInput type="time" [(ngModel)]="config.TurnoNocheInicio" />
+            </mat-form-field>
+
+            <span class="dash">—</span>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Hasta</mat-label>
+              <input matInput type="time" [(ngModel)]="config.TurnoNocheFin" />
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-card>
+
+    </div>
+
+    <div class="actions" *ngIf="loaded">
+      <button mat-raised-button color="primary" (click)="save()">
+        <ion-icon name="save"></ion-icon>
+        Guardar configuración
+      </button>
+    </div>
+
+  </div>
+
+</ion-content>

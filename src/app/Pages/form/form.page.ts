@@ -131,7 +131,7 @@ export class FormPage implements OnInit {
           this.selectedStates = this.locations;
           this.selectedStates2 = this.locations;
 
-          this.api.getWMotivos(login[0].WorkZone, login[0].token
+          this.api.getWMotivos(login[0].WorkZone, login[0].token, true
           ).then((rsMotivo) => {
             this.motivosList = rsMotivo.response;
 
@@ -220,6 +220,15 @@ export class FormPage implements OnInit {
 
 
       ]),
+      idpac: new FormControl('', [
+        
+        // validaciones síncronas
+
+        // Validators.minLength(4),
+        // Validators.required
+
+
+      ]),
       recurso: new FormArray([], [
         // validaciones síncronas
 
@@ -277,18 +286,52 @@ export class FormPage implements OnInit {
       if (this.myForm.controls['nombrepac']['value'] == '') {
         this.invalid = true;
         this.isClick = false;
+        this.toast.MsgError('El nombre del paciente es obligatorio.')
         return;
 
       }
+
+      // if (this.myForm.controls['idpac']['value'] == '') {
+      //   this.invalid = true;
+      //   this.isClick = false;
+      //   return;
+      // } else {
+      //    if (this.myForm.controls['idpac']['value'].length < 4) {
+      //   this.invalid = true;
+      //   this.isClick = false;
+      //   this.toast.MsgError('La identificación del paciente debe tener como mínimo 4 carácteres.')
+      //   return;
+      // }
+      // }
+
+      if (this.myForm.controls['idpac']['value'].toString() == '') {
+        this.invalid = true;
+        this.isClick = false;
+        this.toast.MsgError('La identificación del paciente es obligatoria.')
+        return;
+      } else {
+        console.log(this.myForm.controls['idpac']['value'].toString().length, 'texto')
+        if (this.myForm.controls['idpac']['value'].toString().length < 4) {
+          this.invalid = true;
+          this.isClick = false;
+          this.toast.MsgError('La identificación del paciente debe tener como mínimo 4 carácteres.')
+          return;
+        }
+      }
+
+
+
       if (this.myForm.controls['aislado']['value'] == '') {
         this.invalid = true;
         this.isClick = false;
+             this.toast.MsgError('Debe indicar si el paciente se ecnuentra o no aislado.')
         return;
 
       }
       if (this.myForm.controls['recurso']['value'].length == 0) {
         this.invalid = true;
         this.isClick = false;
+             this.toast.MsgError('El recurso del paciente es obligatorio.')
         return;
 
 
@@ -361,7 +404,13 @@ export class FormPage implements OnInit {
         }, {
           apiId: 'NOMBRE_PACIENTE',
           Value: this.myForm.controls['nombrepac']['value']
-        }, {
+        },
+        {
+          apiId: 'ID_PACIENTE',
+          Value: this.myForm.controls['idpac']['value'].toString().trim()
+        },
+
+        {
           apiId: 'RECURSOS',
           Value: this.myForm.controls['recurso']['value']
         }, {
@@ -408,7 +457,7 @@ export class FormPage implements OnInit {
               Format: 'America/Bogota'
             })
 
-            
+
 
 
 
@@ -476,9 +525,15 @@ export class FormPage implements OnInit {
         this.invalid = true;
       }
 
+      if (this.myForm.controls['idpac']['value'] == '') {
+        // this.myForm.controls['idpac'].addValidators([Validators.minLength(4),
+        // Validators.required])
+        this.invalid = true;
+      }
+
     } else {
-
-
+      console.log('No')
+      //this.myForm.controls['idpac'].reset()
 
       this.isPaciente = false;
     }

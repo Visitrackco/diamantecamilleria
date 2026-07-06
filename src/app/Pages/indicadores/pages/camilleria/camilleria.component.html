@@ -1,0 +1,150 @@
+<div class="cam">
+
+  <!-- Barra de acciones -->
+  <div class="cam-toolbar" *ngIf="!modoPublico">
+    <button class="btn btn-ayuda" (click)="ayuda()" title="¿Cómo se calcula?">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      <span>¿Cómo se calcula?</span>
+    </button>
+    <div class="cam-toolbar-right">
+      <button class="btn btn-compartir" (click)="compartir()" title="Compartir link de solo lectura">
+        <ion-icon name="share-social-outline"></ion-icon>
+        <span>Compartir</span>
+      </button>
+      <button class="btn btn-excel" (click)="descargar()" [disabled]="loading" title="Descargar data en bruto (Excel/CSV)">
+        <ion-icon name="download-outline"></ion-icon>
+        <span>Descargar Excel</span>
+      </button>
+      <button class="btn btn-recargar" (click)="recargar()" [disabled]="loading" title="Recargar">
+        <ion-icon name="refresh"></ion-icon>
+        <span>Recargar</span>
+      </button>
+      <button class="btn btn-limpiar" (click)="limpiar()" [disabled]="loading" title="Limpiar filtros">
+        <ion-icon name="close-circle-outline"></ion-icon>
+        <span>Limpiar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Barra de filtros + KPIs -->
+  <div class="cam-top" [class.solo-kpis]="modoPublico">
+
+    <div class="filtro fecha-filtro" *ngIf="!modoPublico">
+      <label>FECHA</label>
+      <div class="rango">
+        <mat-form-field class="fecha-field">
+          <mat-label>Desde</mat-label>
+          <input matInput [matDatepicker]="pDesde" [(ngModel)]="desde" (dateChange)="aplicar()" readonly />
+          <mat-datepicker-toggle matIconSuffix [for]="pDesde"></mat-datepicker-toggle>
+          <mat-datepicker #pDesde></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="fecha-field">
+          <mat-label>Hasta</mat-label>
+          <input matInput [matDatepicker]="pHasta" [(ngModel)]="hasta" (dateChange)="aplicar()" readonly />
+          <mat-datepicker-toggle matIconSuffix [for]="pHasta"></mat-datepicker-toggle>
+          <mat-datepicker #pHasta></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="filtro slicer" *ngIf="!modoPublico">
+      <label>PRIORIDAD</label>
+      <ul class="opts">
+        <li *ngFor="let o of prioridadOpts" (click)="setPrioridad(o.v)">
+          <span class="chk" [class.on]="prioridad === o.v"></span>
+          <span class="txt">{{ o.l }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="filtro slicer" *ngIf="!modoPublico">
+      <label>UNIDAD DEFINITIVA</label>
+      <ul class="opts">
+        <li *ngFor="let o of unidadOpts" (click)="setUnidad(o.v)">
+          <span class="chk" [class.on]="unidad === o.v"></span>
+          <span class="txt">{{ o.l }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="filtro slicer" *ngIf="!modoPublico">
+      <label>TIPO</label>
+      <ul class="opts">
+        <li *ngFor="let o of tipoOpts" (click)="setTipo(o.v)">
+          <span class="chk" [class.on]="tipo === o.v"></span>
+          <span class="txt">{{ o.l }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="kpi kpi-num">
+      <span class="kpi-title">CANTIDAD DE SERVICIOS</span>
+      <span class="kpi-value">{{ cantidadServicios | number }}</span>
+    </div>
+
+    <div class="kpi kpi-gauge">
+      <span class="kpi-title">% CUMPLIMIENTO</span>
+      <apx-chart *ngIf="gauge"
+        [series]="gauge.series" [chart]="gauge.chart" [plotOptions]="gauge.plotOptions"
+        [fill]="gauge.fill" [stroke]="gauge.stroke" [labels]="gauge.labels">
+      </apx-chart>
+    </div>
+
+  </div>
+
+  <!-- Tabla + gráfica -->
+  <div class="cam-grid">
+
+    <div class="panel">
+      <div class="panel-title">DISTRIBUCIÓN POR MOTIVO</div>
+      <div class="tabla-wrap">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>MOTIVO</th>
+              <th class="num">Total A Tiempo</th>
+              <th class="num">Total Fuera De Tiempo</th>
+              <th class="num">% Cumplimiento</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of distribucion" [class.row-bajo]="m.cumplimiento != null && m.cumplimiento < meta">
+              <td>{{ m.motivo }}</td>
+              <td class="num">{{ m.aTiempo | number }}</td>
+              <td class="num">{{ m.fueraTiempo | number }}</td>
+              <td class="num" [class.bajo]="m.cumplimiento != null && m.cumplimiento < meta">
+                {{ m.cumplimiento != null ? (m.cumplimiento + '%') : '—' }}
+              </td>
+            </tr>
+            <tr *ngIf="!distribucion.length">
+              <td colspan="4" class="vacio">Sin datos para los filtros seleccionados.</td>
+            </tr>
+          </tbody>
+          <tfoot *ngIf="distribucion.length">
+            <tr>
+              <td>Total</td>
+              <td class="num">{{ totalAtiempo | number }}</td>
+              <td class="num">{{ totalFuera | number }}</td>
+              <td class="num">{{ cumplimiento != null ? (cumplimiento + '%') : '—' }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">% CUMPLIMIENTO</div>
+      <apx-chart *ngIf="line"
+        [series]="line.series" [chart]="line.chart" [xaxis]="line.xaxis" [yaxis]="line.yaxis"
+        [stroke]="line.stroke" [colors]="line.colors" [markers]="line.markers"
+        [dataLabels]="line.dataLabels" [grid]="line.grid" [responsive]="line.responsive">
+      </apx-chart>
+    </div>
+
+  </div>
+
+  <div class="cam-loading" *ngIf="loading">
+    <ion-spinner></ion-spinner>
+  </div>
+
+</div>

@@ -16,6 +16,9 @@
             </div>
             <br>
 
+            <!-- ===== OPERACIÓN ===== -->
+            <div class="menu-sep">Operación</div>
+
             <ion-item color="banner" (click)="form()">
                 <ion-icon name="newspaper" slot="start"></ion-icon>
                 <ion-label>Formulario</ion-label>
@@ -28,11 +31,41 @@
                 <ion-icon name="chevron-forward"></ion-icon>
             </ion-item>
 
+            <ion-item color="banner" (click)="programadas()">
+                <ion-icon name="calendar" slot="start"></ion-icon>
+                <ion-label>Actividades Programadas</ion-label>
+                <ion-icon name="chevron-forward"></ion-icon>
+            </ion-item>
+
             <ion-item (click)="history()" color="banner" *ngIf="role && role.Historial == 1">
                 <ion-icon name="people" slot="start"></ion-icon>
                 <ion-label>Historial Camilleros</ion-label>
                 <ion-icon name="chevron-forward"></ion-icon>
             </ion-item>
+
+            <!-- ===== REPORTES ===== -->
+            <div class="menu-sep" *ngIf="role && role.Reportes == 1">Reportes</div>
+
+            <ion-item (click)="indicadores()" color="banner" *ngIf="role && role.Reportes == 1">
+                <ion-icon name="stats-chart" slot="start"></ion-icon>
+                <ion-label>Indicadores (Dashboard)</ion-label>
+                <ion-icon name="chevron-forward"></ion-icon>
+            </ion-item>
+
+            <ion-item (click)="reportes()" color="banner" *ngIf="role && role.Reportes == 1">
+                <ion-icon name="bar-chart" slot="start"></ion-icon>
+                <ion-label>Reportes</ion-label>
+                <ion-icon name="chevron-forward"></ion-icon>
+            </ion-item>
+
+            <ion-item (click)="reporteFormularios()" color="banner" *ngIf="role && role.Reportes == 1">
+                <ion-icon name="document-text" slot="start"></ion-icon>
+                <ion-label>Reporte de Conteo</ion-label>
+                <ion-icon name="chevron-forward"></ion-icon>
+            </ion-item>
+
+            <!-- ===== CONFIGURACIÓN ===== -->
+            <div class="menu-sep" *ngIf="role && role.Listas == 1">Configuración</div>
 
             <ion-item (click)="listas()" color="banner" *ngIf="role && role.Listas == 1">
                 <ion-icon name="list" slot="start"></ion-icon>
@@ -58,7 +91,6 @@
                 <ion-icon name="chevron-forward"></ion-icon>
             </ion-item>
 
-
             <ion-item color="banner" (click)="control()" *ngIf="role && role.Listas == 1">
                 <ion-icon name="settings" slot="start"></ion-icon>
                 <ion-label>Control Usuarios</ion-label>
@@ -71,21 +103,33 @@
                 <ion-icon name="chevron-forward"></ion-icon>
             </ion-item>
 
-
             <ion-item (click)="custom()"  color="banner" *ngIf="role && role.Listas == 1">
                 <ion-icon name="help-circle" slot="start"></ion-icon>
                 <ion-label>Preguntas personalizadas</ion-label>
                 <ion-icon name="chevron-forward"></ion-icon>
             </ion-item>
 
-
-
-            <ion-item (click)="reportes()" color="banner" *ngIf="role && role.Reportes == 1">
-                <ion-icon name="bar-chart" slot="start"></ion-icon>
-                <ion-label>Reportes</ion-label>
+            <ion-item (click)="perfiles()" color="banner" *ngIf="role && role.Listas == 1">
+                <ion-icon name="id-card" slot="start"></ion-icon>
+                <ion-label>Perfiles de Solicitud</ion-label>
                 <ion-icon name="chevron-forward"></ion-icon>
             </ion-item>
 
+            <ion-item (click)="configuracion()" color="banner" *ngIf="role && role.Listas == 1">
+                <ion-icon name="options" slot="start"></ion-icon>
+                <ion-label>Configuración Tablero</ion-label>
+                <ion-icon name="chevron-forward"></ion-icon>
+            </ion-item>
+
+            <!-- Solo rol 8: administrar links compartidos -->
+            <ion-item (click)="adminLinks()" color="banner" *ngIf="role && role.IDVT == 8">
+                <ion-icon name="link" slot="start"></ion-icon>
+                <ion-label>Administrar Links</ion-label>
+                <ion-icon name="chevron-forward"></ion-icon>
+            </ion-item>
+
+            <!-- ===== SESIÓN ===== -->
+            <div class="menu-sep">Sesión</div>
 
             <ion-item color="banner" (click)="exit()">
                 <ion-icon name="power" slot="start"></ion-icon>

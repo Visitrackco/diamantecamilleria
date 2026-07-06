@@ -1,0 +1,184 @@
+$orange: #c2410c;
+$filtro-bg: #fdf3e7;
+$border: #e5e7eb;
+
+.mc {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.cam-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  .cam-toolbar-right { display: flex; gap: 8px; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer;
+    font-size: 12px; font-weight: 700; color: #fff; white-space: nowrap;
+    ion-icon { font-size: 16px; }
+    &:disabled { opacity: .5; }
+  }
+  .btn-recargar { background: $orange; }
+  .btn-limpiar { background: #64748b; }
+  .btn-compartir { background: #0369a1; }
+  .btn-excel { background: #1d7044; }
+}
+
+.cam-top { display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; }
+
+.filtro {
+  background: $filtro-bg;
+  border: 1px solid #f5e0c8;
+  border-radius: 8px;
+  padding: 10px 12px;
+  flex: 1 1 150px;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label { font-size: 11px; font-weight: 700; color: #6b7280; letter-spacing: .3px; }
+  select, input[type="date"] {
+    border: 1px solid #dcc3a0; border-radius: 6px; padding: 6px 8px;
+    font-size: 12px; background: #fff; color: #374151; outline: none; width: 100%;
+  }
+  .rango { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+}
+
+.fecha-filtro { flex: 1 1 250px; min-width: 210px; }
+.fecha-field {
+  flex: 1 1 105px; min-width: 0; font-size: 12px;
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
+  ::ng-deep .mat-mdc-text-field-wrapper { background: #fff; }
+  ::ng-deep .mat-mdc-form-field-infix { min-height: 42px; }
+}
+
+.slicer .opts {
+  list-style: none; margin: 0; padding: 0;
+  li {
+    display: flex; align-items: center; gap: 8px; padding: 4px 0;
+    cursor: pointer; font-size: 12px; color: #4b5563;
+    &:hover .chk { border-color: $orange; }
+    .chk {
+      width: 15px; height: 15px; border: 1.5px solid #d19a5e; border-radius: 3px;
+      background: #fff; flex-shrink: 0; position: relative;
+      &.on {
+        background: $orange; border-color: $orange;
+        &::after {
+          content: ''; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px;
+          border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
+        }
+      }
+    }
+    .txt { white-space: nowrap; }
+  }
+}
+
+.kpi {
+  background: #fff; border: 1px solid $border; border-radius: 8px; padding: 10px 16px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  .kpi-title { font-size: 12px; font-weight: 700; color: #475569; text-align: center; }
+}
+.kpi-num {
+  flex: 1 1 150px; min-width: 130px;
+  .kpi-value { font-size: clamp(26px, 4vw, 40px); font-weight: 800; color: #111827; margin-top: 6px; }
+}
+.kpi-gauge {
+  flex: 1 1 190px; min-width: 170px;
+  apx-chart { display: block; width: 100%; max-width: 230px; }
+}
+
+/* Panel del mapa de calor */
+.panel {
+  background: #fff; border: 1px solid $border; border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05); overflow: hidden;
+
+  .panel-title {
+    text-align: center; font-size: 13px; font-weight: 800; color: #334155;
+    padding: 10px; border-bottom: 1px solid $border; letter-spacing: .4px;
+  }
+}
+
+/* Leyenda de colores */
+.leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  padding: 8px 14px;
+  border-bottom: 1px solid $border;
+  background: #fbfcfd;
+  font-size: 11px;
+
+  .ley-titulo { font-weight: 700; color: #475569; }
+  .ley-item { display: inline-flex; align-items: center; gap: 6px; color: #475569; }
+  .ley-color {
+    width: 22px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid #e5e7eb;
+    display: inline-block;
+    &.borde { border-color: #22c55e; }
+  }
+}
+
+.heat-wrap {
+  overflow-x: auto;   /* se extiende horizontal cuando hay muchos dias */
+  overflow-y: hidden;
+}
+
+.heat {
+  border-collapse: collapse;
+  font-size: 11px;
+  min-width: 100%;
+
+  th, td {
+    text-align: center;
+    padding: 3px 6px;
+    border: 1px solid #eef1f4;
+    min-width: 46px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  thead th {
+    position: sticky; top: 0; z-index: 2;
+    background: #f8fafc; color: #475569; font-weight: 700;
+  }
+
+  /* columna HORA fija a la izquierda */
+  .hcol {
+    position: sticky; left: 0; z-index: 1;
+    background: #f8fafc; color: #334155; font-weight: 700; min-width: 42px;
+  }
+  thead .hcol { z-index: 3; }
+
+  tfoot td {
+    position: sticky; bottom: 0;
+    background: #eef2f6; font-weight: 800; color: #1f2937;
+    border-top: 2px solid #cbd5e1;
+  }
+  tfoot .hcol { z-index: 1; }
+}
+
+.empty { text-align: center; color: #9ca3af; padding: 30px; }
+
+.cam-loading {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(255, 255, 255, 0.5); z-index: 5;
+}
+
+@media (max-width: 640px) {
+  .filtro, .fecha-filtro { flex: 1 1 100%; min-width: 0; }
+  .kpi-num, .kpi-gauge { flex: 1 1 100%; }
+  .cam-toolbar .btn { flex: 1; }
+}

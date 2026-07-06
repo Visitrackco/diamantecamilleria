@@ -72,3 +72,34 @@
     --width: 80%;
     --height: 80vh;
 }
+/* Buscador interno de los mat-select de Perfiles (Origenes/Destinos) */
+.perfil-select-panel {
+  .select-search {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 8px 10px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+
+      &:focus {
+        border-color: #2563eb;
+      }
+    }
+  }
+
+  .select-empty {
+    padding: 12px 16px;
+    color: #9ca3af;
+    font-size: 13px;
+  }
+}

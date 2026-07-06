@@ -1,0 +1,317 @@
+$pink: #c2410c;      // naranja oscuro (antes rosado)
+$filtro-bg: #fdf3e7; // naranja muy claro para las tarjetas de filtro
+$border: #e5e7eb;
+
+.cam {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+/* ===== Fila superior: filtros + acciones + KPIs ===== */
+.cam-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.filtro {
+  background: $filtro-bg;
+  border: 1px solid #f5e0c8;
+  border-radius: 8px;
+  padding: 10px 12px;
+  flex: 1 1 170px;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6b7280;
+    letter-spacing: .3px;
+  }
+
+  input[type="date"] {
+    border: 1px solid #dcc3a0;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 12px;
+    background: #fff;
+    color: #374151;
+    outline: none;
+    width: 100%;
+  }
+
+  .rango {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+
+    input { flex: 1 1 90px; min-width: 0; }
+    span { color: #9ca3af; }
+  }
+}
+
+/* Slicer estilo Power BI (lista de checkboxes) */
+.slicer .opts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    cursor: pointer;
+    font-size: 12px;
+    color: #4b5563;
+
+    &:hover .chk { border-color: $pink; }
+
+    .chk {
+      width: 15px;
+      height: 15px;
+      border: 1.5px solid #d19a5e;
+      border-radius: 3px;
+      background: #fff;
+      flex-shrink: 0;
+      position: relative;
+
+      &.on {
+        background: $pink;
+        border-color: $pink;
+
+        &::after {
+          content: '';
+          position: absolute;
+          left: 4px;
+          top: 1px;
+          width: 4px;
+          height: 8px;
+          border: solid #fff;
+          border-width: 0 2px 2px 0;
+          transform: rotate(45deg);
+        }
+      }
+    }
+
+    .txt { white-space: nowrap; }
+  }
+}
+
+/* Barra superior de acciones */
+.cam-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  .cam-toolbar-right {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    transition: opacity .15s;
+    white-space: nowrap;
+
+    ion-icon { font-size: 16px; }
+
+    &:disabled { opacity: .5; cursor: default; }
+    &:hover:not(:disabled) { opacity: .9; }
+  }
+
+  .btn-recargar { background: $pink; }
+  .btn-limpiar { background: #64748b; }
+  .btn-excel { background: #1d7044; }
+  .btn-compartir { background: #0369a1; }
+  .btn-ayuda {
+    background: #fff;
+    color: #475569;
+    border: 1px solid #d1d5db;
+  }
+}
+
+/* Campo de fecha (Material datepicker) compacto dentro del filtro */
+.fecha-filtro {
+  flex: 1 1 260px;
+  min-width: 220px;
+}
+
+.fecha-field {
+  flex: 1 1 110px;
+  min-width: 0;
+  font-size: 12px;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
+  ::ng-deep .mat-mdc-text-field-wrapper { background: #fff; }
+  ::ng-deep .mat-mdc-form-field-infix { min-height: 42px; }
+}
+
+.kpi {
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+
+  .kpi-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+    text-align: center;
+    letter-spacing: .3px;
+  }
+}
+
+.kpi-num {
+  flex: 1 1 160px;
+  min-width: 140px;
+
+  .kpi-value {
+    font-size: clamp(30px, 5vw, 46px);
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.1;
+    margin-top: 6px;
+  }
+}
+
+.kpi-gauge {
+  flex: 1 1 200px;
+  min-width: 180px;
+
+  apx-chart {
+    display: block;
+    width: 100%;
+    max-width: 240px;
+  }
+}
+
+/* ===== Grid inferior: tabla + gráfica ===== */
+.cam-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 14px;
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  overflow: hidden;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+
+  .panel-title {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 800;
+    color: #334155;
+    padding: 10px;
+    border-bottom: 1px solid $border;
+    letter-spacing: .4px;
+  }
+
+  apx-chart {
+    display: block;
+    width: 100%;
+    padding: 8px;
+  }
+}
+
+.tabla-wrap {
+  max-height: 420px;
+  overflow: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+
+  th, td {
+    padding: 7px 10px;
+    border-bottom: 1px solid #f1f3f5;
+    text-align: left;
+    color: #374151;
+  }
+
+  th {
+    position: sticky;
+    top: 0;
+    background: #f8fafc;
+    font-weight: 700;
+    color: #475569;
+    font-size: 11px;
+    z-index: 1;
+  }
+
+  td.num, th.num { text-align: right; white-space: nowrap; }
+
+  tbody tr.row-bajo { background: #eceff1; }
+  td.bajo { color: $pink; font-weight: 700; }
+
+  tfoot td {
+    font-weight: 800;
+    background: #f8fafc;
+    border-top: 2px solid #e5e7eb;
+    position: sticky;
+    bottom: 0;
+  }
+
+  .vacio {
+    text-align: center;
+    color: #9ca3af;
+    padding: 24px;
+  }
+}
+
+.cam-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.5);
+  z-index: 5;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 992px) {
+  .cam-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .cam-top { gap: 10px; }
+  .filtro { flex: 1 1 100%; min-width: 0; }
+  .fecha-filtro { flex: 1 1 100%; min-width: 0; }
+  .cam-toolbar .btn { flex: 1; }
+  .kpi-num, .kpi-gauge { flex: 1 1 100%; }
+  .tabla th, .tabla td { padding: 6px 8px; }
+}

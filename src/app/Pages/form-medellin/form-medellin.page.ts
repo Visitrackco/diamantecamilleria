@@ -129,7 +129,7 @@ export class FormMedellinPage implements OnInit {
           this.selectedStates = this.locations;
           this.selectedStates2 = this.locations;
 
-          this.api.getWMotivos(login[0].WorkZone, login[0].token
+          this.api.getWMotivos(login[0].WorkZone, login[0].token, true
           ).then((rsMotivo) => {
             this.motivosList = rsMotivo.response;
 
@@ -217,6 +217,23 @@ export class FormMedellinPage implements OnInit {
 
 
       ]),
+      idpac: new FormControl('', [
+        
+        // validaciones síncronas
+
+        // Validators.minLength(4),
+        // Validators.required
+
+
+      ]),
+      // idpac: new FormControl('', [
+      //   // validaciones síncronas
+
+      //   Validators.minLength(4),
+      //   Validators.required
+
+
+      // ]),
       recurso: new FormArray([], [
         // validaciones síncronas
 
@@ -274,19 +291,44 @@ export class FormMedellinPage implements OnInit {
     if (this.isPaciente) {
       if (this.myForm.controls['nombrepac']['value'] == '') {
         this.invalid = true;
-         this.isClick = false;
+        this.isClick = false;
+        this.toast.MsgError('El nombre del paciente es obligatorio.')
         return;
 
       }
+
+
+      if (this.myForm.controls['idpac']['value'].toString() == '') {
+        this.invalid = true;
+        this.isClick = false;
+        this.toast.MsgError('La identificación del paciente es obligatoria.')
+        return;
+      } else {
+        console.log(this.myForm.controls['idpac']['value'].toString().length, 'texto')
+        if (this.myForm.controls['idpac']['value'].toString().length < 4) {
+          this.invalid = true;
+          this.isClick = false;
+          this.toast.MsgError('La identificación del paciente debe tener como mínimo 4 carácteres.')
+          return;
+        }
+      }
+
+      // if (this.myForm.controls['idpac']['value'] == '') {
+      //   this.invalid = true;
+      //   this.isClick = false;
+      //   return;
+      // }
       if (this.myForm.controls['aislado']['value'] == '') {
         this.invalid = true;
-         this.isClick = false;
+        this.isClick = false;
+        this.toast.MsgError('Debe indicar si el paciente se ecnuentra o no aislado.')
         return;
 
       }
       if (this.myForm.controls['recurso']['value'].length == 0) {
         this.invalid = true;
-         this.isClick = false;
+        this.isClick = false;
+        this.toast.MsgError('El recurso del paciente es obligatorio.')
         return;
 
 
@@ -322,11 +364,11 @@ export class FormMedellinPage implements OnInit {
         if (diff >= 0) {
           this.myForm.controls['fecha'].setValue(server.date)
           this.dateServer = server.date
-  
+
           this.myForm.controls['hora'].setValue(server.time)
           this.timeServer = server.time
-        } 
-       
+        }
+
 
 
         this.saving = true;
@@ -357,7 +399,12 @@ export class FormMedellinPage implements OnInit {
         }, {
           apiId: 'NOMBRE_PACIENTE',
           Value: this.myForm.controls['nombrepac']['value']
-        }, {
+        },
+        {
+          apiId: 'ID_PACIENTE',
+          Value: this.myForm.controls['idpac']['value'].toString().trim()
+        },
+        {
           apiId: 'RECURSOS',
           Value: this.myForm.controls['recurso']['value']
         }, {
@@ -383,15 +430,15 @@ export class FormMedellinPage implements OnInit {
             title: l.Name,
             Value: this.myForm.controls[l.Api.toString().toLowerCase()]['value']
           })
-     
+
         })
 
-    
-  
+
+
         if (login) {
-  
+
           let fecha = moment(this.myForm.controls['fecha']['value']).format('YYYY-MM-DD');
-  
+
           try {
             const create = await this.api.CreateActivity({
               WorkZoneID: login[0].WorkZone,
@@ -403,11 +450,11 @@ export class FormMedellinPage implements OnInit {
               Destino: this.myForm.controls['destino']['value']._id,
               Format: 'America/Bogota'
             })
-  
-       
-  
-  
-  
+
+
+
+
+
             if (create.status) {
               create.response.future = create.future;
               if (create.response.isAdmin == 1) {
@@ -415,15 +462,15 @@ export class FormMedellinPage implements OnInit {
               } else {
                 this.socket.newActivity(login[0].WorkZone + 'central', create.response)
               }
-  
+
               this.isClick = false;
-           
+
               this.myForm.reset()
-  
+
               this.router.navigate(['/dashboard'])
-  
+
               this.saving = false;
-  
+
             } else {
               this.isClick = false;
               this.saving = false;
@@ -441,7 +488,7 @@ export class FormMedellinPage implements OnInit {
         this.toast.MsgError('No se pudo guardar la fecha para la solicitud, recargue el formulario nuevamente')
       })
 
-    
+
 
 
 
@@ -470,12 +517,24 @@ export class FormMedellinPage implements OnInit {
       ]))
     })
 
-    
+
     if (event.detail.value.Name == 'TRANSPORTAR PACIENTE') {
       this.isPaciente = true;
       if (this.myForm.controls['recurso']['value'].length == 0) {
         this.invalid = true;
       }
+
+      if (this.myForm.controls['idpac']['value'] == '') {
+        // this.myForm.controls['idpac'].addValidators([Validators.minLength(4),
+        // Validators.required])
+        this.invalid = true;
+      }
+
+
+      // if (this.myForm.controls['idpac']['value'] == '') {
+      //   this.myForm.controls['idpac'].addValidators([Validators.required])
+      //   this.invalid = true;
+      // }
 
     } else {
 
@@ -484,7 +543,7 @@ export class FormMedellinPage implements OnInit {
       this.isPaciente = false;
     }
 
-    
+
 
 
 
@@ -524,9 +583,9 @@ export class FormMedellinPage implements OnInit {
 
     if (rec.length > 0) {
       if (!event.detail.checked) {
-        let idx =  this.myForm.value.recurso.findIndex((item) => item == event.detail.value)
-      
-        this.myForm.value.recurso.splice(idx, 1) 
+        let idx = this.myForm.value.recurso.findIndex((item) => item == event.detail.value)
+
+        this.myForm.value.recurso.splice(idx, 1)
       }
 
       return;

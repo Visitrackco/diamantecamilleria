@@ -10,3 +10,20 @@ ion-item {
 ion-item:hover {
     background: rgba(0,0,0,0.3) !important;
 }
+
+/* Separador de secciones del menú (Operación, Reportes, Configuración...) */
+.menu-sep {
+    padding: 14px 16px 6px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    margin-top: 6px;
+
+    &:first-of-type {
+        border-top: none;
+        margin-top: 0;
+    }
+}

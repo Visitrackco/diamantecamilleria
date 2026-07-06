@@ -59,6 +59,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { ComponentsModule } from 'src/app/Components/components.module';
+import { OnlyNumbersDirective } from '../directiva.directive';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -76,7 +77,8 @@ import { ComponentsModule } from 'src/app/Components/components.module';
     NgxMaterialTimepickerModule,
     MatSelectModule,
 
-    ComponentsModule
+    ComponentsModule,
+    OnlyNumbersDirective
     
   ],
 

@@ -478,7 +478,7 @@ export class TablaPage implements OnInit {
 
 
 
-      this.api.apiPost('searchActivity', {
+      this.api.apiPost('searchActivityReport', {
         token: login[0].token,
         WorkZoneID: login[0].WorkZone,
         Format: 'America/Bogota',

@@ -19,8 +19,10 @@ import { elementAt } from 'rxjs';
 export class UsuariosPage implements OnInit {
 
   displayedColumns =
-    ['estado', 'name', 'login', 'clave', 'islock', 'isdelete', 'isassigment', 'central', 'centraladmin', 'programmer', 'zones', 'acc'];
+    ['estado', 'name', 'login', 'clave', 'islock', 'isdelete', 'isassigment', 'perfil', 'central', 'centraladmin', 'programmer', 'zones', 'acc'];
   dataSource = new MatTableDataSource([]);
+
+  perfiles: any[] = [];
 
   @ViewChild('paginatorHistory') paginator: MatPaginator;
 
@@ -136,6 +138,8 @@ export class UsuariosPage implements OnInit {
 
         this.zones = zones.response;
 
+        const perfilesRs: any = await this.api.apiGet('perfiles?WorkZoneID=' + login[0].WorkZone, login[0].token)
+        this.perfiles = perfilesRs && perfilesRs.status ? perfilesRs.response : [];
 
 
         const rs = await this.api.apiGet('usersworkzone?WorkZoneID=' + login[0].WorkZone + '&all=1', login[0].token)
@@ -167,6 +171,8 @@ export class UsuariosPage implements OnInit {
               islock: element.IsLocked,
               isdelete: element.isCantDelete,
               isassigment: element.isCantAssigment,
+              coh: element.COH || 0,
+              perfil: element.Perfil || null,
               central: element.isCentral,
               centraladmin: element.isCentralAdmin,
               programmer: element.isCantProgrammer,
@@ -176,6 +182,12 @@ export class UsuariosPage implements OnInit {
             fila.push(obj)
           });
           this.dataSource.data = fila;
+
+          this.dataSource.filterPredicate = (data: any, filter: string) => {
+            const name = data.name ? data.name.toLowerCase() : '';
+            const login = data.login ? data.login.toLowerCase() : '';
+            return name.includes(filter) || login.includes(filter);
+          };
 
           this.dataSource.paginator = this.paginator;
 
@@ -388,6 +400,67 @@ export class UsuariosPage implements OnInit {
 
           if (event.detail.checked) {
             //this.socket.lockEmit({ '_id': data.acc._id })
+          }
+
+          this.loading = false;
+        }
+      } catch (error) {
+        this.loading = false;
+      }
+
+
+    }
+
+  }
+
+  async assignPerfil(event, data) {
+    const login = await this.stg.getLogin();
+    if (!login) return;
+
+    this.loading = true;
+
+    try {
+      const rs: any = await this.api.apiPost('assignPerfil', {
+        _id: data.acc._id,
+        token: login[0].token,
+        Perfil: event.detail.value || null
+      });
+
+      this.loading = false;
+
+      if (!rs || !rs.status) {
+        this.toast.MsgError(rs && rs.err ? rs.err : 'Error al asignar perfil');
+        return;
+      }
+
+      data.acc.Perfil = event.detail.value || null;
+      data.perfil = event.detail.value || null;
+      this.toast.MsgOK('Perfil actualizado');
+    } catch (error) {
+      this.loading = false;
+    }
+  }
+
+  async changeCOH(event, data) {
+    const login = await this.stg.getLogin();
+
+    this.loading = true;
+
+    if (login) {
+
+      try {
+        let rs = await this.api.apiPost('isCOH', {
+          _id: data.acc._id,
+          token: login[0].token,
+          COH: event.detail.checked ? 1 : 0
+        })
+
+        if (rs) {
+
+          if (!rs.status) {
+            this.toast.MsgError(rs.err)
+            this.loading = false;
+            return;
           }
 
           this.loading = false;

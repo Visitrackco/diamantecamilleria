@@ -92,6 +92,16 @@ const routes: Routes = [
     canActivate: [PageGuard]
   },
   {
+    path: 'reporte-formularios',
+    loadChildren: () => import('./Pages/Reportes/formularios/formularios.module').then(m => m.FormulariosPageModule),
+    canActivate: [PageGuard]
+  },
+  {
+    path: 'perfiles',
+    loadChildren: () => import('./Pages/perfiles/perfiles.module').then(m => m.PerfilesPageModule),
+    canActivate: [PageGuard]
+  },
+  {
     path: 'form-pruebas',
     loadChildren: () => import('./Pages/form-pruebas/form-pruebas.module').then(m => m.FormPruebasPageModule)
   },
@@ -107,6 +117,32 @@ const routes: Routes = [
   {
     path: 'custom-options',
     loadChildren: () => import('./Pages/custom-options/custom-options.module').then( m => m.CustomOptionsPageModule)
+  },
+  {
+    path: 'configuracion',
+    loadChildren: () => import('./Pages/configuracion/configuracion.module').then(m => m.ConfiguracionPageModule),
+    canActivate: [PageGuard]
+  },
+  {
+    path: 'programadas',
+    loadChildren: () => import('./Pages/programadas/programadas.module').then(m => m.ProgramadasPageModule),
+    canActivate: [PageGuard]
+  },
+  {
+    path: 'indicadores',
+    loadChildren: () => import('./Pages/indicadores/indicadores.module').then(m => m.IndicadoresPageModule),
+    canActivate: [PageGuard]
+  },
+  {
+    // Vista pública de solo lectura de un tablero compartido (sin guard, sin login)
+    path: 'ver/:token',
+    loadChildren: () => import('./Pages/publico/publico.module').then(m => m.PublicoPageModule)
+  },
+  {
+    // Administración de links compartidos (solo personal con todos los permisos)
+    path: 'links',
+    loadChildren: () => import('./Pages/links/links.module').then(m => m.LinksPageModule),
+    canActivate: [PageGuard]
   },
 ];
 

@@ -248,6 +248,66 @@
                 </ion-col>
             </ion-row>
 
+               <ion-row *ngIf="isPaciente">
+                <ion-col size="12" class="title">Número de identificación del paciente(Cédula, Tarjeta de Identidad,
+                    Registro Civil o Pasaporte. Para pacientes NN digite 0000)</ion-col>
+
+            </ion-row>
+
+            <ion-row *ngIf="isPaciente">
+                <ion-col size="12">
+                    <div class="help" style="padding: 10px; background-color: rgb(255, 253, 207);">
+                        <strong>Si es un paciente NN, por favor digite 0000, </strong>
+                    </div>
+                </ion-col>
+            </ion-row>
+
+            <ion-row *ngIf="isPaciente">
+                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['idpac'].value)">
+
+                    <mat-form-field>
+
+
+                        <input onlyNumbers type="text" formControlName="idpac" placeholder="Ingrese el ID del paciente" matInput>
+
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
+
+              <!-- <ion-row *ngIf="isPaciente">
+                <ion-col size="12" class="title">Número de identificación del paciente(Cédula, Tarjeta de Identidad, Registro Civil o Pasaporte. Para pacientes NN digite 0000)</ion-col>
+
+            </ion-row>
+
+            <ion-row *ngIf="isPaciente">
+                <ion-col size="12">
+                    <div class="help" style="padding: 10px; background-color: rgb(255, 253, 207);">
+                        <strong>Si es un paciente NN, por favor digite 0000, </strong>
+                    </div>
+                </ion-col>
+            </ion-row>
+
+            <ion-row *ngIf="isPaciente">
+                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['idpac'].value)">
+
+                    <mat-form-field>
+                   
+
+                        <input formControlName="idpac" placeholder="Ingrese el ID del paciente" matInput>
+
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
+
+             <ion-row *ngIf="isPaciente && myForm.controls['idpac'].errors">
+                <ion-col size="12">
+                    <div +ngIf="(myForm.controls['idpac'].errors | json).includes('minlength')" style="padding: 10px; background-color: rgb(255, 207, 207); color: red;">
+                        <strong>Debe ingresar como mínimo 4 carácteres</strong>
+               
+                    </div>
+                </ion-col>
+            </ion-row> -->
+
             <ion-row *ngIf="isPaciente">
                 <ion-col size="12" class="title">RECURSOS NECESARIOS</ion-col>
 

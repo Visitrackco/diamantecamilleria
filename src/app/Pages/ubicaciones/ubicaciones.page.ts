@@ -18,7 +18,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class UbicacionesPage implements OnInit {
 
   displayedColumns =
-  ['name', 'tag', 'torre', 'piso' , 'login' , 'logout', 'acc'];
+  ['name', 'tag', 'torre', 'piso' , 'grupo', 'login' , 'logout', 'acc'];
 dataSource = new MatTableDataSource([]);
 
 @ViewChild('paginatorHistory') paginator: MatPaginator;
@@ -83,6 +83,7 @@ async getHistory() {
             tag: element.TagUID,
             torre: element.Torre,
             piso: element.Piso,
+            grupo: element.Grupo || '',
             login: element.Login == 1 ? true : false,
             logout: element.Logout == 1 ? true : false,
             acc: element
@@ -151,6 +152,51 @@ async change(event, ele, type) {
 
 
     }
+}
+
+normalizeGrupo(value): string | null {
+  const v = (value || '').toString().trim().toLowerCase();
+  if (!v) return '';
+  if (v === 'infantil') return 'Infantil';
+  if (v === 'adultos' || v === 'adulto') return 'Adultos';
+  return null;
+}
+
+async changeGrupo(event, ele) {
+  const Grupo = event.detail.value || '';
+  const login = await this.stg.getLogin();
+
+  if (login) {
+    this.loading = true;
+    try {
+      const rs = await this.api.apiPost('locationGrupo', {
+        _id: ele.acc._id,
+        token: login[0].token,
+        Grupo
+      })
+
+      this.loading = false;
+
+      if (rs) {
+        if (!rs.status) {
+          this.toast.MsgError(rs.err)
+          return;
+        }
+
+        let fila = [...this.dataSource.data];
+        let idx = fila.findIndex((it) => it.acc._id == ele.acc._id);
+        if (idx >= 0) {
+          fila[idx].grupo = Grupo;
+          this.dataSource.data = fila;
+        }
+
+        this.toast.MsgOK('Grupo actualizado')
+      }
+    } catch (error) {
+      this.loading = false;
+      this.toast.MsgError('Error al actualizar el grupo')
+    }
+  }
 }
 
 async deletePoint(point) {
@@ -237,6 +283,12 @@ async editPoint(point) {
         type: 'text',
         name: 'piso',
         value: point.Piso
+      },
+      {
+        placeholder: 'Grupo (Infantil / Adultos)',
+        type: 'text',
+        name: 'Grupo',
+        value: point.Grupo
       }
     ],
     buttons: [
@@ -253,7 +305,12 @@ async editPoint(point) {
             return;
           }
 
-   
+          const grupo = this.normalizeGrupo(data.Grupo);
+          if (grupo === null) {
+            this.toast.MsgError('Grupo inválido. Use Infantil o Adultos (o déjelo vacío).')
+            return;
+          }
+          data.Grupo = grupo;
 
           this.loading = true;
 
@@ -263,7 +320,7 @@ async editPoint(point) {
             try {
               data._id = point._id;
               data.token = login[0].token;
-       
+
               const rs = await this.api.apiPost('locationsEdit', data)
       
               if (rs) {
@@ -327,6 +384,12 @@ async create() {
         type: 'text',
         name: 'Piso',
         value: ''
+      },
+      {
+        placeholder: 'Grupo (Infantil / Adultos)',
+        type: 'text',
+        name: 'Grupo',
+        value: ''
       }
     ],
     buttons: [
@@ -343,7 +406,12 @@ async create() {
             return;
           }
 
-   
+          const grupo = this.normalizeGrupo(data.Grupo);
+          if (grupo === null) {
+            this.toast.MsgError('Grupo inválido. Use Infantil o Adultos (o déjelo vacío).')
+            return;
+          }
+          data.Grupo = grupo;
 
           this.loading = true;
 
@@ -351,7 +419,7 @@ async create() {
 
           if (login) {
             try {
-         
+
               data.token = login[0].token;
               data.IDVT = 0;
               data.Prioridad = 0;

@@ -1,0 +1,99 @@
+<ion-header class="ion-no-border" [translucent]="true">
+    <ion-toolbar color="diamante">
+        <ion-title>Reporte de Conteo</ion-title>
+        <app-options slot="end"></app-options>
+    </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+
+    <div class="loading" *ngIf="loading">
+        <mat-spinner></mat-spinner>
+    </div>
+
+    <div class="main">
+        <div class="dash" *ngIf="load">
+
+            <div class="options">
+                <form [formGroup]="myForm" class="flex">
+                    <mat-form-field>
+                        <mat-label>Fecha Desde</mat-label>
+                        <input formControlName="from" [max]="dateServer" (dateChange)="changePicker($event, 1)" readonly
+                            matInput [matDatepicker]="picker">
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                        <mat-label>Fecha Hasta</mat-label>
+                        <input formControlName="to" [max]="dateServer" (dateChange)="changePicker($event, 2)" readonly
+                            matInput [matDatepicker]="picker2">
+                        <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2></mat-datepicker>
+                    </mat-form-field>
+
+                    <div class="separador"></div>
+
+                    <ion-button color="primary" fill="outline" [disabled]="!fechaFrom || !fechaTo"
+                        (click)="getReport()">
+                        <ion-icon name="refresh"></ion-icon>
+                    </ion-button>
+
+                    <ion-button color="danger" fill="outline" (click)="clear()">
+                        <ion-icon name="trash"></ion-icon>
+                    </ion-button>
+
+                    <ion-button color="success" fill="outline" [disabled]="!formularios.length"
+                        (click)="exportExcel()">
+                        <ion-icon name="newspaper"></ion-icon>
+                    </ion-button>
+                </form>
+            </div>
+
+
+            <div class="content-area" *ngIf="loadData">
+
+                <div class="empty-state" *ngIf="!formularios.length">
+                    No hay registros para el rango seleccionado.
+                </div>
+
+                <div class="form-block" *ngFor="let f of formularios">
+
+                    <div class="form-header">
+                        <h2 class="form-title">{{ f.Title }}</h2>
+                        <div class="stats">
+                            <div class="stat">
+                                <span class="stat-label">Total</span>
+                                <span class="stat-value">{{ fmt(f.totalAnual) }}</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Promedio mensual</span>
+                                <span class="stat-value">{{ fmt(f.promedioMensualPeriodo) }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table mat-table [dataSource]="f.distribucionMensual" class="months-table">
+
+                        <ng-container matColumnDef="mes">
+                            <th mat-header-cell *matHeaderCellDef>Mes</th>
+                            <td mat-cell *matCellDef="let m">{{ monthLabel(m) }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="cantidad">
+                            <th mat-header-cell *matHeaderCellDef class="num">Cantidad</th>
+                            <td mat-cell *matCellDef="let m" class="num">{{ fmt(m.total) }}</td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="monthsColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: monthsColumns;"></tr>
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</ion-content>

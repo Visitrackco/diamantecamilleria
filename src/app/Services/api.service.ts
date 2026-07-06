@@ -22,11 +22,11 @@ export class ApiService {
         private stg: Storage,
         private router: Router
     ) { }
-
-// https://diamanteticvisitrack.comm
-//https://diamanteticvisitrack.com
+//hhttp://localhost:4000
+// http://localhost:4000m
+//http://localhost:4000
     postUser(data: any) {
-        return fetch('https://diamanteticvisitrack.com/users', {
+        return fetch('http://localhost:4000/users', {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
@@ -39,7 +39,7 @@ export class ApiService {
 
     async getUser(data: any) {
         const token = await this.stg.get('tokenweb')
-        return fetch('https://diamanteticvisitrack.com/users?Login=' + data.Login + '&Password=' + data.Password, {
+        return fetch('http://localhost:4000/users?Login=' + data.Login + '&Password=' + data.Password, {
             method: 'GET',
             headers: {
                 'x-web': token
@@ -49,7 +49,7 @@ export class ApiService {
     }
 
     getLocationByZone(data: any) {
-        return fetch('https://diamanteticvisitrack.com/locations?WorkZoneID=' + data.WorkZoneID, {
+        return fetch('http://localhost:4000/locations?WorkZoneID=' + data.WorkZoneID, {
             method: 'GET',
             headers: {
                 'x-token' : data['token']
@@ -60,7 +60,7 @@ export class ApiService {
 
     async googleSingIn(data: any) {
         const token = await this.stg.get('tokenweb')
-        return fetch('https://diamanteticvisitrack.com/googleSingIn', {
+        return fetch('http://localhost:4000/googleSingIn', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -73,7 +73,7 @@ export class ApiService {
     }
 
     getWorkZones(data: any) {
-        return fetch('https://diamanteticvisitrack.com/workzonesList', {
+        return fetch('http://localhost:4000/workzonesList', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -90,7 +90,7 @@ export class ApiService {
     }
 
     getSessions(data: any) {
-        return fetch('https://diamanteticvisitrack.com/session', {
+        return fetch('http://localhost:4000/session', {
             method: 'GET',
             headers: {
                 'x-token': data.token
@@ -115,8 +115,8 @@ export class ApiService {
 
     }
 
-    getWMotivos(WorkZoneID: any, token) {
-        return fetch('https://diamanteticvisitrack.com/motivos?WorkZoneID=' + WorkZoneID, {
+    getWMotivos(WorkZoneID: any, token, applyCOH?) {
+        return fetch('http://localhost:4000/motivos?WorkZoneID=' + WorkZoneID + (applyCOH ? '&applyCOH=1' : ''), {
             method: 'GET',
             headers: {
                 'x-token' : token
@@ -132,7 +132,7 @@ export class ApiService {
 
 
     CreateActivity(data: any) {
-        return fetch('https://diamanteticvisitrack.com/CreateActivity', {
+        return fetch('http://localhost:4000/CreateActivity', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -163,7 +163,7 @@ export class ApiService {
 
 
     getDate(data: any) {
-        return fetch('https://diamanteticvisitrack.com/date?format=' + data.format, {
+        return fetch('http://localhost:4000/date?format=' + data.format, {
             method: 'GET',
             headers: {
          
@@ -193,7 +193,7 @@ export class ApiService {
 
 
     closeSession(data: any) {
-        return fetch('https://diamanteticvisitrack.com/closeSession', {
+        return fetch('http://localhost:4000/closeSession', {
             method: 'GET',
             headers: {
          
@@ -226,7 +226,7 @@ export class ApiService {
 
     apiGet(service, token) {
  
-        return fetch('https://diamanteticvisitrack.com/' + service, {
+        return fetch('http://localhost:4000/' + service, {
             method: 'GET',
             headers: {
              
@@ -264,7 +264,7 @@ export class ApiService {
 
     apiDelete(service, token) {
       
-        return fetch('https://diamanteticvisitrack.com/' + service, {
+        return fetch('http://localhost:4000/' + service, {
             method: 'DELETE',
             headers: {
              
@@ -301,7 +301,7 @@ export class ApiService {
     }
 
     apiPost(service, data: any) {
-        return fetch('https://diamanteticvisitrack.com/' + service, {
+        return fetch('http://localhost:4000/' + service, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

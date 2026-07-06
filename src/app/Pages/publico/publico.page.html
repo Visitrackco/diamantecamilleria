@@ -1,0 +1,134 @@
+<!-- Encabezado con el color del dashboard (diamante) -->
+<ion-header class="ion-no-border">
+  <ion-toolbar color="diamante">
+    <div class="pub-toolbar">
+      <div class="pub-brand">
+        <ion-icon name="bar-chart"></ion-icon>
+        <div class="pub-brand-txt">
+          <span class="pub-brand-title">{{ nombre || 'Tablero de indicadores' }}</span>
+          <span class="pub-brand-sub">Visitrack · Tablero compartido</span>
+        </div>
+      </div>
+      <span class="pub-badge">
+        <ion-icon name="eye-outline"></ion-icon> Solo lectura
+      </span>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="pub-content">
+
+  <div class="pub-wrap">
+
+    <!-- Cargando (inicial) -->
+    <div class="pub-estado" *ngIf="loading">
+      <ion-spinner></ion-spinner>
+      <p>Cargando tablero…</p>
+    </div>
+
+    <!-- Solicitud de clave -->
+    <div class="pub-clave" *ngIf="!loading && requierePassword">
+      <ion-icon name="lock-closed-outline" class="pub-lock"></ion-icon>
+      <h3>Este tablero requiere clave</h3>
+      <input type="password" [(ngModel)]="password" placeholder="Ingresa la clave"
+        (keyup.enter)="validarPassword()" />
+      <p class="pub-error" *ngIf="error">{{ error }}</p>
+      <button class="pub-btn" (click)="validarPassword()" [disabled]="!password">Ver tablero</button>
+    </div>
+
+    <!-- Error -->
+    <div class="pub-estado" *ngIf="!loading && error && !requierePassword">
+      <ion-icon name="alert-circle-outline" class="pub-err-icon"></ion-icon>
+      <p>{{ error }}</p>
+    </div>
+
+    <!-- Contenido -->
+    <ng-container *ngIf="!loading && !error && !requierePassword && datos">
+
+      <!-- Barra de filtros interactivos (si el creador habilitó alguno; la fecha nunca) -->
+      <div class="pub-filtros" *ngIf="hayFiltros">
+
+        <div class="pub-filtros-head">
+          <span class="pf-titulo"><ion-icon name="funnel-outline"></ion-icon> Filtros</span>
+          <span class="pf-activos" *ngIf="filtrosActivosCount">{{ filtrosActivosCount }} aplicado{{ filtrosActivosCount > 1 ? 's' : '' }}</span>
+        </div>
+
+        <div class="pub-filtros-row">
+          <div class="pub-filtro" *ngIf="interactivos.prioridad" [class.activo]="filtroActivo('prioridad')">
+            <label>Prioridad <span class="dot" *ngIf="filtroActivo('prioridad')"></span></label>
+            <select [(ngModel)]="fVals.Prioridad" (change)="cambiarFiltro()">
+              <option *ngFor="let o of prioridadOpts" [value]="o.v">{{ o.l }}</option>
+            </select>
+          </div>
+
+          <div class="pub-filtro" *ngIf="interactivos.unidad" [class.activo]="filtroActivo('unidad')">
+            <label>Unidad definitiva <span class="dot" *ngIf="filtroActivo('unidad')"></span></label>
+            <select [(ngModel)]="fVals.Unidad" (change)="cambiarFiltro()">
+              <option *ngFor="let o of unidadOpts" [value]="o.v">{{ o.l }}</option>
+            </select>
+          </div>
+
+          <div class="pub-filtro" *ngIf="interactivos.turno" [class.activo]="filtroActivo('turno')">
+            <label>Turno <span class="dot" *ngIf="filtroActivo('turno')"></span></label>
+            <select [(ngModel)]="fVals.Turno" (change)="cambiarFiltro()">
+              <option *ngFor="let o of turnoOpts" [value]="o.v">{{ o.l }}</option>
+            </select>
+          </div>
+
+          <div class="pub-filtro" *ngIf="interactivos.motivo" [class.activo]="filtroActivo('motivo')">
+            <label>Motivo <span class="dot" *ngIf="filtroActivo('motivo')"></span></label>
+            <select [(ngModel)]="fVals.Motivo" (change)="cambiarFiltro()">
+              <option value="">Todos</option>
+              <option *ngFor="let m of motivos" [value]="m._id">{{ m.Name }}</option>
+            </select>
+          </div>
+
+          <div class="pub-filtro" *ngIf="interactivos.tipo" [class.activo]="filtroActivo('tipo')">
+            <label>Tipo <span class="dot" *ngIf="filtroActivo('tipo')"></span></label>
+            <select [(ngModel)]="fVals.Tipo" (change)="cambiarFiltro()">
+              <option *ngFor="let o of tipoOpts" [value]="o.v">{{ o.l }}</option>
+            </select>
+          </div>
+
+          <div class="pub-recargando" *ngIf="recargando">
+            <ion-spinner name="crescent"></ion-spinner>
+          </div>
+        </div>
+
+        <!-- Resumen de filtros aplicados (chips) -->
+        <div class="pub-chips" *ngIf="filtrosActivosCount">
+          <span class="chip" *ngIf="interactivos.prioridad && filtroActivo('prioridad')">
+            Prioridad: {{ fVals.Prioridad === 'critico' ? 'Crítico' : 'No crítico' }}
+          </span>
+          <span class="chip" *ngIf="interactivos.unidad && filtroActivo('unidad')">Unidad: {{ fVals.Unidad }}</span>
+          <span class="chip" *ngIf="interactivos.turno && filtroActivo('turno')">Turno: {{ fVals.Turno === 'dia' ? 'Día' : 'Noche' }}</span>
+          <span class="chip" *ngIf="interactivos.motivo && filtroActivo('motivo')">Motivo: {{ motivoNombre }}</span>
+          <span class="chip" *ngIf="interactivos.tipo && filtroActivo('tipo')">Tipo: {{ fVals.Tipo === 'admin' ? 'Administrativas' : 'Todos' }}</span>
+        </div>
+      </div>
+
+      <!-- Pantalla en modo público (solo lectura) -->
+      <div class="pub-body">
+        <app-bi-camilleria *ngIf="pantalla === 'camilleria'"
+          [modoPublico]="true" [datosPublicos]="datos"></app-bi-camilleria>
+
+        <app-bi-camilleria2 *ngIf="pantalla === 'camilleria2'"
+          [modoPublico]="true" [datosPublicos]="datos"></app-bi-camilleria2>
+
+        <app-bi-mapacalor *ngIf="pantalla === 'mapacalor'"
+          [modoPublico]="true" [datosPublicos]="datos"></app-bi-mapacalor>
+
+        <app-bi-mapacumplimiento *ngIf="pantalla === 'mapacumplimiento'"
+          [modoPublico]="true" [datosPublicos]="datos"></app-bi-mapacumplimiento>
+
+        <app-bi-camilleria4 *ngIf="pantalla === 'camilleria4'"
+          [modoPublico]="true" [datosPublicos]="datos"></app-bi-camilleria4>
+      </div>
+
+      <div class="pub-foot">Visitrack · Tablero compartido</div>
+
+    </ng-container>
+
+  </div>
+
+</ion-content>

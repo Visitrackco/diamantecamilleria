@@ -1,0 +1,155 @@
+<ion-header class="ion-no-border" [translucent]="true">
+  <ion-toolbar color="diamante">
+    <ion-title>Administrar Links</ion-title>
+    <app-options slot="end"></app-options>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="lk-wrap">
+
+    <div class="lk-head">
+      <div class="lk-head-txt">
+        <h2>Links compartidos</h2>
+        <span>Tableros publicados como link de solo lectura.</span>
+      </div>
+      <button class="lk-btn lk-btn-sec" (click)="cargar()" [disabled]="loading">
+        <ion-icon name="refresh"></ion-icon><span>Recargar</span>
+      </button>
+    </div>
+
+    <!-- Cargando -->
+    <div class="lk-estado" *ngIf="loading">
+      <ion-spinner></ion-spinner>
+    </div>
+
+    <!-- Vacío -->
+    <div class="lk-vacio" *ngIf="!loading && !links.length">
+      <ion-icon name="link-outline"></ion-icon>
+      <p>Aún no hay links compartidos.</p>
+    </div>
+
+    <!-- Tabla de links -->
+    <div class="lk-tabla-wrap" *ngIf="!loading && links.length">
+      <table class="lk-tabla">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Pantalla</th>
+            <th>Acceso</th>
+            <th class="num">Filtros</th>
+            <th>Creado por</th>
+            <th class="acc">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let l of links">
+            <td>
+              <span class="lk-nombre">{{ l.Nombre || '(sin nombre)' }}</span>
+            </td>
+            <td>{{ l.pantallaLabel }}</td>
+            <td>
+              <span class="lk-chip" [class.pub]="l.publico === 1" [class.priv]="l.publico !== 1">
+                <ion-icon [name]="l.publico === 1 ? 'earth-outline' : 'lock-closed-outline'"></ion-icon>
+                {{ l.publico === 1 ? 'Público' : 'Con clave' }}
+              </span>
+            </td>
+            <td class="num">{{ interactivosActivos(l) }}</td>
+            <td class="lk-creador">{{ l.creador || '—' }}</td>
+            <td class="acc">
+              <button class="lk-ico" title="Copiar link" (click)="copiar(l)">
+                <ion-icon name="copy-outline"></ion-icon>
+              </button>
+              <button class="lk-ico" title="Abrir" (click)="abrir(l)">
+                <ion-icon name="open-outline"></ion-icon>
+              </button>
+              <button class="lk-ico" title="Editar" (click)="editar(l)">
+                <ion-icon name="create-outline"></ion-icon>
+              </button>
+              <button class="lk-ico lk-ico-del" title="Eliminar" (click)="eliminar(l)">
+                <ion-icon name="trash-outline"></ion-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- Modal de edición -->
+  <div class="lk-overlay" *ngIf="editando" (click)="cancelarEdicion()">
+    <div class="lk-card" (click)="$event.stopPropagation()">
+      <div class="lk-card-head">
+        <div class="lk-card-title">
+          <ion-icon name="create-outline"></ion-icon>
+          <span>Editar link</span>
+        </div>
+        <button class="lk-x" (click)="cancelarEdicion()"><ion-icon name="close"></ion-icon></button>
+      </div>
+
+      <div class="lk-card-body">
+        <p class="lk-sub">Pantalla: <b>{{ editando.pantallaLabel }}</b></p>
+
+        <label class="lk-label">Nombre</label>
+        <input class="lk-input" type="text" [(ngModel)]="editando.Nombre" placeholder="Nombre del link" />
+
+        <!-- Fechas del link -->
+        <label class="lk-label">Fechas del reporte</label>
+        <div class="lk-fechas">
+          <mat-form-field class="lk-fecha-field">
+            <mat-label>Desde</mat-label>
+            <input matInput [matDatepicker]="pDesde" [(ngModel)]="editando.desde" readonly />
+            <mat-datepicker-toggle matIconSuffix [for]="pDesde"></mat-datepicker-toggle>
+            <mat-datepicker #pDesde></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field class="lk-fecha-field">
+            <mat-label>Hasta</mat-label>
+            <input matInput [matDatepicker]="pHasta" [(ngModel)]="editando.hasta" readonly />
+            <mat-datepicker-toggle matIconSuffix [for]="pHasta"></mat-datepicker-toggle>
+            <mat-datepicker #pHasta></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <!-- Público / con clave -->
+        <div class="lk-switch">
+          <div class="lk-switch-txt">
+            <span class="lk-switch-title">{{ editando.publico ? 'Público' : 'Requiere clave' }}</span>
+            <span class="lk-switch-sub">
+              {{ editando.publico ? 'Cualquiera con el link puede verlo.' : 'Se pedirá una clave para verlo.' }}
+            </span>
+          </div>
+          <mat-slide-toggle color="primary" [(ngModel)]="editando.publico"></mat-slide-toggle>
+        </div>
+
+        <div class="lk-pass" *ngIf="!editando.publico">
+          <label class="lk-label">Clave <span>(déjala vacía para conservar la actual)</span></label>
+          <input class="lk-input" type="password" [(ngModel)]="editando.password" placeholder="Nueva clave" />
+        </div>
+
+        <!-- Filtros interactivos -->
+        <div class="lk-inter" *ngIf="filtrosEdit.length">
+          <div class="lk-inter-head">
+            <span class="lk-label">Filtros interactivos</span>
+            <span class="lk-inter-hint">La fecha siempre queda fija.</span>
+          </div>
+          <div class="lk-inter-row" *ngFor="let f of filtrosEdit">
+            <span class="lk-inter-name">{{ f.label }}</span>
+            <mat-slide-toggle color="primary" [ngModel]="editando.interactivos[f.key]"
+              (ngModelChange)="toggleInteractivo(f.key, $event)"></mat-slide-toggle>
+          </div>
+        </div>
+
+        <div class="lk-actions">
+          <button class="lk-btn lk-btn-sec" (click)="cancelarEdicion()" [disabled]="guardando">Cancelar</button>
+          <button class="lk-btn lk-btn-pri" (click)="guardarEdicion()" [disabled]="guardando">
+            <ion-spinner name="crescent" *ngIf="guardando"></ion-spinner>
+            <span *ngIf="!guardando">Guardar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

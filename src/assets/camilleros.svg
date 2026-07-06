@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 360" fill="none">
+  <!-- Piso -->
+  <ellipse cx="210" cy="322" rx="180" ry="18" fill="#eef0f3"/>
+
+  <!-- ===== Camilla (gurney) ===== -->
+  <!-- patas / estructura -->
+  <path d="M120 250 L150 300 M300 250 L270 300 M150 250 L150 300 M270 250 L270 300" stroke="#94a3b8" stroke-width="6" stroke-linecap="round"/>
+  <!-- ruedas -->
+  <circle cx="150" cy="304" r="12" fill="#334155"/><circle cx="150" cy="304" r="4" fill="#cbd5e1"/>
+  <circle cx="270" cy="304" r="12" fill="#334155"/><circle cx="270" cy="304" r="4" fill="#cbd5e1"/>
+  <!-- base de la cama -->
+  <rect x="110" y="232" width="200" height="20" rx="6" fill="#c2410c"/>
+  <rect x="110" y="232" width="200" height="7" rx="3.5" fill="#e2660f"/>
+  <!-- colchon -->
+  <rect x="118" y="216" width="184" height="18" rx="8" fill="#f1f5f9"/>
+  <!-- almohada -->
+  <rect x="126" y="204" width="46" height="20" rx="9" fill="#e2e8f0"/>
+
+  <!-- ===== Paciente ===== -->
+  <!-- cabeza -->
+  <circle cx="150" cy="200" r="14" fill="#f6c6a4"/>
+  <!-- cobija -->
+  <path d="M170 224 Q210 200 285 216 L292 232 L172 232 Z" fill="#3f51b5"/>
+  <path d="M170 224 Q210 206 285 218" stroke="#5566cf" stroke-width="4" fill="none"/>
+
+  <!-- ===== Camillero (empuja por la izquierda) ===== -->
+  <!-- brazo hacia la camilla -->
+  <path d="M92 210 L120 236" stroke="#2f8f83" stroke-width="12" stroke-linecap="round"/>
+  <!-- cuerpo (uniforme) -->
+  <path d="M60 234 Q78 196 98 210 L96 280 L64 280 Z" fill="#2f8f83"/>
+  <!-- cuello -->
+  <rect x="72" y="182" width="16" height="16" rx="6" fill="#e8b892"/>
+  <!-- cabeza -->
+  <circle cx="80" cy="172" r="18" fill="#f6c6a4"/>
+  <path d="M63 168 Q80 148 97 168 Q92 158 80 156 Q68 158 63 168 Z" fill="#3d2b21"/>
+  <!-- piernas -->
+  <path d="M66 280 L60 316 M92 280 L98 316" stroke="#1f2937" stroke-width="12" stroke-linecap="round"/>
+  <!-- zapatos -->
+  <path d="M52 318 L66 318 M92 318 L106 318" stroke="#111827" stroke-width="10" stroke-linecap="round"/>
+
+  <!-- ===== Portasueros (IV) ===== -->
+  <path d="M330 130 L330 252" stroke="#94a3b8" stroke-width="5" stroke-linecap="round"/>
+  <path d="M322 130 L338 130" stroke="#94a3b8" stroke-width="5" stroke-linecap="round"/>
+  <rect x="322" y="132" width="16" height="26" rx="4" fill="#bae6fd"/>
+  <path d="M330 158 Q330 190 300 214" stroke="#7dd3fc" stroke-width="2.5" fill="none"/>
+  <circle cx="330" cy="256" r="7" fill="#334155"/>
+
+  <!-- Cruz medica -->
+  <g transform="translate(360,60)">
+    <rect x="-4" y="-14" width="8" height="28" rx="2" fill="#c2410c"/>
+    <rect x="-14" y="-4" width="28" height="8" rx="2" fill="#c2410c"/>
+  </g>
+</svg>

@@ -132,7 +132,7 @@ export class FormPruebasPage implements OnInit {
           this.selectedStates = this.locations;
           this.selectedStates2 = this.locations;
 
-          this.api.getWMotivos(login[0].WorkZone, login[0].token
+          this.api.getWMotivos(login[0].WorkZone, login[0].token, true
           ).then((rsMotivo) => {
             this.motivosList = rsMotivo.response;
 
@@ -223,9 +223,6 @@ export class FormPruebasPage implements OnInit {
       idpac: new FormControl('', [
         // validaciones síncronas
 
-        Validators.minLength(4),
-        Validators.required
-
 
       ]),
       recurso: new FormArray([], [
@@ -286,8 +283,25 @@ export class FormPruebasPage implements OnInit {
       if (this.myForm.controls['nombrepac']['value'] == '') {
         this.invalid = true;
         this.isClick = false;
+        this.toast.MsgError('El nombre del paciente es obligatorio.')
         return;
       }
+
+
+      if (this.myForm.controls['idpac']['value'] == '') {
+        this.invalid = true;
+        this.isClick = false;
+        this.toast.MsgError('La identificación del paciente es obligatoria.')
+        return;
+      } else {
+        if (this.myForm.controls['idpac']['value'].length < 4) {
+          this.invalid = true;
+          this.isClick = false;
+          this.toast.MsgError('La identificación del paciente debe tener como mínimo 4 carácteres.')
+          return;
+        }
+      }
+
 
       if (this.myForm.controls['idpac']['value'] == '') {
         this.invalid = true;
@@ -378,7 +392,7 @@ export class FormPruebasPage implements OnInit {
           Value: this.myForm.controls['nombrepac']['value']
         }, {
           apiId: 'ID_PACIENTE',
-          Value: this.myForm.controls['idpac']['value']
+          Value: this.myForm.controls['idpac']['value'].toString().trim()
         }, {
           apiId: 'RECURSOS',
           Value: this.myForm.controls['recurso']['value']
@@ -489,20 +503,18 @@ export class FormPruebasPage implements OnInit {
     })
     if (event.detail.value.Name == 'TRANSPORTAR PACIENTE') {
       this.isPaciente = true;
-      if (this.myForm.controls['recurso']['value'].length == 0) {
-        this.invalid = true;
-      }
+      // if (this.myForm.controls['recurso']['value'].length == 0) {
+      //   this.invalid = true;
+      // }
 
-      if (this.myForm.controls['idpac']['value'] == '') {
-        this.myForm.controls['idpac'].addValidators([Validators.required])
-        this.invalid = true;
-      }
+
 
     } else {
 
 
 
       this.isPaciente = false;
+  
     }
 
 

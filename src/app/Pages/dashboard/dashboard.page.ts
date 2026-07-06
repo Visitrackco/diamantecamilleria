@@ -34,8 +34,10 @@ export class DashboardPage implements OnInit {
 
 
 
-  displayedColumns =
+  baseColumns =
     ['estado', 'fecha', 'recibido', 'motivo', 'origen', 'destino', 'camillero', 'obscentral', 'obs', 'obs3', 'acc', 'obssolicitante', 'token'];
+  cohHiddenColumns = ['recibido', 'obs3', 'obssolicitante', 'token'];
+  displayedColumns = [...this.baseColumns];
   dataSource = new MatTableDataSource([]);
 
   @ViewChild('paginatorHistory') paginator: MatPaginator;
@@ -60,6 +62,10 @@ export class DashboardPage implements OnInit {
   motivoSelect;
   origenSelec;
   DestinoSelect;
+
+  isCOH = false;
+  perfilName = '';
+  perfilIsCOH = false;
 
   filter;
 
@@ -152,7 +158,6 @@ export class DashboardPage implements OnInit {
           if (this.isFilter) {
             return;
           }
-
 
           let fila = [...this.dataSource.data];
 
@@ -296,6 +301,7 @@ export class DashboardPage implements OnInit {
     })
     this.interval = setInterval(() => {
       if (!this.stop) {
+        this.reloadMotivos()
         this.getSolicitudes()
       }
     }, 30000)
@@ -364,6 +370,8 @@ export class DashboardPage implements OnInit {
 
     moment.locale('en')
 
+    this.resetFilters();
+
     this.midata()
 
     this.stop = false;
@@ -373,7 +381,38 @@ export class DashboardPage implements OnInit {
 
   }
 
+  resetFilters() {
+    try { this.mot && this.mot.writeValue(''); } catch (e) { }
+    try { this.org && this.org.writeValue(''); } catch (e) { }
+    try { this.des && this.des.writeValue(''); } catch (e) { }
+
+    this.motivoSelect = false;
+    this.origenSelec = false;
+    this.DestinoSelect = false;
+    this.fechaFrom = '';
+    this.fechaTo = '';
+    this.fromTemp = '';
+    this.toTemp = '';
+    this.filter = true;
+    this.isAllStatus = false;
+    this.isFilter = false;
+    this.isCOH = false;
+    this.perfilName = '';
+    this.perfilIsCOH = false;
+    this.applyCOHColumns();
+    this.dataSource.data = [];
+
+    if (this.myForm) {
+      this.myForm.controls['from'].setValue('');
+      this.myForm.controls['to'].setValue('');
+    }
+  }
+
   async midata() {
+
+    this.isCOH = false;
+    this.perfilName = '';
+    this.perfilIsCOH = false;
 
     this.loadForm()
 
@@ -435,11 +474,18 @@ export class DashboardPage implements OnInit {
           this.selectedStates = this.locations;
           this.selectedStates2 = this.locations;
 
-          this.api.getWMotivos(login[0].WorkZone, login[0].token
+          this.api.getWMotivos(login[0].WorkZone, login[0].token, true
           ).then((rsMotivo) => {
 
+            this.isCOH = rsMotivo.isCOH ? true : false;
+            this.perfilName = rsMotivo.perfilName || '';
+            this.perfilIsCOH = rsMotivo.perfilIsCOH ? true : false;
+            this.applyCOHColumns();
             this.motivosList = rsMotivo.response;
             this.motivosList2 = this.motivosList;
+
+            this.isDelete = login[0].isCantDelete;
+            this.isAssigment = login[0].isCantAssigment;
 
             this.getSolicitudes();
             this.getUsers();
@@ -1562,7 +1608,33 @@ export class DashboardPage implements OnInit {
   load() {
     this.stop = false;
     this.filter = true;
+    this.reloadMotivos()
     this.getSolicitudes()
+  }
+
+  async reloadMotivos() {
+    const login = await this.stg.getLogin();
+    if (login) {
+      const rsMotivo = await this.api.getWMotivos(login[0].WorkZone, login[0].token, true);
+      if (rsMotivo) {
+        this.isCOH = rsMotivo.isCOH ? true : false;
+        this.perfilName = rsMotivo.perfilName || '';
+        this.perfilIsCOH = rsMotivo.perfilIsCOH ? true : false;
+        this.applyCOHColumns();
+        this.motivosList = rsMotivo.response;
+        this.motivosList2 = this.motivosList;
+      }
+    }
+  }
+
+  applyCOHColumns() {
+    if (this.perfilIsCOH) {
+      this.displayedColumns = this.baseColumns.filter(
+        (c) => !this.cohHiddenColumns.includes(c)
+      );
+    } else {
+      this.displayedColumns = [...this.baseColumns];
+    }
   }
 
   filterUsers(event) {
@@ -1598,24 +1670,7 @@ export class DashboardPage implements OnInit {
     if (this.interval) {
       //  clearInterval(this.interval);
     }
-    this.mot.writeValue('');
-    this.org.writeValue('');
-    this.des.writeValue('');
-    this.motivoSelect = false;
-    this.origenSelec = false;
-    this.DestinoSelect = false;
-    this.fechaFrom = '';
-    this.fechaTo = '';
-    this.fromTemp = '';
-    this.toTemp = '';
-    this.filter = true;
-    this.isAllStatus = false;
-    this.isFilter = false;
-
-    this.myForm.controls['from'].setValue('');
-    this.myForm.controls['to'].setValue('');
-    this.dataSource.data = [];
-
+    this.resetFilters();
   }
 
 
