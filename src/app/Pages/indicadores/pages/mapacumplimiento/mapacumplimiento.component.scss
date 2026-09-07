@@ -34,6 +34,10 @@ $border: #e5e7eb;
 
 .cam-top { display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; }
 
+/* Fuerza a que los KPI (cantidad de servicios / % cumplimiento) bajen a su
+   propia fila, separados de los filtros de arriba. */
+.cam-top-break { flex-basis: 100%; height: 0; }
+
 .filtro {
   background: $filtro-bg;
   border: 1px solid #f5e0c8;
@@ -50,15 +54,18 @@ $border: #e5e7eb;
     border: 1px solid #dcc3a0; border-radius: 6px; padding: 6px 8px;
     font-size: 12px; background: #fff; color: #374151; outline: none; width: 100%;
   }
-  .rango { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .rango { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .par { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
 }
 
-.fecha-filtro { flex: 1 1 250px; min-width: 210px; }
+.fecha-filtro { flex: 1 1 330px; min-width: 290px; }
 .fecha-field {
-  flex: 1 1 105px; min-width: 0; font-size: 12px;
+  flex: 1 1 105px; min-width: 0; font-size: 12px; cursor: pointer;
   ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
   ::ng-deep .mat-mdc-text-field-wrapper { background: #fff; }
   ::ng-deep .mat-mdc-form-field-infix { min-height: 42px; }
+
+  &.hora-field { flex: 0 1 92px; }
 }
 
 .slicer .opts {

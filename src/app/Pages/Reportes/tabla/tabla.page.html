@@ -19,23 +19,41 @@
 
             <div class="options">
                 <form [formGroup]="myForm" class="flex">
-                    <mat-form-field>
-                        <mat-label>Fecha Desde</mat-label>
-                        <input formControlName="from" [max]="dateServer" (dateChange)="changePicker($event, 1)" readonly
-                            matInput [matDatepicker]="picker">
+                    <div class="par">
+                        <mat-form-field class="fecha" (click)="picker.open()">
+                            <mat-label>Fecha Desde</mat-label>
+                            <input formControlName="from" [max]="dateServer" (dateChange)="changePicker($event, 1)" readonly
+                                matInput [matDatepicker]="picker">
 
-                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                        <mat-datepicker #picker></mat-datepicker>
-                    </mat-form-field>
+                            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
 
-                    <mat-form-field>
-                        <mat-label>Fecha Hasta</mat-label>
-                        <input formControlName="to" [max]="dateServer" (dateChange)="changePicker($event, 2)" readonly
-                            matInput [matDatepicker]="picker2">
+                        <mat-form-field class="hora">
+                            <mat-label>Hora</mat-label>
+                            <mat-select formControlName="horaFrom" (selectionChange)="changeHora($event.value, 1)">
+                                <mat-option *ngFor="let h of horasOpts" [value]="h">{{ h }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
 
-                        <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
-                        <mat-datepicker #picker2></mat-datepicker>
-                    </mat-form-field>
+                    <div class="par">
+                        <mat-form-field class="fecha" (click)="picker2.open()">
+                            <mat-label>Fecha Hasta</mat-label>
+                            <input formControlName="to" [max]="dateServer" (dateChange)="changePicker($event, 2)" readonly
+                                matInput [matDatepicker]="picker2">
+
+                            <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+                            <mat-datepicker #picker2></mat-datepicker>
+                        </mat-form-field>
+
+                        <mat-form-field class="hora">
+                            <mat-label>Hora</mat-label>
+                            <mat-select formControlName="horaTo" (selectionChange)="changeHora($event.value, 2)">
+                                <mat-option *ngFor="let h of horasOpts" [value]="h">{{ h }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
 
 
 
@@ -55,6 +73,12 @@
                  
 
 
+
+
+                    <ion-button color="diamante" fill="outline" (click)="consultar()">
+                        <ion-icon name="search"></ion-icon>
+                        Consultar
+                    </ion-button>
 
 
                     <ion-button color="danger" fill="outline" (click)="clear()">

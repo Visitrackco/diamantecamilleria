@@ -1,0 +1,235 @@
+<ion-header class="ion-no-border" [translucent]="true">
+  <ion-toolbar color="diamante">
+    <ion-title>Auditoría del Sistema</ion-title>
+    <app-options slot="end"></app-options>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="aud">
+
+    <!-- Barra de acciones -->
+    <div class="aud-toolbar">
+      <span class="aud-subtitulo">Salud y uso de los servicios del backend</span>
+      <div class="aud-toolbar-right">
+        <button class="btn btn-ayuda" (click)="ayuda()" title="¿Cómo se calcula cada dato?">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <span>¿Cómo se calcula?</span>
+        </button>
+        <button class="btn btn-recargar" (click)="recargar()" [disabled]="loading" title="Recargar">
+          <ion-icon name="refresh"></ion-icon>
+          <span>Recargar</span>
+        </button>
+        <button class="btn btn-recalcular" (click)="recalcularConteos()" [disabled]="loading" title="Recalcular Total/Pendiente de camilleros conectados o en descanso">
+          <ion-icon name="calculator-outline"></ion-icon>
+          <span>Recalcular conteos</span>
+        </button>
+        <button class="btn btn-purgar" (click)="purgar()" [disabled]="loading" title="Purgar logs de auditoría">
+          <ion-icon name="trash-outline"></ion-icon>
+          <span>Purgar logs</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filtros: una sola fila, arriba de todo -->
+    <div class="aud-filtros">
+
+      <div class="rango-rapido">
+        <button *ngFor="let p of presets" class="chip" [class.on]="preset === p.key" (click)="aplicarPreset(p.key)">
+          {{ p.label }}
+        </button>
+      </div>
+
+      <div class="rango-custom">
+        <mat-form-field class="fecha-field">
+          <mat-label>Desde</mat-label>
+          <input matInput [matDatepicker]="pDesde" [(ngModel)]="desde" (dateChange)="onRangoManual()" readonly />
+          <mat-datepicker-toggle matIconSuffix [for]="pDesde"></mat-datepicker-toggle>
+          <mat-datepicker #pDesde></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="fecha-field">
+          <mat-label>Hasta</mat-label>
+          <input matInput [matDatepicker]="pHasta" [(ngModel)]="hasta" (dateChange)="onRangoManual()" readonly />
+          <mat-datepicker-toggle matIconSuffix [for]="pHasta"></mat-datepicker-toggle>
+          <mat-datepicker #pHasta></mat-datepicker>
+        </mat-form-field>
+        <span class="rango-nota">máx. 1 semana</span>
+      </div>
+
+    </div>
+
+    <!-- KPIs -->
+    <div class="aud-kpis">
+
+      <div class="kpi">
+        <ion-icon name="swap-horizontal-outline"></ion-icon>
+        <div class="kpi-body">
+          <span class="kpi-title">Llamadas totales</span>
+          <span class="kpi-value">{{ (resumen?.totalLlamadas || 0) | number }}</span>
+        </div>
+      </div>
+
+      <div class="kpi">
+        <ion-icon name="warning-outline" [class.aud-critico]="resumen?.tasaErrorPct > 5"></ion-icon>
+        <div class="kpi-body">
+          <span class="kpi-title">Tasa de error</span>
+          <span class="kpi-value" [class.aud-critico]="resumen?.tasaErrorPct > 5">{{ resumen?.tasaErrorPct || 0 }}%</span>
+        </div>
+      </div>
+
+      <div class="kpi">
+        <ion-icon name="alert-circle-outline" [class.aud-critico]="resumen?.totalCaidas > 0"></ion-icon>
+        <div class="kpi-body">
+          <span class="kpi-title">Caídas (5xx)</span>
+          <span class="kpi-value" [class.aud-critico]="resumen?.totalCaidas > 0">{{ (resumen?.totalCaidas || 0) | number }}</span>
+        </div>
+      </div>
+
+      <div class="kpi">
+        <ion-icon name="time-outline" [ngClass]="claseTiempo(resumen?.tiempoPromedioMs)"></ion-icon>
+        <div class="kpi-body">
+          <span class="kpi-title">Tiempo promedio</span>
+          <span class="kpi-value" [ngClass]="claseTiempo(resumen?.tiempoPromedioMs)">{{ resumen?.tiempoPromedioMs || 0 }} <small>ms</small></span>
+        </div>
+      </div>
+
+      <div class="kpi">
+        <ion-icon name="hardware-chip-outline" [ngClass]="claseMemoria(resumen?.memoriaPromedioMB)"></ion-icon>
+        <div class="kpi-body">
+          <span class="kpi-title">Memoria actual</span>
+          <span class="kpi-value" [ngClass]="claseMemoria(resumen?.memoriaPromedioMB)">{{ resumen?.memoriaPromedioMB || 0 }} <small>MB</small></span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Servicios mas llamados + detalle por hora -->
+    <div class="aud-grid">
+
+      <div class="panel">
+        <div class="panel-title">Servicios más llamados (Top 10)</div>
+        <apx-chart *ngIf="topServiciosChart"
+          [series]="topServiciosChart.series" [chart]="topServiciosChart.chart" [plotOptions]="topServiciosChart.plotOptions"
+          [xaxis]="topServiciosChart.xaxis" [colors]="topServiciosChart.colors" [dataLabels]="topServiciosChart.dataLabels"
+          [grid]="topServiciosChart.grid">
+        </apx-chart>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Servicio más llamado por hora</div>
+        <div class="tabla-wrap">
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Servicio</th>
+                <th class="num">Llamadas en la hora</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let b of bucketsConTop">
+                <td>{{ b.hora | date:'dd/MM HH:00' }}</td>
+                <td>{{ b.topServicio }}</td>
+                <td class="num">{{ b.topServicioLlamadas | number }}</td>
+              </tr>
+              <tr *ngIf="!bucketsConTop.length">
+                <td colspan="3" class="vacio">Sin tráfico en el rango seleccionado.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Linea de tiempo por hora (estilo DigitalOcean) -->
+    <div class="aud-timeline">
+
+      <div class="panel">
+        <div class="panel-title">
+          Llamadas por hora
+          <span class="panel-sub">Cantidad de peticiones recibidas, agrupadas por hora</span>
+        </div>
+        <apx-chart *ngIf="llamadasChart"
+          [series]="llamadasChart.series" [chart]="llamadasChart.chart" [xaxis]="llamadasChart.xaxis"
+          [yaxis]="llamadasChart.yaxis" [stroke]="llamadasChart.stroke" [fill]="llamadasChart.fill"
+          [colors]="llamadasChart.colors" [dataLabels]="llamadasChart.dataLabels" [grid]="llamadasChart.grid"
+          [markers]="llamadasChart.markers">
+        </apx-chart>
+        <div class="panel-vacio" *ngIf="!llamadasChart">Sin datos para el rango seleccionado.</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          Memoria RSS (MB) por hora
+          <span class="panel-sub">Memoria RAM usada por el proceso del backend</span>
+        </div>
+        <apx-chart *ngIf="memoriaChart"
+          [series]="memoriaChart.series" [chart]="memoriaChart.chart" [xaxis]="memoriaChart.xaxis"
+          [yaxis]="memoriaChart.yaxis" [stroke]="memoriaChart.stroke" [fill]="memoriaChart.fill"
+          [colors]="memoriaChart.colors" [dataLabels]="memoriaChart.dataLabels" [grid]="memoriaChart.grid"
+          [markers]="memoriaChart.markers">
+        </apx-chart>
+        <div class="panel-vacio" *ngIf="!memoriaChart">Sin datos para el rango seleccionado.</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          % CPU usado por hora
+          <span class="panel-sub">% de CPU consumido por el proceso del backend</span>
+        </div>
+        <apx-chart *ngIf="cpuChart"
+          [series]="cpuChart.series" [chart]="cpuChart.chart" [xaxis]="cpuChart.xaxis"
+          [yaxis]="cpuChart.yaxis" [stroke]="cpuChart.stroke" [fill]="cpuChart.fill"
+          [colors]="cpuChart.colors" [dataLabels]="cpuChart.dataLabels" [grid]="cpuChart.grid"
+          [markers]="cpuChart.markers">
+        </apx-chart>
+        <div class="panel-vacio" *ngIf="!cpuChart">Sin datos para el rango seleccionado.</div>
+      </div>
+
+    </div>
+
+    <!-- Detalle completo por endpoint -->
+    <div class="panel">
+      <div class="panel-title">Detalle por servicio</div>
+      <div class="tabla-wrap">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Método</th>
+              <th>Ruta</th>
+              <th class="num">Llamadas</th>
+              <th class="num">Errores</th>
+              <th class="num">Caídas (5xx)</th>
+              <th class="num">Tiempo prom. (ms)</th>
+              <th class="num">Tiempo máx. (ms)</th>
+              <th>Última llamada</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let e of porEndpoint" [class.row-bajo]="e.caidas > 0">
+              <td>{{ e.Method }}</td>
+              <td>{{ e.Path }}</td>
+              <td class="num">{{ e.llamadas | number }}</td>
+              <td class="num">{{ e.errores | number }}</td>
+              <td class="num" [class.bajo]="e.caidas > 0">{{ e.caidas | number }}</td>
+              <td class="num" [ngClass]="claseTiempo(e.tiempoPromedioMs)">{{ e.tiempoPromedioMs }}</td>
+              <td class="num" [ngClass]="claseTiempo(e.tiempoMaxMs, true)">{{ e.tiempoMaxMs }}</td>
+              <td>{{ e.ultimaLlamada | date:'dd/MM HH:mm' }}</td>
+            </tr>
+            <tr *ngIf="!porEndpoint.length">
+              <td colspan="8" class="vacio">Sin datos para el rango seleccionado.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="aud-loading" *ngIf="loading">
+      <ion-spinner></ion-spinner>
+    </div>
+
+  </div>
+
+</ion-content>

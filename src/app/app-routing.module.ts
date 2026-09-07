@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { DashboardGuard } from './Guards/dashboard.guard';
 import { FormMEDGuard } from './Guards/formmed.guard';
 import { FormRNGGuard } from './Guards/formrng.guard';
 import { LoginGuard } from './Guards/login.guard';
@@ -131,7 +132,7 @@ const routes: Routes = [
   {
     path: 'indicadores',
     loadChildren: () => import('./Pages/indicadores/indicadores.module').then(m => m.IndicadoresPageModule),
-    canActivate: [PageGuard]
+    canActivate: [PageGuard, DashboardGuard]
   },
   {
     // Vista pública de solo lectura de un tablero compartido (sin guard, sin login)
@@ -142,6 +143,12 @@ const routes: Routes = [
     // Administración de links compartidos (solo personal con todos los permisos)
     path: 'links',
     loadChildren: () => import('./Pages/links/links.module').then(m => m.LinksPageModule),
+    canActivate: [PageGuard]
+  },
+  {
+    // Auditoria interna del sistema (salud/uso de los servicios del backend)
+    path: 'auditoria',
+    loadChildren: () => import('./Pages/auditoria/auditoria.module').then(m => m.AuditoriaPageModule),
     canActivate: [PageGuard]
   },
 ];

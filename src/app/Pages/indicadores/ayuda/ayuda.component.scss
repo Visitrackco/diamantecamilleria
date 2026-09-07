@@ -1,0 +1,435 @@
+$diamante: #0e3651;
+$acento: #1d6fa5;
+$border: #e5e7eb;
+$texto: #334155;
+$suave: #64748b;
+
+/* Botón que abre la ayuda (va en la barra de acciones de cada pantalla) */
+.ay-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+
+  ion-icon { font-size: 16px; }
+
+  &:hover {
+    border-color: $acento;
+    color: $acento;
+  }
+}
+
+/* Fondo del diálogo */
+.ay-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(8, 25, 40, .55);
+  animation: ay-fade .18s ease-out;
+}
+
+.ay-modal {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 780px;
+  max-height: 90vh;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 30px 70px rgba(8, 25, 40, .35);
+  animation: ay-in .2s ease-out;
+}
+
+/* Encabezado */
+.ay-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, $diamante, #17527a);
+  color: #fff;
+
+  .ay-eyebrow {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    opacity: .7;
+  }
+
+  h2 {
+    margin: 2px 0 0;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: .3px;
+  }
+
+  .ay-close {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .15);
+    color: #fff;
+    cursor: pointer;
+    ion-icon { font-size: 20px; }
+    &:hover { background: rgba(255, 255, 255, .28); }
+  }
+}
+
+.ay-body {
+  overflow-y: auto;
+  padding: 18px 20px 4px;
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(11, 43, 63, .3) transparent;
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-thumb { background: rgba(11, 43, 63, .3); border-radius: 10px; }
+}
+
+/* Qué mide */
+.ay-hero {
+  padding: 14px 16px;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  background: #f4f9fd;
+
+  .ay-resumen {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: $texto;
+  }
+}
+
+/* Fórmula como fracción */
+.ay-formula {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+
+  .frac {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+
+    .num, .den {
+      font-size: 12px;
+      font-weight: 700;
+      color: $diamante;
+      white-space: nowrap;
+    }
+    .bar {
+      width: 100%;
+      min-width: 150px;
+      height: 2px;
+      background: $acento;
+      border-radius: 2px;
+    }
+  }
+
+  .op {
+    font-size: 13px;
+    font-weight: 700;
+    color: $suave;
+  }
+
+  .res {
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: $acento;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+}
+
+/* Métrica de conteo (pantallas que no son porcentaje) */
+.ay-metrica {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
+  text-align: center;
+
+  code {
+    display: block;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: $diamante;
+    color: #e2f1fb;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  span {
+    font-size: 12px;
+    color: $suave;
+  }
+}
+
+/* Bloques */
+.ay-bloque {
+  margin-top: 22px;
+
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0 0 4px;
+    font-size: 13px;
+    font-weight: 800;
+    color: $diamante;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+
+    ion-icon { font-size: 16px; color: $acento; }
+  }
+
+  .ay-sub {
+    margin: 0 0 12px;
+    font-size: 12px;
+    color: $suave;
+  }
+}
+
+/* Línea de tiempo */
+.ay-tl-wrap {
+  overflow-x: auto;
+  padding: 6px 0;
+
+  scrollbar-width: thin;
+  &::-webkit-scrollbar { height: 6px; }
+  &::-webkit-scrollbar-thumb { background: rgba(11, 43, 63, .25); border-radius: 10px; }
+}
+
+.ay-tl {
+  display: block;
+  width: 100%;
+  min-width: 620px;
+  height: auto;
+
+  .axis {
+    stroke: #cbd5e1;
+    stroke-width: 2;
+  }
+
+  /* Tramos (llaves arriba y abajo del eje) */
+  .seg {
+    path {
+      fill: none;
+      stroke: #cbd5e1;
+      stroke-width: 1.5;
+    }
+    text {
+      fill: #94a3b8;
+      font-size: 10px;
+      font-weight: 700;
+      text-anchor: middle;
+      letter-spacing: .3px;
+    }
+
+    &.on {
+      path { stroke: $acento; stroke-width: 2.5; }
+      text { fill: $acento; font-size: 10.5px; }
+    }
+  }
+
+  /* Hitos */
+  .hito {
+    circle {
+      fill: #fff;
+      stroke: #cbd5e1;
+      stroke-width: 2.5;
+    }
+    text {
+      fill: #94a3b8;
+      font-size: 10px;
+      font-weight: 700;
+      text-anchor: middle;
+    }
+    text.sub {
+      fill: #b6c2cf;
+      font-size: 9px;
+      font-weight: 500;
+    }
+
+    &.on {
+      circle { fill: $acento; stroke: $acento; }
+      text { fill: $diamante; }
+      text.sub { fill: $suave; }
+    }
+  }
+}
+
+/* Pasos */
+.ay-pasos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px dashed $border;
+    &:last-child { border-bottom: none; }
+
+    .num {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #e8f2f9;
+      color: $acento;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    div {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    strong { font-size: 13px; color: $diamante; }
+    span { font-size: 12px; color: $suave; line-height: 1.5; }
+  }
+}
+
+/* Filtros */
+.ay-filtros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px;
+}
+
+.ay-filtro {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px 12px;
+  border: 1px solid $border;
+  border-radius: 9px;
+  background: #fcfdfe;
+
+  .ay-filtro-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .nombre {
+    font-size: 11px;
+    font-weight: 800;
+    color: $diamante;
+    letter-spacing: .4px;
+  }
+
+  code {
+    padding: 1px 6px;
+    border-radius: 5px;
+    background: #eef2f6;
+    color: $suave;
+    font-size: 10px;
+  }
+
+  .desc {
+    font-size: 12px;
+    color: $suave;
+    line-height: 1.5;
+  }
+}
+
+/* Notas */
+.ay-notas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    position: relative;
+    padding: 6px 0 6px 20px;
+    font-size: 12px;
+    color: $texto;
+    line-height: 1.55;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 12px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #f0a63c;
+    }
+  }
+}
+
+.ay-foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 20px;
+  border-top: 1px solid $border;
+  background: #fbfcfd;
+
+  .ay-ok {
+    padding: 9px 22px;
+    border: none;
+    border-radius: 8px;
+    background: $diamante;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    &:hover { background: $acento; }
+  }
+}
+
+@keyframes ay-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ay-in {
+  from { opacity: 0; transform: translateY(12px) scale(.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 640px) {
+  .ay-backdrop { padding: 0; }
+  .ay-modal { max-width: none; max-height: 100vh; height: 100vh; border-radius: 0; }
+  .ay-trigger { flex: 1; }
+}

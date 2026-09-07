@@ -154,11 +154,16 @@ async change(event, ele, type) {
     }
 }
 
+// Grupos válidos de ubicación. El valor guardado tiene que escribirse igual que en el
+// filtro UNIDAD DEFINITIVA del dashboard (y que en GRUPOS_UNIDAD del backend), porque
+// el reporte cruza por texto exacto contra Locations.Grupo.
 normalizeGrupo(value): string | null {
   const v = (value || '').toString().trim().toLowerCase();
   if (!v) return '';
   if (v === 'infantil') return 'Infantil';
   if (v === 'adultos' || v === 'adulto') return 'Adultos';
+  if (v === 'alta complejidad' || v === 'alta') return 'Alta complejidad';
+  if (v === 'medicina privada' || v === 'privada') return 'Medicina privada';
   return null;
 }
 
@@ -285,7 +290,7 @@ async editPoint(point) {
         value: point.Piso
       },
       {
-        placeholder: 'Grupo (Infantil / Adultos)',
+        placeholder: 'Grupo (Infantil / Adultos / Alta complejidad / Medicina privada)',
         type: 'text',
         name: 'Grupo',
         value: point.Grupo
@@ -307,7 +312,7 @@ async editPoint(point) {
 
           const grupo = this.normalizeGrupo(data.Grupo);
           if (grupo === null) {
-            this.toast.MsgError('Grupo inválido. Use Infantil o Adultos (o déjelo vacío).')
+            this.toast.MsgError('Grupo inválido. Use Infantil, Adultos, Alta complejidad o Medicina privada (o déjelo vacío).')
             return;
           }
           data.Grupo = grupo;
@@ -386,7 +391,7 @@ async create() {
         value: ''
       },
       {
-        placeholder: 'Grupo (Infantil / Adultos)',
+        placeholder: 'Grupo (Infantil / Adultos / Alta complejidad / Medicina privada)',
         type: 'text',
         name: 'Grupo',
         value: ''
@@ -408,7 +413,7 @@ async create() {
 
           const grupo = this.normalizeGrupo(data.Grupo);
           if (grupo === null) {
-            this.toast.MsgError('Grupo inválido. Use Infantil o Adultos (o déjelo vacío).')
+            this.toast.MsgError('Grupo inválido. Use Infantil, Adultos, Alta complejidad o Medicina privada (o déjelo vacío).')
             return;
           }
           data.Grupo = grupo;

@@ -38,7 +38,9 @@ export class PublicoPage implements OnInit, OnDestroy {
   unidadOpts = [
     { v: 'todos', l: 'Todos' },
     { v: 'Adultos', l: 'Adultos' },
-    { v: 'Infantil', l: 'Infantil' }
+    { v: 'Infantil', l: 'Infantil' },
+    { v: 'Alta complejidad', l: 'Alta complejidad' },
+    { v: 'Medicina privada', l: 'Medicina privada' }
   ];
   tipoOpts = [
     { v: 'camilleria', l: 'Camillería' },

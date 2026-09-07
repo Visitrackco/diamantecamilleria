@@ -1,0 +1,152 @@
+$pink: #c2410c;
+
+/* ===== Escritorio: el contenedor no existe =====
+   `display: contents` saca al componente del layout, asi que las tarjetas de
+   filtro proyectadas quedan como hijas directas de la barra superior de la
+   pantalla y conservan el mismo diseño de siempre. */
+:host,
+.ff-panel,
+.ff-body {
+  display: contents;
+}
+
+.ff-toggle,
+.ff-backdrop,
+.ff-head,
+.ff-foot {
+  display: none;
+}
+
+/* ===== Móvil / tablet: menú vertical desde la derecha ===== */
+@media (max-width: 900px) {
+
+  /* Fijo sobre el tablero: al bajar en la pantalla el boton sigue ahi, del mismo
+     lado por el que entra el panel. */
+  .ff-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    bottom: calc(14px + env(safe-area-inset-bottom));
+    z-index: 999;
+    padding: 13px 20px;
+    border: none;
+    border-radius: 999px;
+    background: $pink;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: .3px;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.28);
+    cursor: pointer;
+    transition: opacity .2s ease, transform .2s ease;
+
+    ion-icon { font-size: 20px; }
+
+    /* Con el panel abierto estorba: se desvanece hasta que se cierre. */
+    &.oculto {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+    }
+  }
+
+  .ff-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
+    z-index: 1000;
+
+    &.on {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  .ff-panel {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(88vw, 340px);
+    background: #fff;
+    box-shadow: -10px 0 28px rgba(15, 23, 42, 0.18);
+    transform: translateX(100%);
+    transition: transform .25s ease;
+    z-index: 1001;
+
+    &.on { transform: none; }
+  }
+
+  .ff-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 16px;
+    font-weight: 800;
+    color: #334155;
+    letter-spacing: .4px;
+
+    .ff-close {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: #64748b;
+      cursor: pointer;
+
+      ion-icon { font-size: 24px; }
+    }
+  }
+
+  .ff-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    padding: 14px;
+    overflow-y: auto;
+  }
+
+  /* Las tarjetas proyectadas vienen con anchos pensados para la fila horizontal:
+     dentro del panel van una debajo de otra, a todo el ancho. */
+  :host ::ng-deep .ff-body > * {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  .ff-foot {
+    display: block;
+    padding: 12px 14px;
+    border-top: 1px solid #e5e7eb;
+
+    .ff-ver {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      background: $pink;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+  }
+}

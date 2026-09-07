@@ -12,6 +12,7 @@ import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { ToastService } from './Services/toast.service';
 import { SocketService } from './Services/Sockets.service';
 import { ApiService } from './Services/api.service';
+import { PermisosService } from './Services/permisos.service';
 
 @Component({
   selector: 'app-root',
@@ -21,6 +22,10 @@ import { ApiService } from './Services/api.service';
 export class AppComponent {
 
   role;
+
+  // Permiso del dashboard de Indicadores: es por usuario (Users.Dashboard), no por
+  // rol, asi que se lee del login guardado y no de infoRole.
+  verDashboard = false;
 
   title = 'af-notification';
   message: any = null;
@@ -35,7 +40,8 @@ export class AppComponent {
     private socket: Socket,
     private toast: ToastService,
     private socketService: SocketService,
-    private api: ApiService
+    private api: ApiService,
+    private permisos: PermisosService
 
   ) {
 
@@ -45,6 +51,21 @@ export class AppComponent {
       if (data.length > 0) {
         this.role = data[0];
 
+      }
+    })
+
+    // Al cambiar de clinica el usuario se queda en la misma pantalla, pero Ionic la
+    // mantiene montada y seguiria mostrando los datos de la zona anterior. Se vuelve
+    // a entrar a la misma ruta para que corra otra vez su carga.
+    this.obs.$zona.subscribe(() => {
+      this.recargarPantallaActual();
+    })
+
+    // Los permisos del dashboard se releen del API en cada punto de entrada
+    // (PermisosService). Al llegar los nuevos el menu se ajusta solo, sin recargar.
+    this.obs.$permisos.subscribe((permisos: any) => {
+      if (permisos) {
+        this.verDashboard = permisos.Dashboard == 1;
       }
     })
 
@@ -112,6 +133,11 @@ export class AppComponent {
 
     if (login.length > 0) {
       this.role = login[0].infoRole[0];
+      this.verDashboard = login[0].Dashboard == 1;
+
+      // Se releen del API por si la central se los cambio con la sesion abierta:
+      // el resultado llega por $permisos y ajusta el menu.
+      this.permisos.refrescar(true);
 
 
     /*  if (login[0].isCentral == 1) {
@@ -128,11 +154,17 @@ export class AppComponent {
 
       }
 */
-    } 
+    }
   }
 
   async exit() {
     const login = await this.stg.getLogin();
+
+    // Los permisos releidos son de quien sale: el que entre despues tiene que pedir
+    // los suyos y no heredar la ventana de cache.
+    this.permisos.limpiar();
+    this.verDashboard = false;
+
     this.storage.set('login', []).then(() => {
 
       if (login) {
@@ -175,6 +207,17 @@ export class AppComponent {
 
 
     })
+  }
+
+  // Ionic engancha los hooks de ciclo de vida como listeners del DOM sobre el elemento
+  // de cada pagina (StackController.createView), asi que basta con dispararle el evento
+  // a la pantalla visible: corre su ionViewWillEnter sin navegar y sin parpadeos.
+  private recargarPantallaActual() {
+    const pagina = document.querySelector('ion-router-outlet > .ion-page:not(.ion-page-hidden)');
+
+    if (pagina) {
+      pagina.dispatchEvent(new CustomEvent('ionViewWillEnter'));
+    }
   }
 
   async form() {
@@ -265,6 +308,11 @@ export class AppComponent {
   async adminLinks() {
     this.menuCtrl.toggle('menu')
     this.router.navigate(['/links'])
+  }
+
+  async auditoria() {
+    this.menuCtrl.toggle('menu')
+    this.router.navigate(['/auditoria'])
   }
 
   async descansos() {

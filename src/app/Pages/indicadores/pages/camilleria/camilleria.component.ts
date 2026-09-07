@@ -1,12 +1,12 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { AlertController } from '@ionic/angular';
 import { ApiService } from 'src/app/Services/api.service';
 import { StorageWebService } from 'src/app/Services/storage.service';
 import { ToastService } from 'src/app/Services/toast.service';
 import * as moment from 'moment-timezone';
 import * as XLSX from 'xlsx';
-import { DashboardFiltrosService } from '../../dashboard-filtros.service';
+import { DashboardFiltrosService, HORAS_OPTS } from '../../dashboard-filtros.service';
 import { CompartirService } from '../../compartir.service';
+import { ClinicaService } from 'src/app/Services/clinica.service';
 
 @Component({
   selector: 'app-bi-camilleria',
@@ -24,6 +24,9 @@ export class CamilleriaComponent implements OnInit, OnChanges {
   // Filtros
   desde: Date = null;
   hasta: Date = null;
+  horaFrom = '00:00';
+  horaTo = '23:30';
+  horasOpts = HORAS_OPTS;
   prioridad = 'todos';        // todos | critico | nocritico
   unidad = 'todos';           // todos | Adultos | Infantil
   tipo = 'camilleria';        // camilleria (isAdmin=0) | admin (isAdmin=1) | todos
@@ -38,11 +41,19 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     { v: 'admin', l: 'ADMINISTRATIVAS' },
     { v: 'todos', l: 'TODOS' }
   ];
-  unidadOpts = [
-    { v: 'todos', l: 'Seleccionar todo' },
-    { v: 'Adultos', l: 'ADULTOS' },
-    { v: 'Infantil', l: 'INFANTIL' }
-  ];
+  // Se arma segun la clinica en ngOnInit (Medellin: Adultos/Infantil,
+  // Rionegro: Alta complejidad/Medicina privada).
+  unidadOpts: { v: string; l: string }[] = [{ v: 'todos', l: 'Seleccionar todo' }];
+
+  // Motivos de la zona: la tabla trae el nombre y el backend filtra por _id.
+  motivos: any[] = [];
+
+  // Motivo seleccionado en la tabla; solo afecta la grafica de tendencia.
+  motivoSel = '';
+  motivoSelNombre = '';
+  motivoSelFila: any = null;
+  loadingLinea = false;
+  private tendenciaGlobal: any[] = [];
 
   // Datos del reporte
   cantidadServicios = 0;
@@ -60,26 +71,12 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     private api: ApiService,
     private stg: StorageWebService,
     private toast: ToastService,
-    private alertCtrl: AlertController,
     private filtros: DashboardFiltrosService,
-    private compartirSvc: CompartirService
+    private compartirSvc: CompartirService,
+    private clinica: ClinicaService
   ) { }
 
-  async ayuda() {
-    const alert = await this.alertCtrl.create({
-      header: '¿Cómo se calcula el cumplimiento?',
-      message:
-        'Se tienen en cuenta <b>todos los estados excepto las eliminadas</b>.<br><br>' +
-        'El <b>tiempo</b> se calcula desde la fecha de solicitud (<i>dateVisible</i>) hasta la fecha de ' +
-        'llegada a origen, y se compara contra el <b>ANS</b> configurado en el motivo.<br><br>' +
-        'Las solicitudes <b>sin llegada a origen</b> no entran en el cumplimiento (no se pueden medir).<br><br>' +
-        'El <b>% de cumplimiento</b> es la proporción de solicitudes atendidas dentro del ANS.',
-      buttons: ['Entendido']
-    });
-    await alert.present();
-  }
-
-  ngOnInit() {
+  async ngOnInit() {
     if (this.modoPublico) {
       // Link público: usa los datos ya calculados, sin filtros ni API.
       if (this.datosPublicos) this.aplicarDatos(this.datosPublicos);
@@ -88,9 +85,19 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     // Hereda los filtros compartidos del dashboard
     this.desde = this.filtros.desde;
     this.hasta = this.filtros.hasta;
+    this.horaFrom = this.filtros.horaFrom;
+    this.horaTo = this.filtros.horaTo;
     this.prioridad = this.filtros.prioridad;
     this.unidad = this.filtros.unidad;
     this.tipo = this.filtros.tipo;
+
+    // El slicer UNIDAD solo lista los grupos que existen en la clínica actual.
+    const u = await this.clinica.unidadPara(this.unidad);
+    this.unidadOpts = u.opts;
+    this.unidad = u.unidad;
+    this.filtros.unidad = this.unidad;
+
+    this.cargarMotivos();
     this.cargar();
   }
 
@@ -110,7 +117,15 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     this.totalAtiempo = r.totales ? r.totales.aTiempo : 0;
     this.totalFuera = r.totales ? r.totales.fueraTiempo : 0;
     this.buildGauge(r.cumplimiento);
-    this.buildLine(r.tendencia || []);
+    this.tendenciaGlobal = r.tendencia || [];
+    this.buildLine(this.tendenciaGlobal);
+
+    // Si el motivo que estaba marcado ya no aparece con los filtros nuevos, se suelta.
+    if (this.motivoSelNombre) {
+      const fila = this.distribucion.find((m) => m.motivo === this.motivoSelNombre);
+      if (!fila) this.quitarMotivo();
+      else this.motivoSelFila = fila;
+    }
   }
 
   // Filtros actuales en el formato que consume el backend (para compartir el link)
@@ -134,7 +149,7 @@ export class CamilleriaComponent implements OnInit, OnChanges {
   private fmtFecha(d: Date, fin: boolean): string {
     if (!d) return '';
     const dia = moment(d).format('YYYY-MM-DD');
-    const hora = fin ? '23:59:59' : '00:00:00';
+    const hora = (fin ? (this.horaTo || '23:30') : (this.horaFrom || '00:00')) + (fin ? ':59' : ':00');
     return moment.tz(dia + ' ' + hora, 'America/Bogota').utc().format('YYYY-MM-DD HH:mm:ss');
   }
 
@@ -142,18 +157,15 @@ export class CamilleriaComponent implements OnInit, OnChanges {
   private guardarFiltros() {
     this.filtros.desde = this.desde;
     this.filtros.hasta = this.hasta;
+    this.filtros.horaFrom = this.horaFrom;
+    this.filtros.horaTo = this.horaTo;
     this.filtros.prioridad = this.prioridad;
     this.filtros.unidad = this.unidad;
     this.filtros.tipo = this.tipo;
   }
 
-  async cargar() {
-    this.guardarFiltros();
-    const login = await this.stg.getLogin();
-    if (!login) return;
-
-    this.loading = true;
-
+  // Cuerpo que consume el reporte con los filtros de la barra superior.
+  private cuerpo(login: any): any {
     const body: any = {
       token: login[0].token,
       WorkZoneID: login[0].WorkZone,    // zona habilitada en el front
@@ -164,9 +176,18 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     if (this.prioridad !== 'todos') body.Prioridad = this.prioridad;
     if (this.unidad !== 'todos') body.Unidad = this.unidad;
     body.Tipo = this.tipo;
+    return body;
+  }
+
+  async cargar() {
+    this.guardarFiltros();
+    const login = await this.stg.getLogin();
+    if (!login) return;
+
+    this.loading = true;
 
     try {
-      const rs: any = await this.api.apiPost('dashboard/camilleria', body);
+      const rs: any = await this.api.apiPost('dashboard/camilleria', this.cuerpo(login));
       this.loading = false;
 
       if (!rs || !rs.status) {
@@ -175,9 +196,84 @@ export class CamilleriaComponent implements OnInit, OnChanges {
       }
 
       this.aplicarDatos(rs.response);
+
+      // aplicarDatos repinta la tendencia global: si hay un motivo marcado, se vuelve a aplicar.
+      if (this.motivoSel) this.cargarTendenciaMotivo();
     } catch (e) {
       this.loading = false;
       this.toast.MsgError('Error al cargar el reporte');
+    }
+  }
+
+  async cargarMotivos() {
+    const login = await this.stg.getLogin();
+    if (!login) return;
+    const rs: any = await this.api.apiGet('motivos?WorkZoneID=' + login[0].WorkZone, login[0].token);
+    if (rs && rs.status) this.motivos = rs.response || [];
+  }
+
+  // El reporte devuelve el motivo por nombre; el backend lo filtra por _id.
+  private idDeMotivo(fila: any): string {
+    if (fila.motivoId) return fila.motivoId;
+    const m = this.motivos.find((x) => x.Name === fila.motivo);
+    return m ? m._id : '';
+  }
+
+  // Clic en una fila de la tabla: la tendencia pasa a mostrar solo ese motivo.
+  // Un segundo clic sobre la misma fila vuelve a la tendencia de todos los motivos.
+  seleccionarMotivo(fila: any) {
+    if (this.modoPublico) return;
+
+    if (this.motivoSelNombre === fila.motivo) {
+      this.quitarMotivo();
+      return;
+    }
+
+    const id = this.idDeMotivo(fila);
+    if (!id) {
+      this.toast.MsgError('No se encontró el motivo "' + fila.motivo + '" en esta zona');
+      return;
+    }
+
+    this.motivoSel = id;
+    this.motivoSelNombre = fila.motivo;
+    this.motivoSelFila = fila;
+    this.cargarTendenciaMotivo();
+  }
+
+  quitarMotivo() {
+    this.motivoSel = '';
+    this.motivoSelNombre = '';
+    this.motivoSelFila = null;
+    this.buildLine(this.tendenciaGlobal);
+  }
+
+  // Vuelve a pedir el reporte con el motivo marcado, pero solo usa su tendencia:
+  // los KPIs y la tabla siguen mostrando el total de los filtros de arriba.
+  async cargarTendenciaMotivo() {
+    const login = await this.stg.getLogin();
+    if (!login) return;
+
+    this.loadingLinea = true;
+
+    try {
+      const body = this.cuerpo(login);
+      body.Motivo = this.motivoSel;
+
+      const rs: any = await this.api.apiPost('dashboard/camilleria', body);
+      this.loadingLinea = false;
+
+      if (!rs || !rs.status) {
+        this.toast.MsgError(rs && rs.err ? rs.err : 'No se pudo cargar la tendencia del motivo');
+        this.quitarMotivo();
+        return;
+      }
+
+      this.buildLine(rs.response.tendencia || []);
+    } catch (e) {
+      this.loadingLinea = false;
+      this.toast.MsgError('Error al cargar la tendencia del motivo');
+      this.quitarMotivo();
     }
   }
 
@@ -208,9 +304,12 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     this.filtros.reset();
     this.desde = this.filtros.desde;
     this.hasta = this.filtros.hasta;
+    this.horaFrom = this.filtros.horaFrom;
+    this.horaTo = this.filtros.horaTo;
     this.prioridad = this.filtros.prioridad;
     this.unidad = this.filtros.unidad;
     this.tipo = this.filtros.tipo;
+    this.quitarMotivo();
     this.cargar();
   }
 
@@ -220,16 +319,7 @@ export class CamilleriaComponent implements OnInit, OnChanges {
 
     this.loading = true;
 
-    const body: any = {
-      token: login[0].token,
-      WorkZoneID: login[0].WorkZone,
-      Format: 'America/Bogota',
-      Desde: this.fmtFecha(this.desde, false),
-      Hasta: this.fmtFecha(this.hasta, true)
-    };
-    if (this.prioridad !== 'todos') body.Prioridad = this.prioridad;
-    if (this.unidad !== 'todos') body.Unidad = this.unidad;
-    body.Tipo = this.tipo;
+    const body = this.cuerpo(login);
 
     try {
       const rs: any = await this.api.apiPost('dashboard/camilleria/raw', body);
@@ -272,7 +362,7 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     const v = valor == null ? 0 : valor;
     this.gauge = {
       series: [v],
-      chart: { type: 'radialBar', height: 230, width: '100%', sparkline: { enabled: false } },
+      chart: { type: 'radialBar', height: 280, width: '100%', sparkline: { enabled: false } },
       plotOptions: {
         radialBar: {
           startAngle: -90,
@@ -283,7 +373,7 @@ export class CamilleriaComponent implements OnInit, OnChanges {
             name: { show: false },
             value: {
               offsetY: -2,
-              fontSize: '30px',
+              fontSize: '38px',
               fontWeight: 800,
               color: '#111827',
               formatter: (val: number) => Math.round(val * 10) / 10 + '%'
@@ -300,21 +390,25 @@ export class CamilleriaComponent implements OnInit, OnChanges {
   buildLine(tend: any[]) {
     this.line = {
       series: [{ name: '% Cumplimiento', data: tend.map((t) => t.cumplimiento) }],
-      chart: { type: 'line', height: 280, width: '100%', toolbar: { show: false }, zoom: { enabled: false } },
-      xaxis: { categories: tend.map((t) => t.fecha), labels: { rotate: -45, style: { fontSize: '10px' } } },
-      yaxis: { min: 0, max: 100, tickAmount: 5, labels: { formatter: (val: number) => Math.round(val) + '%' } },
+      chart: { type: 'line', height: 340, width: '100%', toolbar: { show: false }, zoom: { enabled: false } },
+      xaxis: { categories: tend.map((t) => t.fecha), labels: { rotate: -45, style: { fontSize: '13px' } } },
+      yaxis: {
+        min: 0, max: 100, tickAmount: 5,
+        labels: { style: { fontSize: '13px' }, formatter: (val: number) => Math.round(val) + '%' }
+      },
       stroke: { curve: 'smooth', width: 3 },
       colors: ['#3b82f6'],
-      markers: { size: 4 },
+      markers: { size: 5 },
+      tooltip: { style: { fontSize: '13px' } },
       dataLabels: { enabled: false },
       grid: { borderColor: '#eef0f3' },
       responsive: [
         {
           breakpoint: 640,
           options: {
-            chart: { height: 220 },
+            chart: { height: 260 },
             markers: { size: 0 },
-            xaxis: { labels: { rotate: -90, style: { fontSize: '9px' } } }
+            xaxis: { labels: { rotate: -90, style: { fontSize: '11px' } } }
           }
         }
       ]

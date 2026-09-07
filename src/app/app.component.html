@@ -10,11 +10,9 @@
         </ion-header>
         <ion-content color="banner">
 
-            <br>
-            <div class="img">
-                <img class="img" src="/assets/diamante.png" width="150px" alt="">
+            <div class="menu-brand">
+                <img src="/assets/diamante.png" alt="Diamante">
             </div>
-            <br>
 
             <!-- ===== OPERACIÓN ===== -->
             <div class="menu-sep">Operación</div>
@@ -22,46 +20,46 @@
             <ion-item color="banner" (click)="form()">
                 <ion-icon name="newspaper" slot="start"></ion-icon>
                 <ion-label>Formulario</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
 
             <ion-item color="banner" (click)="dash()">
                 <ion-icon name="bag-add" slot="start"></ion-icon>
                 <ion-label>Actividades</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
 
             <ion-item color="banner" (click)="programadas()">
                 <ion-icon name="calendar" slot="start"></ion-icon>
                 <ion-label>Actividades Programadas</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
 
             <ion-item (click)="history()" color="banner" *ngIf="role && role.Historial == 1">
                 <ion-icon name="people" slot="start"></ion-icon>
                 <ion-label>Historial Camilleros</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
 
             <!-- ===== REPORTES ===== -->
-            <div class="menu-sep" *ngIf="role && role.Reportes == 1">Reportes</div>
+            <div class="menu-sep" *ngIf="verDashboard || (role && role.Reportes == 1)">Reportes</div>
 
-            <ion-item (click)="indicadores()" color="banner" *ngIf="role && role.Reportes == 1">
+            <ion-item (click)="indicadores()" color="banner" *ngIf="verDashboard">
                 <ion-icon name="stats-chart" slot="start"></ion-icon>
                 <ion-label>Indicadores (Dashboard)</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
 
             <ion-item (click)="reportes()" color="banner" *ngIf="role && role.Reportes == 1">
                 <ion-icon name="bar-chart" slot="start"></ion-icon>
                 <ion-label>Reportes</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
 
             <ion-item (click)="reporteFormularios()" color="banner" *ngIf="role && role.Reportes == 1">
                 <ion-icon name="document-text" slot="start"></ion-icon>
                 <ion-label>Reporte de Conteo</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
 
             <!-- ===== CONFIGURACIÓN ===== -->
@@ -70,71 +68,77 @@
             <ion-item (click)="listas()" color="banner" *ngIf="role && role.Listas == 1">
                 <ion-icon name="list" slot="start"></ion-icon>
                 <ion-label>Listas Ubicaciones</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
 
             <ion-item (click)="motivos()" color="banner" *ngIf="role && role.Listas == 1">
                 <ion-icon name="hourglass" slot="start"></ion-icon>
                 <ion-label>Motivos Demora</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
 
             <ion-item (click)="motivos2()" color="banner" *ngIf="role && role.Listas == 1">
                 <ion-icon name="fitness" slot="start"></ion-icon>
                 <ion-label>Motivos Solicitud</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
 
             <ion-item (click)="recursos()" color="banner" *ngIf="role && role.Listas == 1">
                 <ion-icon name="bag-handle-outline" slot="start"></ion-icon>
                 <ion-label>Recursos Paciente</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
 
             <ion-item color="banner" (click)="control()" *ngIf="role && role.Listas == 1">
                 <ion-icon name="settings" slot="start"></ion-icon>
                 <ion-label>Control Usuarios</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
 
             <ion-item (click)="descansos()"  color="banner" *ngIf="role && role.Listas == 1">
                 <ion-icon name="cafe" slot="start"></ion-icon>
                 <ion-label>Descansos</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
 
             <ion-item (click)="custom()"  color="banner" *ngIf="role && role.Listas == 1">
                 <ion-icon name="help-circle" slot="start"></ion-icon>
                 <ion-label>Preguntas personalizadas</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
 
             <ion-item (click)="perfiles()" color="banner" *ngIf="role && role.Listas == 1">
                 <ion-icon name="id-card" slot="start"></ion-icon>
                 <ion-label>Perfiles de Solicitud</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
 
             <ion-item (click)="configuracion()" color="banner" *ngIf="role && role.Listas == 1">
                 <ion-icon name="options" slot="start"></ion-icon>
                 <ion-label>Configuración Tablero</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
 
             <!-- Solo rol 8: administrar links compartidos -->
             <ion-item (click)="adminLinks()" color="banner" *ngIf="role && role.IDVT == 8">
                 <ion-icon name="link" slot="start"></ion-icon>
                 <ion-label>Administrar Links</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
+            </ion-item>
+
+            <!-- Solo rol 8: auditoria interna del sistema (salud/uso del backend) -->
+            <ion-item (click)="auditoria()" color="banner" *ngIf="role && role.IDVT == 8">
+                <ion-icon name="pulse" slot="start"></ion-icon>
+                <ion-label>Auditoría del Sistema</ion-label>
+                <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
 
             <!-- ===== SESIÓN ===== -->
             <div class="menu-sep">Sesión</div>
 
-            <ion-item color="banner" (click)="exit()">
+            <ion-item class="salir" color="banner" (click)="exit()">
                 <ion-icon name="power" slot="start"></ion-icon>
                 <ion-label>Salir</ion-label>
-                <ion-icon name="chevron-forward"></ion-icon>
             </ion-item>
 
 

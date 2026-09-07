@@ -28,55 +28,85 @@ $bi-text: #374151;
   }
 
   .bi-sidebar-head {
-    height: 48px;
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 8px 0 16px;
+    padding: 0 8px 0 18px;
     border-bottom: 1px solid $bi-border;
 
     .bi-sidebar-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #6b7280;
-      letter-spacing: .4px;
+      font-size: 10px;
+      font-weight: 800;
+      color: #9ca3af;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+    }
+
+    /* Cerrar el cajon: reemplaza al boton de colapsar en pantallas angostas */
+    .bi-cerrar-menu {
+      display: none;
+      width: 34px;
+      height: 34px;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: #64748b;
+      cursor: pointer;
+
+      ion-icon { font-size: 24px; }
     }
 
     .bi-collapse {
+      width: 30px;
+      height: 30px;
       background: transparent;
       border: none;
+      border-radius: 8px;
       cursor: pointer;
       color: #9ca3af;
       display: flex;
       align-items: center;
+      justify-content: center;
+      transition: background .15s, color .15s;
 
-      ion-icon { font-size: 18px; }
+      ion-icon { font-size: 17px; }
+
+      &:hover {
+        background: #f1f5f9;
+        color: #475569;
+      }
     }
   }
 
   .bi-pages {
     list-style: none;
     margin: 0;
-    padding: 8px 0;
+    padding: 10px 8px;
     overflow-y: auto;
 
     li {
+      position: relative;
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 16px;
+      padding: 10px 12px;
+      margin-bottom: 2px;
+      border-radius: 9px;
       cursor: pointer;
       font-size: 13px;
-      color: $bi-text;
-      border-left: 3px solid transparent;
-      transition: background .15s, border-color .15s;
+      color: #64748b;
+      transition: background .15s ease, color .15s ease;
 
       .bi-page-dot {
-        width: 8px;
-        height: 8px;
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
         background: #cbd5e1;
         flex-shrink: 0;
+        transition: background .15s ease, box-shadow .15s ease;
       }
 
       .bi-page-label {
@@ -86,18 +116,59 @@ $bi-text: #374151;
       }
 
       &:hover {
-        background: #f9fafb;
+        background: #f4f6f8;
+        color: #1f2937;
+
+        .bi-page-dot { background: #94a3b8; }
       }
 
       &.active {
-        background: rgba(230, 68, 122, 0.08);
-        border-left-color: $bi-pink;
+        background: rgba(194, 65, 12, 0.08);
         font-weight: 700;
         color: #111827;
 
-        .bi-page-dot { background: $bi-pink; }
+        .bi-page-dot {
+          background: $bi-pink;
+          box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.16);
+        }
+
+        /* Franja de acento pegada al borde de la barra */
+        &::before {
+          content: '';
+          position: absolute;
+          left: -8px;
+          top: 50%;
+          width: 3px;
+          height: 20px;
+          border-radius: 0 3px 3px 0;
+          background: $bi-pink;
+          transform: translateY(-50%);
+        }
       }
     }
+  }
+
+  /* Colapsada: los items quedan centrados en el punto */
+  &.collapsed .bi-pages li {
+    justify-content: center;
+    padding: 10px 0;
+  }
+}
+
+/* Fondo oscuro detras del cajon de paginas (solo movil) */
+.bi-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+  z-index: 1000;
+
+  &.on {
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 
@@ -117,20 +188,49 @@ $bi-text: #374151;
   background: #ffffff;
   border-bottom: 1px solid $bi-border;
 
+  /* Abre el menu de paginas. Solo se ve en pantallas angostas. */
+  .bi-menu-toggle {
+    display: none;
+    width: 40px;
+    height: 40px;
+    margin-right: 6px;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 9px;
+    color: $bi-pink;
+    cursor: pointer;
+
+    ion-icon { font-size: 28px; }
+  }
+
   .bi-logo {
     height: 40px;
     width: auto;
     object-fit: contain;
   }
 
-  .bi-title {
+  .bi-title-wrap {
     flex: 1;
+    min-width: 0;
     text-align: center;
+  }
+
+  .bi-title {
     margin: 0;
     font-size: 26px;
     font-weight: 800;
     letter-spacing: 1px;
     color: $bi-pink;
+  }
+
+  /* Fechas con las que estan pintados los datos de la pantalla */
+  .bi-fechas {
+    display: block;
+    margin-top: 2px;
+    font-size: 12px;
+    color: #94a3b8;
   }
 
   .bi-topbar-spacer {
@@ -175,9 +275,43 @@ $bi-text: #374151;
   }
 }
 
-@media (max-width: 640px) {
-  .bi-sidebar { width: 56px; }
-  .bi-sidebar .bi-page-label,
-  .bi-sidebar .bi-sidebar-title { display: none; }
+/* ===== Responsive =====
+   En pantallas angostas la barra de paginas deja de ocupar espacio fijo y pasa a
+   ser un cajon que entra desde la IZQUIERDA (el panel de filtros de cada pantalla
+   entra desde la derecha), asi el tablero se queda con todo el ancho. */
+@media (max-width: 900px) {
+
+  .bi-backdrop { display: block; }
+  .bi-menu-toggle { display: inline-flex; }
+
+  .bi-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 250px;
+    z-index: 1001;
+    box-shadow: 10px 0 28px rgba(15, 23, 42, 0.18);
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+
+    /* El colapsado es para escritorio: en el cajon siempre va completa */
+    &.collapsed { width: 250px; }
+    &.abierto { transform: none; }
+
+    .bi-sidebar-title { display: inline; }
+    .bi-page-label { display: inline; }
+    .bi-collapse { display: none; }
+    .bi-cerrar-menu { display: flex; }
+
+    .bi-pages li { font-size: 15px; padding: 13px 12px; }
+    &.collapsed .bi-pages li { justify-content: flex-start; padding: 13px 12px; }
+  }
+
+  .bi-topbar { padding: 0 12px; }
+  .bi-topbar .bi-topbar-spacer { width: 0; }
   .bi-title { font-size: 18px; }
+  .bi-fechas { font-size: 11px; }
+  /* Espacio abajo para que el boton flotante de filtros no tape el contenido */
+  .bi-canvas { padding: 12px 12px 84px; }
 }

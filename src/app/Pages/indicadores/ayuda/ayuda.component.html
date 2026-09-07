@@ -1,0 +1,144 @@
+<button class="ay-trigger" (click)="abrir()" title="¿Cómo se calcula este indicador?">
+  <ion-icon name="help-circle-outline"></ion-icon>
+  <span>¿Cómo funciona?</span>
+</button>
+
+<div class="ay-backdrop" *ngIf="abierto" (click)="cerrar()">
+  <div class="ay-modal" (click)="$event.stopPropagation()">
+
+    <!-- Encabezado -->
+    <header class="ay-head">
+      <div class="ay-head-txt">
+        <span class="ay-eyebrow">Cómo funciona</span>
+        <h2>{{ doc.titulo }}</h2>
+      </div>
+      <button class="ay-close" (click)="cerrar()" title="Cerrar">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </header>
+
+    <div class="ay-body">
+
+      <!-- Qué mide, con la fórmula o la métrica -->
+      <section class="ay-hero">
+        <p class="ay-resumen">{{ doc.resumen }}</p>
+
+        <div class="ay-formula" *ngIf="doc.formula">
+          <div class="frac">
+            <span class="num">{{ doc.formula.num }}</span>
+            <span class="bar"></span>
+            <span class="den">{{ doc.formula.den }}</span>
+          </div>
+          <span class="op">× 100</span>
+          <span class="op eq">=</span>
+          <span class="res">{{ doc.formula.res }}</span>
+        </div>
+
+        <div class="ay-metrica" *ngIf="doc.metrica">
+          <code>{{ doc.metrica.expr }}</code>
+          <span>{{ doc.metrica.desc }}</span>
+        </div>
+      </section>
+
+      <!-- Línea de tiempo de una solicitud, con el tramo que mide esta pantalla -->
+      <section class="ay-bloque">
+        <h3><ion-icon name="git-commit-outline"></ion-icon> La vida de una solicitud</h3>
+        <p class="ay-sub">En azul, el momento o el tramo que mide <strong>esta</strong> pantalla.</p>
+
+        <div class="ay-tl-wrap">
+          <svg class="ay-tl" viewBox="0 0 700 180" role="img"
+            aria-label="Línea de tiempo de una solicitud: solicitud, asignación, llegada a origen y llegada a destino">
+
+            <!-- Tramo: respuesta (lo que se compara con el ANS) -->
+            <g class="seg" [class.on]="resalta('respuesta')">
+              <path d="M70 52 L70 40 L460 40 L460 52" />
+              <text x="265" y="30">RESPUESTA · se compara con el ANS</text>
+            </g>
+
+            <!-- Tramo: asignación -->
+            <g class="seg" [class.on]="resalta('asignacion')">
+              <path d="M70 74 L70 86 L255 86 L255 74" />
+              <text x="162" y="103">ASIGNACIÓN</text>
+            </g>
+
+            <!-- Tramo: atención (traslado) -->
+            <g class="seg">
+              <path d="M460 74 L460 86 L640 86 L640 74" />
+              <text x="550" y="103">ATENCIÓN</text>
+            </g>
+
+            <!-- Eje -->
+            <line class="axis" x1="40" y1="63" x2="670" y2="63" />
+
+            <!-- Hitos -->
+            <g class="hito" [class.on]="onSolicitud">
+              <circle cx="70" cy="63" r="8" />
+              <text x="70" y="130">SOLICITUD</text>
+              <text class="sub" x="70" y="146">la piden</text>
+            </g>
+
+            <g class="hito" [class.on]="onAsignado">
+              <circle cx="255" cy="63" r="8" />
+              <text x="255" y="130">ASIGNADA</text>
+              <text class="sub" x="255" y="146">tiene camillero</text>
+            </g>
+
+            <g class="hito" [class.on]="onOrigen">
+              <circle cx="460" cy="63" r="8" />
+              <text x="460" y="130">LLEGA A ORIGEN</text>
+              <text class="sub" x="460" y="146">marca la apertura</text>
+            </g>
+
+            <g class="hito" [class.on]="onDestino">
+              <circle cx="640" cy="63" r="8" />
+              <text x="640" y="130">LLEGA A DESTINO</text>
+              <text class="sub" x="640" y="146">marca el cierre</text>
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <!-- Cómo se calcula, paso a paso -->
+      <section class="ay-bloque">
+        <h3><ion-icon name="calculator-outline"></ion-icon> Cómo se calcula</h3>
+        <ol class="ay-pasos">
+          <li *ngFor="let p of doc.pasos; let i = index">
+            <span class="num">{{ i + 1 }}</span>
+            <div>
+              <strong>{{ p.titulo }}</strong>
+              <span>{{ p.desc }}</span>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <!-- Qué hace cada filtro -->
+      <section class="ay-bloque">
+        <h3><ion-icon name="funnel-outline"></ion-icon> Los filtros</h3>
+        <div class="ay-filtros">
+          <div class="ay-filtro" *ngFor="let f of doc.filtros">
+            <div class="ay-filtro-top">
+              <span class="nombre">{{ f.nombre }}</span>
+              <code>{{ f.campo }}</code>
+            </div>
+            <span class="desc">{{ f.desc }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Advertencias de lectura -->
+      <section class="ay-bloque">
+        <h3><ion-icon name="alert-circle-outline"></ion-icon> Ojo al leerlo</h3>
+        <ul class="ay-notas">
+          <li *ngFor="let n of doc.notas">{{ n }}</li>
+        </ul>
+      </section>
+
+    </div>
+
+    <footer class="ay-foot">
+      <button class="ay-ok" (click)="cerrar()">Entendido</button>
+    </footer>
+
+  </div>
+</div>

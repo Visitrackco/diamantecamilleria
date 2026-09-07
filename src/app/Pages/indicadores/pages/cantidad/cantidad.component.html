@@ -1,0 +1,189 @@
+<div class="mc">
+
+  <!-- Barra de acciones -->
+  <div class="cam-toolbar" *ngIf="!modoPublico">
+    <app-bi-ayuda pagina="cantidad"></app-bi-ayuda>
+    <div class="cam-toolbar-right">
+      <button class="btn btn-compartir" (click)="compartir()" title="Compartir link de solo lectura">
+        <ion-icon name="share-social-outline"></ion-icon><span>Compartir</span>
+      </button>
+      <button class="btn btn-excel" (click)="descargar()" [disabled]="loading" title="Descargar la data con la que se construyó el indicador">
+        <ion-icon name="download-outline"></ion-icon><span>Descargar Excel</span>
+      </button>
+      <button class="btn btn-recargar" (click)="recargar()" [disabled]="loading">
+        <ion-icon name="refresh"></ion-icon><span>Recargar</span>
+      </button>
+      <button class="btn btn-limpiar" (click)="limpiar()" [disabled]="loading">
+        <ion-icon name="close-circle-outline"></ion-icon><span>Limpiar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros + KPIs -->
+  <div class="cam-top">
+
+    <!-- Filtros: en pantallas angostas pasan a un menú lateral -->
+    <app-bi-filtros *ngIf="!modoPublico">
+      <div class="filtro fecha-filtro">
+        <label>FECHA</label>
+        <div class="rango">
+          <div class="par">
+            <mat-form-field class="fecha-field" (click)="pDesde.open()">
+              <mat-label>Desde</mat-label>
+              <input matInput [matDatepicker]="pDesde" [(ngModel)]="desde" (dateChange)="aplicar()" readonly />
+              <mat-datepicker-toggle matIconSuffix [for]="pDesde"></mat-datepicker-toggle>
+              <mat-datepicker #pDesde></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field class="fecha-field hora-field">
+              <mat-label>Hora</mat-label>
+              <mat-select [(ngModel)]="horaFrom" (selectionChange)="aplicar()">
+                <mat-option *ngFor="let h of horasOpts" [value]="h">{{ h }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="par">
+            <mat-form-field class="fecha-field" (click)="pHasta.open()">
+              <mat-label>Hasta</mat-label>
+              <input matInput [matDatepicker]="pHasta" [(ngModel)]="hasta" (dateChange)="aplicar()" readonly />
+              <mat-datepicker-toggle matIconSuffix [for]="pHasta"></mat-datepicker-toggle>
+              <mat-datepicker #pHasta></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field class="fecha-field hora-field">
+              <mat-label>Hora</mat-label>
+              <mat-select [(ngModel)]="horaTo" (selectionChange)="aplicar()">
+                <mat-option *ngFor="let h of horasOpts" [value]="h">{{ h }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <!-- HORA: selección múltiple (recorta las filas del mapa y recalcula los totales) -->
+      <div class="filtro horas-filtro">
+      <label>HORA</label>
+      <button class="horas-toggle" (click)="toggleHoras()">
+        <span>{{ horasLabel }}</span>
+        <ion-icon [name]="horasAbierto ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+      </button>
+
+      <div class="horas-panel" *ngIf="horasAbierto">
+        <div class="horas-acciones">
+          <button (click)="todasHoras()">Todas</button>
+          <button (click)="ningunaHora()">Ninguna</button>
+        </div>
+        <ul class="horas-lista">
+          <li *ngFor="let h of horas" (click)="toggleHora(h)">
+            <span class="chk" [class.on]="horaOn(h)"></span>
+            <span class="txt">{{ h }}:00</span>
+          </li>
+        </ul>
+      </div>
+      </div>
+
+      <div class="filtro slicer">
+      <label>PRIORIDAD</label>
+      <ul class="opts">
+        <li *ngFor="let o of prioridadOpts" (click)="setPrioridad(o.v)">
+          <span class="chk" [class.on]="prioridad === o.v"></span><span class="txt">{{ o.l }}</span>
+        </li>
+      </ul>
+      </div>
+
+      <div class="filtro slicer">
+      <label>UNIDAD DEFINITIVA</label>
+      <ul class="opts">
+        <li *ngFor="let o of unidadOpts" (click)="setUnidad(o.v)">
+          <span class="chk" [class.on]="unidad === o.v"></span><span class="txt">{{ o.l }}</span>
+        </li>
+      </ul>
+      </div>
+
+      <div class="filtro">
+      <label>MOTIVO</label>
+      <select [(ngModel)]="motivo" (change)="aplicar()">
+        <option value="">Todos</option>
+        <option *ngFor="let m of motivos" [value]="m._id">{{ m.Name }}</option>
+      </select>
+      </div>
+
+      <div class="filtro slicer">
+      <label>TIPO</label>
+      <ul class="opts">
+        <li *ngFor="let o of tipoOpts" (click)="setTipo(o.v)">
+          <span class="chk" [class.on]="tipo === o.v"></span><span class="txt">{{ o.l }}</span>
+        </li>
+      </ul>
+      </div>
+    </app-bi-filtros>
+
+    <div class="kpi kpi-num">
+      <span class="kpi-title">CAMILLEROS DISTINTOS</span>
+      <span class="kpi-value">{{ totalCamilleros | number }}</span>
+    </div>
+
+    <div class="kpi kpi-num">
+      <span class="kpi-title">PROMEDIO POR DÍA</span>
+      <span class="kpi-value">{{ promedioDia | number }}</span>
+    </div>
+
+    <div class="kpi kpi-num">
+      <span class="kpi-title">MÁXIMO EN UNA HORA</span>
+      <span class="kpi-value">{{ maxCelda | number }}</span>
+    </div>
+
+    <div class="kpi kpi-num">
+      <span class="kpi-title">SOLICITUDES ASIGNADAS</span>
+      <span class="kpi-value">{{ cantidadAsignaciones | number }}</span>
+    </div>
+
+  </div>
+
+  <!-- Mapa de calor -->
+  <div class="panel">
+    <div class="panel-title">MAPA DE CALOR POR CANTIDAD DE CAMILLEROS</div>
+
+    <!-- Leyenda: qué significa cada intensidad y desde qué número cambia -->
+    <div class="leyenda" *ngIf="dias.length">
+      <span class="ley-titulo">Camilleros distintos:</span>
+      <span class="ley-item" *ngFor="let l of leyenda">
+        <span class="ley-color" [ngStyle]="{ background: l.color }"></span>
+        <span class="ley-txt">{{ l.nivel }} ({{ l.rango }})</span>
+      </span>
+    </div>
+
+    <div class="heat-wrap">
+      <table class="heat" *ngIf="dias.length">
+        <thead>
+          <tr>
+            <th class="hcol">HORA</th>
+            <th *ngFor="let l of diasLabel">{{ l }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let h of horasVisibles">
+            <td class="hcol">{{ h }}</td>
+            <td *ngFor="let d of dias" [ngStyle]="estiloCelda(celda(h, d))">{{ celda(h, d) || '' }}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="hcol">Total</td>
+            <td *ngFor="let d of dias">{{ totales[d] || 0 | number }}</td>
+          </tr>
+        </tfoot>
+      </table>
+      <div class="empty" *ngIf="!dias.length">Sin datos para los filtros seleccionados.</div>
+    </div>
+
+    <!-- El total no es la suma de la columna: es gente, no servicios -->
+    <div class="nota" *ngIf="dias.length">
+      Cada celda es la cantidad de camilleros <strong>distintos</strong> con al menos una asignación en esa hora.
+      La fila <strong>Total</strong> son los camilleros distintos del día, por eso no es la suma de la columna.
+    </div>
+  </div>
+
+  <div class="cam-loading" *ngIf="loading">
+    <ion-spinner></ion-spinner>
+  </div>
+
+</div>

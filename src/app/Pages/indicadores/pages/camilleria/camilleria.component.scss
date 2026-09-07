@@ -18,6 +18,13 @@ $border: #e5e7eb;
   align-items: stretch;
 }
 
+/* Fuerza a que los KPI (cantidad de servicios / % cumplimiento) bajen a su
+   propia fila, separados de los filtros de arriba. */
+.cam-top-break {
+  flex-basis: 100%;
+  height: 0;
+}
+
 .filtro {
   background: $filtro-bg;
   border: 1px solid #f5e0c8;
@@ -30,7 +37,7 @@ $border: #e5e7eb;
   gap: 8px;
 
   label {
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     color: #6b7280;
     letter-spacing: .3px;
@@ -39,18 +46,20 @@ $border: #e5e7eb;
   input[type="date"] {
     border: 1px solid #dcc3a0;
     border-radius: 6px;
-    padding: 6px 8px;
-    font-size: 12px;
+    padding: 7px 9px;
+    font-size: 14px;
     background: #fff;
     color: #374151;
     outline: none;
     width: 100%;
   }
 
+  .par { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+
   .rango {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 10px;
     flex-wrap: wrap;
 
     input { flex: 1 1 90px; min-width: 0; }
@@ -68,16 +77,16 @@ $border: #e5e7eb;
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 4px 0;
+    padding: 5px 0;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
     color: #4b5563;
 
     &:hover .chk { border-color: $pink; }
 
     .chk {
-      width: 15px;
-      height: 15px;
+      width: 17px;
+      height: 17px;
       border: 1.5px solid #d19a5e;
       border-radius: 3px;
       background: #fff;
@@ -91,10 +100,10 @@ $border: #e5e7eb;
         &::after {
           content: '';
           position: absolute;
-          left: 4px;
+          left: 5px;
           top: 1px;
           width: 4px;
-          height: 8px;
+          height: 9px;
           border: solid #fff;
           border-width: 0 2px 2px 0;
           transform: rotate(45deg);
@@ -124,17 +133,17 @@ $border: #e5e7eb;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 8px 16px;
+    padding: 9px 18px;
     border-radius: 8px;
     border: none;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     color: #fff;
     transition: opacity .15s;
     white-space: nowrap;
 
-    ion-icon { font-size: 16px; }
+    ion-icon { font-size: 18px; }
 
     &:disabled { opacity: .5; cursor: default; }
     &:hover:not(:disabled) { opacity: .9; }
@@ -144,27 +153,25 @@ $border: #e5e7eb;
   .btn-limpiar { background: #64748b; }
   .btn-excel { background: #1d7044; }
   .btn-compartir { background: #0369a1; }
-  .btn-ayuda {
-    background: #fff;
-    color: #475569;
-    border: 1px solid #d1d5db;
-  }
 }
 
 /* Campo de fecha (Material datepicker) compacto dentro del filtro */
 .fecha-filtro {
-  flex: 1 1 260px;
-  min-width: 220px;
+  flex: 1 1 340px;
+  min-width: 300px;
 }
 
 .fecha-field {
   flex: 1 1 110px;
   min-width: 0;
-  font-size: 12px;
+  font-size: 14px;
+  cursor: pointer;
 
   ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
   ::ng-deep .mat-mdc-text-field-wrapper { background: #fff; }
   ::ng-deep .mat-mdc-form-field-infix { min-height: 42px; }
+
+  &.hora-field { flex: 0 1 92px; }
 }
 
 .kpi {
@@ -179,7 +186,7 @@ $border: #e5e7eb;
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
 
   .kpi-title {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 700;
     color: #475569;
     text-align: center;
@@ -192,7 +199,7 @@ $border: #e5e7eb;
   min-width: 140px;
 
   .kpi-value {
-    font-size: clamp(30px, 5vw, 46px);
+    font-size: clamp(36px, 6vw, 60px);
     font-weight: 800;
     color: #111827;
     line-height: 1.1;
@@ -207,14 +214,17 @@ $border: #e5e7eb;
   apx-chart {
     display: block;
     width: 100%;
-    max-width: 240px;
+    max-width: 300px;
   }
 }
 
-/* ===== Grid inferior: tabla + gráfica ===== */
+/* ===== Grid inferior: tabla + gráfica =====
+   Con la letra mas grande las dos lado a lado quedan apretadas, asi que por defecto
+   van una debajo de la otra a todo el ancho. Solo en monitores anchos se reparten
+   en dos columnas, donde si caben sin encogerse. */
 .cam-grid {
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 14px;
 }
 
@@ -230,12 +240,75 @@ $border: #e5e7eb;
 
   .panel-title {
     text-align: center;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 800;
     color: #334155;
     padding: 10px;
     border-bottom: 1px solid $border;
     letter-spacing: .4px;
+
+    /* Pista de que las filas de la tabla son clicables */
+    .panel-hint {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0;
+      color: #94a3b8;
+      text-transform: none;
+    }
+
+    /* Motivo marcado en la tabla, que es el que alimenta la tendencia */
+    .motivo-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-left: 8px;
+      padding: 2px 4px 2px 9px;
+      border-radius: 999px;
+      background: $filtro-bg;
+      border: 1px solid #f0d3b2;
+      color: $pink;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0;
+      vertical-align: middle;
+
+      ion-icon {
+        font-size: 17px;
+        cursor: pointer;
+        opacity: .75;
+
+        &:hover { opacity: 1; }
+      }
+    }
+  }
+
+  /* Totales del motivo marcado, debajo del titulo de la grafica */
+  .motivo-resumen {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 18px;
+    padding: 9px 10px;
+    border-bottom: 1px solid $border;
+    background: #fafbfc;
+    font-size: 13px;
+    color: #64748b;
+
+    strong {
+      margin-left: 4px;
+      color: #111827;
+      font-size: 15px;
+    }
+
+    .bajo, .bajo strong { color: $pink; }
+  }
+
+  .linea-loading {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0 0;
   }
 
   apx-chart {
@@ -246,17 +319,17 @@ $border: #e5e7eb;
 }
 
 .tabla-wrap {
-  max-height: 420px;
+  max-height: 560px;
   overflow: auto;
 }
 
 .tabla {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 15px;
 
   th, td {
-    padding: 7px 10px;
+    padding: 10px 14px;
     border-bottom: 1px solid #f1f3f5;
     text-align: left;
     color: #374151;
@@ -268,7 +341,7 @@ $border: #e5e7eb;
     background: #f8fafc;
     font-weight: 700;
     color: #475569;
-    font-size: 11px;
+    font-size: 13px;
     z-index: 1;
   }
 
@@ -276,6 +349,21 @@ $border: #e5e7eb;
 
   tbody tr.row-bajo { background: #eceff1; }
   td.bajo { color: $pink; font-weight: 700; }
+
+  tbody tr.clickable {
+    cursor: pointer;
+
+    &:hover { background: #f8fafc; }
+  }
+
+  /* Motivo marcado: es el que alimenta la grafica de tendencia */
+  tbody tr.row-sel,
+  tbody tr.row-sel:hover {
+    background: $filtro-bg;
+    box-shadow: inset 3px 0 0 $pink;
+
+    td { font-weight: 700; color: #1f2937; }
+  }
 
   tfoot td {
     font-weight: 800;
@@ -303,8 +391,9 @@ $border: #e5e7eb;
 }
 
 /* ===== Responsive ===== */
-@media (max-width: 992px) {
-  .cam-grid { grid-template-columns: 1fr; }
+/* Monitores anchos: ahi si caben la tabla y la grafica lado a lado. */
+@media (min-width: 1500px) {
+  .cam-grid { grid-template-columns: 1.1fr 1fr; }
 }
 
 @media (max-width: 640px) {
@@ -313,5 +402,6 @@ $border: #e5e7eb;
   .fecha-filtro { flex: 1 1 100%; min-width: 0; }
   .cam-toolbar .btn { flex: 1; }
   .kpi-num, .kpi-gauge { flex: 1 1 100%; }
-  .tabla th, .tabla td { padding: 6px 8px; }
+  .tabla { font-size: 14px; }
+  .tabla th, .tabla td { padding: 8px 10px; }
 }

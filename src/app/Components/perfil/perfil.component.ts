@@ -136,24 +136,20 @@ export class PerfilComponent implements OnInit {
     try {
       const login = await this.stg.getLogin();
 
+      const nueva = event.detail.value.IDVT;
+
+      // Apagar el toggle de la zona activa no cambia nada: se repinta la lista
+      // para que el switch vuelva a quedar donde estaba.
+      if (nueva == this.zoneSelect) {
+        this.zones = [...this.zones];
+        return;
+      }
+
       this.socketService.disconnect((login[0].WorkZone + 'central').toString())
       this.socketService.disconnect((login[0].WorkZone + 'centraladmin').toString())
 
-      console.log(login[0].WorkZone + 'central')
-
-      await this.stg.putZone(event.detail.value.IDVT);
-      this.zoneSelect = event.detail.value.IDVT;
-
-   
-/*
-      if (this.zoneSelect == 6842) {
-        this.router.navigate(['/medellinform'])
-      }
-      if (this.zoneSelect == 6993) {
-        this.router.navigate(['/rionegroform'])
-      } */
-
-
+      await this.stg.putZone(nueva);
+      this.zoneSelect = nueva;
 
       if (this.zoneSelect == 6993) {
         this.zoneName = 'RioNegro'
@@ -167,18 +163,42 @@ export class PerfilComponent implements OnInit {
       if (login[0].isCentralAdmin == 1) {
         this.socketService.hospitalCentral(this.zoneSelect + 'centraladmin')
       }
-      this.router.navigate(['/dashboard'])
 
-      
-        this.obs.load(true)
-      
-      //this.close();
+      // Se queda en la pantalla donde esta el usuario y la refresca con la zona nueva.
+      // La excepcion son los formularios: su guard esta atado a la sede, asi que ahi
+      // si hay que moverlo al de la otra clinica (y esa navegacion ya la remonta).
+      if (!this.irAlFormularioDeLaZona()) {
+        this.obs.cambioZona(this.zoneSelect);
+      }
+
+      this.toast.MsgOK('Zona cambiada a ' + this.zoneName);
 
     } catch (error) {
 
     }
 
 
+  }
+
+  // Los formularios estan atados a la sede por guard (FormRNGGuard / FormMEDGuard):
+  // si el usuario cambia de clinica parado en uno, hay que pasarlo al de la otra.
+  private irAlFormularioDeLaZona(): boolean {
+    const url = this.router.url;
+
+    if (url.indexOf('rionegroform') < 0 && url.indexOf('medellinform') < 0) {
+      return false;
+    }
+
+    if (this.zoneSelect == 6842) {
+      this.router.navigate(['/medellinform'])
+      return true;
+    }
+    if (this.zoneSelect == 6993) {
+      this.router.navigate(['/rionegroform'])
+      return true;
+    }
+
+    return false;
   }
 
   history() {

@@ -1,6 +1,6 @@
 <ion-header class="ion-no-border" [translucent]="true">
   <ion-toolbar color="diamante">
-    <ion-title>Indicadores</ion-title>
+    <ion-title>Indicadores<span *ngIf="clinica"> · {{ clinica }}</span></ion-title>
     <app-options slot="end"></app-options>
   </ion-toolbar>
 </ion-header>
@@ -9,13 +9,21 @@
 
   <div class="bi">
 
-    <!-- Menú lateral de páginas (estilo Power BI) -->
-    <aside class="bi-sidebar" [class.collapsed]="collapsed">
+    <!-- Fondo oscuro del menú de páginas (solo cuando está abierto en móvil) -->
+    <div class="bi-backdrop" [class.on]="menuAbierto" (click)="cerrarMenu()"></div>
+
+    <!-- Menú lateral de páginas (estilo Power BI). En pantallas angostas entra
+         desde la izquierda, al contrario del panel de filtros que entra por la
+         derecha. -->
+    <aside class="bi-sidebar" [class.collapsed]="collapsed" [class.abierto]="menuAbierto">
 
       <div class="bi-sidebar-head">
         <span class="bi-sidebar-title" *ngIf="!collapsed">Páginas</span>
         <button class="bi-collapse" (click)="toggleSidebar()">
           <ion-icon [name]="collapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
+        </button>
+        <button class="bi-cerrar-menu" (click)="cerrarMenu()">
+          <ion-icon name="close-outline"></ion-icon>
         </button>
       </div>
 
@@ -33,31 +41,52 @@
     <section class="bi-content">
 
       <header class="bi-topbar">
+        <button class="bi-menu-toggle" (click)="abrirMenu()" title="Páginas">
+          <ion-icon name="menu-outline"></ion-icon>
+        </button>
         <img class="bi-logo" src="/assets/diamante.png" alt="logo" />
-        <h1 class="bi-title">{{ currentLabel }}</h1>
+        <div class="bi-title-wrap">
+          <h1 class="bi-title">{{ currentLabel }}<span *ngIf="clinica"> · {{ clinica }}</span></h1>
+          <span class="bi-fechas" *ngIf="paginaActiva && rangoFechas">
+            Fechas: {{ rangoFechas }}<span *ngIf="rangoHoras"> · {{ rangoHoras }}</span>
+          </span>
+        </div>
         <div class="bi-topbar-spacer"></div>
       </header>
 
       <div class="bi-canvas">
 
         <!-- Página CAMILLERIA (primera, con datos reales) -->
-        <app-bi-camilleria *ngIf="selectedPage === 'camilleria'"></app-bi-camilleria>
+        <app-bi-camilleria *ngIf="paginaActiva === 'camilleria'"></app-bi-camilleria>
 
         <!-- Página CAMILLERIA 2 (métricas por turno día/noche) -->
-        <app-bi-camilleria2 *ngIf="selectedPage === 'camilleria2'"></app-bi-camilleria2>
+        <app-bi-camilleria2 *ngIf="paginaActiva === 'camilleria2'"></app-bi-camilleria2>
 
         <!-- Página MAPA DE CALOR (hora x día) -->
-        <app-bi-mapacalor *ngIf="selectedPage === 'mapacalor'"></app-bi-mapacalor>
+        <app-bi-mapacalor *ngIf="paginaActiva === 'mapacalor'"></app-bi-mapacalor>
 
         <!-- Página MAPA DE CUMPLIMIENTO (hora x día, %) -->
-        <app-bi-mapacumplimiento *ngIf="selectedPage === 'mapacumplimiento'"></app-bi-mapacumplimiento>
+        <app-bi-mapacumplimiento *ngIf="paginaActiva === 'mapacumplimiento'"></app-bi-mapacumplimiento>
 
-        <!-- Página CAMILLERIA 4 (cumplimiento por ubicación: destino y origen) -->
-        <app-bi-camilleria4 *ngIf="selectedPage === 'camilleria4'"></app-bi-camilleria4>
+        <!-- Página AYUDAS DIAGNOSTICAS (cumplimiento por ubicación: destino y origen) -->
+        <app-bi-camilleria4 *ngIf="paginaActiva === 'ayudas'"></app-bi-camilleria4>
+
+        <!-- Página USO DE NFC (tecnología usada al marcar origen y destino) -->
+        <app-bi-nfc *ngIf="paginaActiva === 'nfc'"></app-bi-nfc>
+
+        <!-- Página CANTIDAD DE CAMILLEROS (camilleros distintos por hora x día) -->
+        <app-bi-cantidad *ngIf="paginaActiva === 'cantidad'"></app-bi-cantidad>
+
+        <!-- Sin ninguna pantalla asignada: se explica en vez de dejar el lienzo vacío -->
+        <div class="bi-placeholder" *ngIf="sinPaginas">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+          <p>No tienes ninguna página del dashboard asignada</p>
+          <span>Pídele a la central que te habilite las que necesitas desde Control de Usuarios.</span>
+        </div>
 
         <!-- Resto de páginas: placeholder hasta construir su diseño -->
         <div class="bi-placeholder"
-          *ngIf="selectedPage !== 'camilleria' && selectedPage !== 'camilleria2' && selectedPage !== 'mapacalor' && selectedPage !== 'mapacumplimiento' && selectedPage !== 'camilleria4'">
+          *ngIf="paginaActiva && paginaActiva !== 'camilleria' && paginaActiva !== 'camilleria2' && paginaActiva !== 'mapacalor' && paginaActiva !== 'mapacumplimiento' && paginaActiva !== 'ayudas' && paginaActiva !== 'nfc' && paginaActiva !== 'cantidad'">
           <ion-icon name="bar-chart-outline"></ion-icon>
           <p>Indicadores de <strong>{{ currentLabel }}</strong></p>
           <span>El diseño de esta página se construirá aquí.</span>

@@ -1,0 +1,28 @@
+<!-- Solo en pantallas angostas: boton flotante que abre el panel de filtros.
+     Queda fijo sobre el tablero para tenerlo a mano sin subir hasta arriba. -->
+<button class="ff-toggle" type="button" [class.oculto]="abierto" (click)="abrir()">
+  <ion-icon name="options-outline"></ion-icon>
+  <span>{{ titulo }}</span>
+</button>
+
+<div class="ff-backdrop" [class.on]="abierto" (click)="cerrar()"></div>
+
+<aside class="ff-panel" [class.on]="abierto">
+
+  <header class="ff-head">
+    <span>{{ titulo }}</span>
+    <button class="ff-close" type="button" (click)="cerrar()">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </header>
+
+  <!-- Las tarjetas de filtro de la pantalla -->
+  <div class="ff-body">
+    <ng-content></ng-content>
+  </div>
+
+  <footer class="ff-foot">
+    <button class="ff-ver" type="button" (click)="cerrar()">Ver resultados</button>
+  </footer>
+
+</aside>

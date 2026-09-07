@@ -1,0 +1,181 @@
+<div class="nfc">
+
+  <!-- Barra de acciones -->
+  <div class="cam-toolbar" *ngIf="!modoPublico">
+    <app-bi-ayuda pagina="nfc"></app-bi-ayuda>
+    <div class="cam-toolbar-right">
+      <button class="btn btn-compartir" (click)="compartir()" title="Compartir link de solo lectura">
+        <ion-icon name="share-social-outline"></ion-icon><span>Compartir</span>
+      </button>
+      <button class="btn btn-excel" (click)="descargar()" [disabled]="loading"
+        title="Descargar la data con la que se construyó el indicador">
+        <ion-icon name="download-outline"></ion-icon><span>Descargar Excel</span>
+      </button>
+      <button class="btn btn-recargar" (click)="recargar()" [disabled]="loading">
+        <ion-icon name="refresh"></ion-icon><span>Recargar</span>
+      </button>
+      <button class="btn btn-limpiar" (click)="limpiar()" [disabled]="loading">
+        <ion-icon name="close-circle-outline"></ion-icon><span>Limpiar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="cam-top" *ngIf="!modoPublico">
+
+    <!-- Filtros: en pantallas angostas pasan a un menú lateral -->
+    <app-bi-filtros>
+      <div class="filtro fecha-filtro">
+        <label>FECHA</label>
+        <div class="rango">
+          <div class="par">
+            <mat-form-field class="fecha-field" (click)="pDesde.open()">
+              <mat-label>Desde</mat-label>
+              <input matInput [matDatepicker]="pDesde" [(ngModel)]="desde" (dateChange)="aplicar()" readonly />
+              <mat-datepicker-toggle matIconSuffix [for]="pDesde"></mat-datepicker-toggle>
+              <mat-datepicker #pDesde></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field class="fecha-field hora-field">
+              <mat-label>Hora</mat-label>
+              <mat-select [(ngModel)]="horaFrom" (selectionChange)="aplicar()">
+                <mat-option *ngFor="let h of horasOpts" [value]="h">{{ h }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="par">
+            <mat-form-field class="fecha-field" (click)="pHasta.open()">
+              <mat-label>Hasta</mat-label>
+              <input matInput [matDatepicker]="pHasta" [(ngModel)]="hasta" (dateChange)="aplicar()" readonly />
+              <mat-datepicker-toggle matIconSuffix [for]="pHasta"></mat-datepicker-toggle>
+              <mat-datepicker #pHasta></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field class="fecha-field hora-field">
+              <mat-label>Hora</mat-label>
+              <mat-select [(ngModel)]="horaTo" (selectionChange)="aplicar()">
+                <mat-option *ngFor="let h of horasOpts" [value]="h">{{ h }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="filtro slicer">
+        <label>PRIORIDAD</label>
+        <ul class="opts">
+          <li *ngFor="let o of prioridadOpts" (click)="setPrioridad(o.v)">
+            <span class="chk" [class.on]="prioridad === o.v"></span><span class="txt">{{ o.l }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="filtro slicer">
+        <label>UNIDAD DEFINITIVA</label>
+        <ul class="opts">
+          <li *ngFor="let o of unidadOpts" (click)="setUnidad(o.v)">
+            <span class="chk" [class.on]="unidad === o.v"></span><span class="txt">{{ o.l }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="filtro">
+        <label>MOTIVO</label>
+        <select [(ngModel)]="motivo" (change)="aplicar()">
+          <option value="">Todos</option>
+          <option *ngFor="let m of motivos" [value]="m._id">{{ m.Name }}</option>
+        </select>
+      </div>
+
+      <div class="filtro slicer">
+        <label>TIPO</label>
+        <ul class="opts">
+          <li *ngFor="let o of tipoOpts" (click)="setTipo(o.v)">
+            <span class="chk" [class.on]="tipo === o.v"></span><span class="txt">{{ o.l }}</span>
+          </li>
+        </ul>
+      </div>
+    </app-bi-filtros>
+
+  </div>
+
+  <!-- Explicación de la fila sin tecnología -->
+  <div class="nota">
+    <ion-icon name="information-circle-outline"></ion-icon>
+    <span>
+      <b>{{ sinTecnologia }}</b> son las solicitudes marcadas desde la web (botones
+      <i>Marcar</i> del tablero): al no pasar por el móvil no registran tecnología de lectura.
+    </span>
+  </div>
+
+  <div class="tablas">
+
+    <!-- TECNOLOGIA ORIGEN -->
+    <div class="panel">
+      <div class="tabla-wrap">
+        <table class="nfc-tabla">
+          <thead>
+            <tr>
+              <th class="lbl">TECNOLOGIA ORIGEN</th>
+              <th class="num">CANTIDAD</th>
+              <th class="num">PORCENTAJE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of origen" [class.row-sin]="esSinTecnologia(r)">
+              <td class="lbl">{{ r.tecnologia }}</td>
+              <td class="num">{{ r.cantidad | number }}</td>
+              <td class="num">{{ r.porcentaje != null ? (r.porcentaje | number:'1.2-2') + '%' : '' }}</td>
+            </tr>
+            <tr *ngIf="!origen.length">
+              <td colspan="3" class="vacio">Sin datos para los filtros seleccionados.</td>
+            </tr>
+          </tbody>
+          <tfoot *ngIf="origen.length">
+            <tr>
+              <td class="lbl">Total</td>
+              <td class="num">{{ totalOrigen.cantidad | number }}</td>
+              <td class="num">{{ totalOrigen.porcentaje != null ? (totalOrigen.porcentaje | number:'1.2-2') + '%' : '' }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- TECNOLOGIA DESTINO -->
+    <div class="panel">
+      <div class="tabla-wrap">
+        <table class="nfc-tabla">
+          <thead>
+            <tr>
+              <th class="lbl">TECNOLOGIA DESTINO</th>
+              <th class="num">CANTIDAD</th>
+              <th class="num">PORCENTAJE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of destino" [class.row-sin]="esSinTecnologia(r)">
+              <td class="lbl">{{ r.tecnologia }}</td>
+              <td class="num">{{ r.cantidad | number }}</td>
+              <td class="num">{{ r.porcentaje != null ? (r.porcentaje | number:'1.2-2') + '%' : '' }}</td>
+            </tr>
+            <tr *ngIf="!destino.length">
+              <td colspan="3" class="vacio">Sin datos para los filtros seleccionados.</td>
+            </tr>
+          </tbody>
+          <tfoot *ngIf="destino.length">
+            <tr>
+              <td class="lbl">Total</td>
+              <td class="num">{{ totalDestino.cantidad | number }}</td>
+              <td class="num">{{ totalDestino.porcentaje != null ? (totalDestino.porcentaje | number:'1.2-2') + '%' : '' }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="cam-loading" *ngIf="loading">
+    <ion-spinner></ion-spinner>
+  </div>
+
+</div>

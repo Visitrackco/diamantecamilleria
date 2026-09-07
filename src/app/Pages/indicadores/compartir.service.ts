@@ -47,6 +47,19 @@ const FILTROS_POR_PANTALLA: { [p: string]: { key: string; label: string }[] } = 
   camilleria4: [
     { key: 'unidad', label: 'Unidad definitiva' },
     { key: 'tipo', label: 'Tipo' }
+  ],
+  nfc: [
+    { key: 'prioridad', label: 'Prioridad' },
+    { key: 'unidad', label: 'Unidad definitiva' },
+    { key: 'motivo', label: 'Motivo' },
+    { key: 'tipo', label: 'Tipo' }
+  ],
+  // La HORA no es interactiva en el link: queda fija con la selección de quien comparte.
+  cantidad: [
+    { key: 'prioridad', label: 'Prioridad' },
+    { key: 'unidad', label: 'Unidad definitiva' },
+    { key: 'motivo', label: 'Motivo' },
+    { key: 'tipo', label: 'Tipo' }
   ]
 };
 

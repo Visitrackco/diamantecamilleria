@@ -21,9 +21,9 @@ $border: #e5e7eb;
 
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer;
-    font-size: 12px; font-weight: 700; color: #fff; white-space: nowrap;
-    ion-icon { font-size: 16px; }
+    padding: 7px 14px; border-radius: 8px; border: none; cursor: pointer;
+    font-size: 11px; font-weight: 700; color: #fff; white-space: nowrap;
+    ion-icon { font-size: 15px; }
     &:disabled { opacity: .5; }
   }
   .btn-recargar { background: $orange; }
@@ -45,30 +45,51 @@ $border: #e5e7eb;
   flex-direction: column;
   gap: 8px;
 
-  label { font-size: 11px; font-weight: 700; color: #6b7280; letter-spacing: .3px; }
-  .rango { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  label { font-size: 10px; font-weight: 700; color: #6b7280; letter-spacing: .3px; }
+  .rango { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .par { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
 }
 
-.fecha-filtro { flex: 1 1 250px; min-width: 210px; }
+.fecha-filtro { flex: 1 1 330px; min-width: 290px; }
 .fecha-field {
-  flex: 1 1 105px; min-width: 0; font-size: 12px;
+  flex: 1 1 105px; min-width: 0; font-size: 11px; cursor: pointer;
   ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
   ::ng-deep .mat-mdc-text-field-wrapper { background: #fff; }
-  ::ng-deep .mat-mdc-form-field-infix { min-height: 42px; }
+  ::ng-deep .mat-mdc-form-field-infix { min-height: 38px; }
+
+  &.hora-field { flex: 0 1 92px; }
+}
+
+/* Destino / Origen: mas anchos para que el nombre de la ubicacion no se corte */
+.filtro-ubic { flex: 2 1 300px; min-width: 280px; }
+
+/* Motivo: campo Material (fondo blanco) como los de ubicacion, un poco mas
+   ancho que un filtro normal porque los nombres de motivo son largos. */
+.filtro-motivo { flex: 1 1 220px; min-width: 190px; }
+
+/* ORIGEN + DESTINO viajan juntos: el par se acomoda o baja completo, nunca
+   queda uno arriba y el otro abajo. */
+.par-ubic {
+  display: flex;
+  gap: 12px;
+  flex: 3 1 620px;
+  min-width: 280px;
+
+  .filtro-ubic { flex: 1 1 0; min-width: 0; }
 }
 
 .multi-field {
-  width: 100%; font-size: 12px;
+  width: 100%; font-size: 11px;
   ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
   ::ng-deep .mat-mdc-text-field-wrapper { background: #fff; }
-  ::ng-deep .mat-mdc-form-field-infix { min-height: 42px; }
+  ::ng-deep .mat-mdc-form-field-infix { min-height: 38px; }
 }
 
 .slicer .opts {
   list-style: none; margin: 0; padding: 0;
   li {
     display: flex; align-items: center; gap: 8px; padding: 4px 0;
-    cursor: pointer; font-size: 12px; color: #4b5563;
+    cursor: pointer; font-size: 11px; color: #4b5563;
     &:hover .chk { border-color: $orange; }
     .chk {
       width: 15px; height: 15px; border: 1.5px solid #d19a5e; border-radius: 3px;
@@ -91,16 +112,37 @@ $border: #e5e7eb;
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05); overflow: hidden;
 }
 
+/* Cabecera del panel + explicacion del resaltado de fila */
+.panel-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; flex-wrap: wrap;
+  padding: 9px 12px;
+  background: #f8fafc;
+  border-bottom: 1px solid $border;
+
+  .panel-title { font-size: 11px; font-weight: 800; color: #334155; letter-spacing: .4px; }
+
+  .ley {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10px; color: #6b7280;
+    b { color: #9a3412; }
+  }
+  .ley-color {
+    width: 22px; height: 11px; border-radius: 3px; flex-shrink: 0;
+    background: #fbeae4; border: 1px solid #efc9ba;
+  }
+}
+
 .tabla-wrap { overflow-x: auto; }
 
 .c4-tabla {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
-  min-width: 640px;
+  font-size: 11px;
+  min-width: 620px;
 
   th, td {
-    padding: 7px 12px;
+    padding: 5px 9px;
     border-bottom: 1px solid #eef1f4;
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
@@ -142,7 +184,7 @@ $border: #e5e7eb;
   padding: 10px;
   border-top: 1px solid $border;
 
-  .pg-txt { font-size: 12px; color: #64748b; font-weight: 600; }
+  .pg-txt { font-size: 11px; color: #64748b; font-weight: 600; }
   .pg-btn {
     background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 7px;
     width: 32px; height: 32px; cursor: pointer; color: #334155;
@@ -160,5 +202,7 @@ $border: #e5e7eb;
 
 @media (max-width: 640px) {
   .filtro, .fecha-filtro { flex: 1 1 100%; min-width: 0; }
+  /* En pantalla angosta el par sigue junto, pero uno debajo del otro. */
+  .par-ubic { flex: 1 1 100%; flex-direction: column; }
   .cam-toolbar .btn { flex: 1; }
 }

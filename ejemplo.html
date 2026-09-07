@@ -1,262 +1,355 @@
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.6/underscore-umd-min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
+  <title>CENTRO ASEO</title>
+</head>
+
 <style>
-    .contenedor {
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 8px !important;
-      width: 100%;
-      margin: auto;
-    }
-    
-    .none {
-      padding: 0px !important;
-      border: 0px !important;
-    }
-    
-    .logo {
-      margin: auto;
-      display: flex;
-      object-fit: cover !important;
-      width: 60%;
-      background-color: red;
-    }
-  
-    td {
-      border: 1px solid rgb(0, 0, 0);
-    }
-  
-    table {
-      width: 100%;
-      /* border: 1px solid rgb(255, 255, 255); */
-      border: none;
-      border-collapse: collapse;
-    }
-  
-    .td-none {
-      border: none;
-      padding: 0;
-    }
-  
-    .td-r-none {
-      border-right: none;
-    }
-  
-    .td-l-none {
-      border-left: none;
-    }
-  
-    .td-b-none {
-      border-bottom: none;
-    }
-  
-    .td-t-none {
-      border-top: none;
-    }
-  
-    .text-medium {
-      font-size: 11px !important;
-    }
-  
-    .text-center {
-      text-align: center !important;
-    }
-  
-    .text-value {
-      font-size: 12px !important;
-    }
-  
-    .bg-name-colums-blue {
-      font-size: small;
-      background-color: #2f5496;
-      color: white;
-      font-weight: bold;
-    }
-    .border-none {
-      border: none !important;
-    }
-    .td-mn-mx-w-40 {
-      max-width: 40px;
-      min-width: 40px;
-      overflow: hidden;
-    }
-  
-    .fila-categoria-c {
-      background-color: #ffcccc; /* Rojo claro */
-    }
-  
-    .fila-categoria-b {
-      background-color: #ffffcc; /* Amarillo claro */
-    }
-  
-    .fila-categoria-a {
-      background-color: #ccffcc; /* Verde claro */
-    }
-  
-    .display-none {
-      display: none;
-    }
-  
-    .td-min-max-w-header {
-      min-width: 90px !important;
-      max-width: 90px !important;
-    }
-  
-    .td-min-max-w-category {
-      min-width: 130px !important;
-      max-width: 130px !important;
-      word-wrap: break-word;
-      word-break: break-word;
-      white-space: normal;
-      overflow-wrap: break-word;
-      text-align: center;
-    }
-    .bg-5{
-      background-color: #01b150;
-      color: white;
-    }
-    .bg-4{
-      background-color: #93d051;
-      color: white;
-    }
-    .bg-3{
-      background-color: #fec001;
-      color: white;
-    }
-    .bg-2{
-      background-color: #fe0001;
-      color: white;
-    }
-    .bg-1{
-      background-color: #c10001;
-      color: white;
-    }
-    .bg-0{
-      background-color: #585958;
-      color: white;
-    }
-    .bg-na{
-      background-color: #00b0f0;
-      color: white;
-    }
-  </style>
-  
-  <div class="contenedor">
-    <table class="table" cellspacing="0" cellspadding="0">
-      <!-- head -->
-      <head>
-        <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.6/underscore-umd-min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-        <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
-        <script
-          type="text/javascript"
-          src="https://www.gstatic.com/charts/loader.js"
-        ></script>
-      </head>
-  
-     <!-- header -->
-     <thead>
+  * {
+    margin: 0%;
+  }
+
+  .contenedor {
+    font-family: Arial, Helvetica, sans-serif;
+    width: 90%;
+    /* margin: auto; */
+    font-size: 12px;
+  }
+
+  .t {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .t td {
+    border: 1px solid #333;
+    padding: 5px;
+  }
+
+  .none {
+    padding: 0px !important;
+    border: 0px !important;
+  }
+
+  .center {
+    text-align: center;
+  }
+
+  .bold {
+    font-weight: bolder;
+  }
+
+  .small {
+    font-size: 9px !important;
+  }
+
+  .firma .vt_picture {
+    width: 90px !important;
+    height: auto !important;
+  }
+
+  .salto {
+    page-break-inside: avoid !important;
+  }
+
+  .imagen img {
+    width: 150px !important;
+    height: 170px !important;
+  }
+
+  .verdis {
+    background: #DCF0E7;
+  }
+
+  .vt_picture {
+    width: 220px;
+    height: 300px;
+  }
+
+
+  .rotate {
+    transform: rotate(-90deg);
+
+  }
+
+  .bg {
+    background-color: #031EFF;
+  }
+</style>
+
+
+<div class="contenedor">
+  <table class="t" cellspacing="0" cellspadding="0">
+    <thead>
+      <tr>
+        <td colspan="" style="padding:8px; border: 0px;"></td>
+      </tr>
+      <tr>
+        <td colspan="" style="padding:0px; border:0px;">
+          <table style="width:100%; border:1px solid #333;" cellspacing="0" cellspadding="0">
+
+            <tr>
+              <td rowspan="4" style="width: 150px;" class="center">
+                <img
+                  src="https://s3.amazonaws.com/bineast.visitrack.com/logocompanies/649AA4D6-851E-4AF7-9C88-93531CD07753.png"
+                  width="150px" alt="">
+              </td>
+              <td rowspan="4"  class="center">RUTINA DE MANTENIMIENTO DE CABINAS</td>
+              <td style="height: 50px;" class="center"><b class="titulo bold">CODIGO:</b></td>
+              <td style="height: 50px;" class="center">GTE-FO-030</td>
+            </tr>
+            <tr>
+                <td style="height: 50px;" class="center"><b class="titulo bold">CODIGO:</b></td>
+              <td style="height: 50px;" class="center">GTE-FO-030</td>
+            
+            </tr>
+
+              <tr>
+                <td style="height: 50px;" class="center"><b class="titulo bold">CODIGO:</b></td>
+              <td style="height: 50px;" class="center">GTE-FO-030</td>
+            
+            </tr>
+
+              <tr>
+                <td style="height: 50px;" class="center"><b class="titulo bold">CODIGO:</b></td>
+              <td style="height: 50px;" class="center">GTE-FO-030</td>
+            
+            </tr>
+           
+
+          </table>
+        </td>
+      </tr>
+    </thead>
+
+    <tfoot>
+      <tr>
+        <td style="padding: 8px 0; border: 0px;"></td>
+      </tr>
+    </tfoot>
+    <tbody>
+
+      <span id="activity" style="display:none;" data-frm="ActivityID"></span>
+      <tr>
+        <td style="padding: 8px 0; border-top: 0px; border-bottom: 0px;"></td>
+      </tr>
+
       <tr>
         <td class="none">
-          <table class="table">
+          <table class="t">
+
             <tr>
-              <td colspan="3">
-                <img
-                  src="https://s3.amazonaws.com/logocompanies/473DF828-F9B8-4BC0-974E-76A20E6D1D4F.jpg"
-                  alt="Logo"
-                  class="logo"
-                />
+              <td colspan="6">Cliente: <span data-frm="LocationName"></span></td>
+              <td colspan="6">Fecha: <span id="fechasss" style="display: none;" data-api="FECHA"></span> <span
+                  class="center" id="fechaNueva"></span></td>
+            </tr>
+            <tr>
+              <td>Motivo Informe: <span style="display: none;" data-api="MOTIVO_INFORME" id="b1" data-properties='{"align":"none",
+                                            "showlabel": "true", "defwith": "20px"}'></span> </td>
+              <td>ACTA DE REUNION: </td>
+              <td class="center" style="padding: 7px;"><span id="b2"
+                  style="width: 50px; height: 30px;padding: 3px 7px; border: 1px solid #333;"></span>
               </td>
-              <td colspan="3" class="text-center">
-                <b> FORMATO DE EVALUACIÓN Y REEVALUACIÓN DE PROVEEDORES </b>
+              <td>INFORME ACTIVIDADES:</td>
+              <td class="center" style="padding: 7px;"><span id="b3"
+                  style="width: 50px; height: 30px;padding: 3px 7px; border: 1px solid #333;"></span>
               </td>
-              <td colspan="4">
-                <table class="table border-none">
-                  <tr>
-                    <td class="td-l-none td-t-none text-medium">
-                      <b> Documento: </b>
-                    </td>
-                    <td class="td-l-none td-t-none td-r-none">
-                      <span class="text-medium">COM-FOR-002</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="td-l-none td-t-none text-medium">
-                      <b>Version</b>
-                    </td>
-                    <td class="td-l-none td-t-none td-r-none">
-                      <span class="text-medium"> 001 </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="td-l-none td-t-none td-b-none text-medium">
-                      <b> Fecha: </b>
-                    </td>
-                    <td class="td-l-none td-t-none td-r-none td-b-none">
-                      <span class="text-medium"> Dic 2024 </span>
-                    </td>
-                  </tr>
-                </table>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td colspan="2">Frecuencia de Visita del <br> coordinador: <span style="display: none;"
+                  data-api="FRECUENCIAVISITA" id="c1" data-properties='{"align":"none",
+                                            "showlabel": "true", "defwith": "20px"}'></span></td>
+              <td>Diaria:</td>
+              <td class="center" style="padding: 7px;"><span id="c2"
+                  style="width: 50px; height: 30px;padding: 3px 7px; border: 1px solid #333;"></span>
+              </td>
+              <td>Semanal:</td>
+              <td class="center" style="padding: 7px;"><span id="c3"
+                  style="width: 50px; height: 30px;padding: 3px 7px; border: 1px solid #333;"></span>
+              </td>
+              <td>Quincenal:</td>
+              <td class="center" style="padding: 7px;"><span id="c4"
+                  style="width: 50px; height: 30px;padding: 3px 7px; border: 1px solid #333;"></span>
+              </td>
+              <td>mensual:</td>
+              <td class="center" style="padding: 7px;"><span id="c5"
+                  style="width: 50px; height: 30px;padding: 3px 7px; border: 1px solid #333;"></span>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="10" style="padding:10px;"></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+
+      <tr>
+        <td style="padding:10px;"></td>
+      </tr>
+
+
+      <tr>
+        <td class="none">
+          <table class="t">
+            <tr>
+              <td class="center bold">ASPECTOS TRATADOS EN LA VISITA</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px;">
+                <p data-api="ASPECTOSATRATAR"></p>
               </td>
             </tr>
           </table>
         </td>
       </tr>
-     
-    </thead>
-      <!-- body -->
-     <tbody>
-        <tr>
-            <td class="none">
-                <table
-                id="MD_ADMINISTRACION"
-                cellspacing="0"
-                data-api="MD_ADMINISTRACION">
-            
-                  <tr class="bg-name-colums-blue">
-                    <td colspan="1" class="text-medium text-center">CATEGORÍA DE LA EVALUACIÓN</td>
-                    <td class="text-medium text-center">EXPECTATIVAS DE RENDIMIENTO</td>
-                    <td class="text-medium text-center">PUNTAJE</td>
-                    <td class="text-medium text-center">DESCRIPCIÓN DE LA   MEDIDA CORRECTIVA</td>
-                    <td class="text-medium text-center">INFORMACIÓN ADICIONAL  </td>
-                    <td class="text-medium text-center">SEGUIMIENTO</td>
-                    <td class="text-medium text-center">FECHA</td>
-                  </tr>
-                
-                <tbody data-container="true" data-template="true" >
-                  <!-- Fila principal con rowspan -->
-                 
-                    <tr>
-                      <td data-col="Name" class="text-value text-center"></td>
-                      <td data-col="PUNTAJE" class="text-center text-value"></td>
-                      <td data-col="DESCRIPCION_MEDIDA_CORRECTIVA" class="text-value"></td>
-                      <td data-col="INFORMACION_ADICIONAL" class="text-value text-center"></td>
-                      <td data-col="SEGUIMIENTO" class="text-value text-center"></td>
-                      <td data-col="DESEA_CALIFICAR" class="text-value text-center "></td>
-                      <td data-col="FECHA_SEGUIMIENTO" class="text-value text-center"></td>
-                      <td data-col="MD_SEGUIMIENTO"  class="text-value text-center">
-                        <table data-api-md="MD_SEGUIMIENTO">
-                     
-                            <tr>
-                              <td>Foto</td>
-                          
-                            </tr>
-                      
-                          <tbody data-template-md="true">
-                            <tr>
-                        
-                              <td data-col-md="FOTO"></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </td>
-                    </tr>
-            
-                  
-                </tbody>
-              </table>    
-            </td>
-        </tr>
-     </tbody>
-    </table>
-  </div>
 
-  
-  
+      <tr>
+        <td style="padding: 5px; border: 0px;"></td>
+      </tr>
+
+
+      <tr>
+        <td class="none">
+          <table class="t" data-api="COMPROMISOS">
+            <thead>
+              <tr>
+                <td class="center bold" colspan="6" style="background: #f3f3f3;">COMPROMISOS
+                </td>
+              </tr>
+              <tr>
+                <td class="center bold">COMPROMISOS ADQUIRIDOS</td>
+                <td class="center bold">DESCRIPCION DEL COMPROMISO</td>
+                <td class="center bold">FECHA DE SOLUCION DEL COMPROMISO</td>
+                <td class="center bold">COMPROMISO RESUELTO</td>
+              </tr>
+            </thead>
+            <tbody data-container="true" data-template="true">
+              <tr>
+                <td data-col="COMPROMISO_ADQUIRIDO"></td>
+                <td data-col="DESCRIPCION"></td>
+                <td data-col="FECHA_SOLUCION"></td>
+                <td data-col="COMPROMISO_RESUELTO" data-properties='{"align":"none",
+                                            "showlabel": "true", "defwith": "20px"}'></td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+
+
+
+      <tr>
+        <td class="none">
+          <table class="t">
+            <tr>
+              <td class="center  bold" colspan="5" style="font-size: 13px; background-color: #f3f3f3ce;">
+                <b>REGISTRO FOTOGRAFICO</b>
+              </td>
+
+              <td colspan="4" style="padding:0px; border:0px;">
+                <script type="text/template" id="fotos-vt">
+                                        <div class="image">
+                                            <%= tr %><br>
+                                                <p>
+                                                    <%= desc %>
+                                                </p>
+                                        </div>
+                                    </script>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="4" style="padding:0px; border:0px;">
+                <table class="t" style="border: 0px;" cellspacing="0" cellspadding="0">
+                  <tbody id="contentFigures">
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="4" style="padding:0px; border:0px;">
+                <div id="allfigures">
+                  <table id="Fotos" style="border: 0px;" class="t" border="1" cellspacing="0" data-api="FOTOS">
+                    <thead>
+                      <tr>
+                        <th>FOTOS</th>
+                      </tr>
+                    </thead>
+                    <tbody data-container="true" data-template="true">
+                      <tr>
+                        <td data-col="DESCRIPCION"></td>
+                        <td data-col="FOTO"></td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <tr class="salto">
+        <td class="none">
+          <table class="t">
+            <tr>
+              <td class="none" style="width: 50%;">
+                <table class="t">
+                  <tr>
+                    <td colspan="2" class="center bold" style="background: #fafafa;">Responsable
+                      Brillantex
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      Firma Responsable Brillantex :
+                      <div class="firma" data-api="FIRMADIRECTOROPERATIVO.bin"></div><br> Nombre:
+                      <span data-api="FIRMADIRECTOROPERATIVO.sig"></span><br>
+                      <span></span><br>
+                      <span></span><br>
+                    </td>
+                  </tr>
+                </table>
+
+              </td>
+
+
+              <td class="none" style="width: 50%;">
+                <table class="t">
+                  <tr>
+                    <td colspan="2" class="center bold" style="background: #fafafa;">Cliente
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      Firma Cliente:
+                      <div class="firma" data-api="FIRMACLIENTE.bin"></div><br> Nombre:
+                      <span data-api="FIRMACLIENTE.sig"></span><br> Cargo:
+                      <span data-api="CARGO2"></span>
+                      <br> Cédula:
+                      <span data-api="CEDULA2"></span>
+                    </td>
+                  </tr>
+                </table>
+
+              </td>
+
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+
+    </tbody>
+  </table>
+</div>

@@ -3,9 +3,10 @@ import { ApiService } from 'src/app/Services/api.service';
 import { StorageWebService } from 'src/app/Services/storage.service';
 import { ToastService } from 'src/app/Services/toast.service';
 import * as moment from 'moment-timezone';
-import { DashboardFiltrosService } from '../../dashboard-filtros.service';
+import { DashboardFiltrosService, HORAS_OPTS } from '../../dashboard-filtros.service';
 import { CompartirService } from '../../compartir.service';
 import { DashboardExcelService } from '../../dashboard-excel.service';
+import { ClinicaService } from 'src/app/Services/clinica.service';
 
 @Component({
   selector: 'app-bi-camilleria2',
@@ -23,6 +24,9 @@ export class Camilleria2Component implements OnInit, OnChanges {
   // Filtros
   desde: Date = null;
   hasta: Date = null;
+  horaFrom = '00:00';
+  horaTo = '23:30';
+  horasOpts = HORAS_OPTS;
   prioridad = 'todos';
   unidad = 'todos';
   tipo = 'camilleria';
@@ -34,11 +38,9 @@ export class Camilleria2Component implements OnInit, OnChanges {
     { v: 'critico', l: 'CRÍTICO' },
     { v: 'nocritico', l: 'NO CRÍTICO' }
   ];
-  unidadOpts = [
-    { v: 'todos', l: 'Seleccionar todo' },
-    { v: 'Adultos', l: 'ADULTOS' },
-    { v: 'Infantil', l: 'INFANTIL' }
-  ];
+  // Se arma segun la clinica en ngOnInit (Medellin: Adultos/Infantil,
+  // Rionegro: Alta complejidad/Medicina privada).
+  unidadOpts: { v: string; l: string }[] = [{ v: 'todos', l: 'Seleccionar todo' }];
   tipoOpts = [
     { v: 'camilleria', l: 'CAMILLERÍA' },
     { v: 'admin', l: 'ADMINISTRATIVAS' },
@@ -66,25 +68,35 @@ export class Camilleria2Component implements OnInit, OnChanges {
     private toast: ToastService,
     private filtros: DashboardFiltrosService,
     private compartirSvc: CompartirService,
-    private excel: DashboardExcelService
+    private excel: DashboardExcelService,
+    private clinica: ClinicaService
   ) { }
 
   descargar() {
     this.excel.descargar(this.filtrosActuales(), 'camilleria2_turnos.xlsx');
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     if (this.modoPublico) {
       if (this.datosPublicos) this.aplicarDatos(this.datosPublicos);
       return;
     }
     this.desde = this.filtros.desde;
     this.hasta = this.filtros.hasta;
+    this.horaFrom = this.filtros.horaFrom;
+    this.horaTo = this.filtros.horaTo;
     this.prioridad = this.filtros.prioridad;
     this.unidad = this.filtros.unidad;
     this.tipo = this.filtros.tipo;
     this.turno = this.filtros.turno;
     this.motivo = this.filtros.motivo;
+
+    // El slicer UNIDAD solo lista los grupos que existen en la clínica actual.
+    const u = await this.clinica.unidadPara(this.unidad);
+    this.unidadOpts = u.opts;
+    this.unidad = u.unidad;
+    this.filtros.unidad = this.unidad;
+
     this.cargarMotivos();
     this.cargar();
   }
@@ -123,6 +135,8 @@ export class Camilleria2Component implements OnInit, OnChanges {
   private guardarFiltros() {
     this.filtros.desde = this.desde;
     this.filtros.hasta = this.hasta;
+    this.filtros.horaFrom = this.horaFrom;
+    this.filtros.horaTo = this.horaTo;
     this.filtros.prioridad = this.prioridad;
     this.filtros.unidad = this.unidad;
     this.filtros.tipo = this.tipo;
@@ -140,7 +154,7 @@ export class Camilleria2Component implements OnInit, OnChanges {
   private fmtFecha(d: Date, fin: boolean): string {
     if (!d) return '';
     const dia = moment(d).format('YYYY-MM-DD');
-    const hora = fin ? '23:59:59' : '00:00:00';
+    const hora = (fin ? (this.horaTo || '23:30') : (this.horaFrom || '00:00')) + (fin ? ':59' : ':00');
     return moment.tz(dia + ' ' + hora, 'America/Bogota').utc().format('YYYY-MM-DD HH:mm:ss');
   }
 
@@ -197,6 +211,8 @@ export class Camilleria2Component implements OnInit, OnChanges {
     this.filtros.reset();
     this.desde = this.filtros.desde;
     this.hasta = this.filtros.hasta;
+    this.horaFrom = this.filtros.horaFrom;
+    this.horaTo = this.filtros.horaTo;
     this.prioridad = this.filtros.prioridad;
     this.unidad = this.filtros.unidad;
     this.tipo = this.filtros.tipo;

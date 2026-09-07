@@ -2,7 +2,7 @@
 
   <!-- Barra de acciones -->
   <div class="cam-toolbar" *ngIf="!modoPublico">
-    <div></div>
+    <app-bi-ayuda pagina="mapacalor"></app-bi-ayuda>
     <div class="cam-toolbar-right">
       <button class="btn btn-compartir" (click)="compartir()" title="Compartir link de solo lectura">
         <ion-icon name="share-social-outline"></ion-icon><span>Compartir</span>
@@ -22,58 +22,79 @@
   <!-- Filtros + KPIs -->
   <div class="cam-top">
 
-    <div class="filtro fecha-filtro" *ngIf="!modoPublico">
-      <label>FECHA</label>
-      <div class="rango">
-        <mat-form-field class="fecha-field">
-          <mat-label>Desde</mat-label>
-          <input matInput [matDatepicker]="pDesde" [(ngModel)]="desde" (dateChange)="aplicar()" readonly />
-          <mat-datepicker-toggle matIconSuffix [for]="pDesde"></mat-datepicker-toggle>
-          <mat-datepicker #pDesde></mat-datepicker>
-        </mat-form-field>
-        <mat-form-field class="fecha-field">
-          <mat-label>Hasta</mat-label>
-          <input matInput [matDatepicker]="pHasta" [(ngModel)]="hasta" (dateChange)="aplicar()" readonly />
-          <mat-datepicker-toggle matIconSuffix [for]="pHasta"></mat-datepicker-toggle>
-          <mat-datepicker #pHasta></mat-datepicker>
-        </mat-form-field>
+    <!-- Filtros: en pantallas angostas pasan a un menú lateral -->
+    <app-bi-filtros *ngIf="!modoPublico">
+      <div class="filtro fecha-filtro">
+        <label>FECHA</label>
+        <div class="rango">
+          <div class="par">
+            <mat-form-field class="fecha-field" (click)="pDesde.open()">
+              <mat-label>Desde</mat-label>
+              <input matInput [matDatepicker]="pDesde" [(ngModel)]="desde" (dateChange)="aplicar()" readonly />
+              <mat-datepicker-toggle matIconSuffix [for]="pDesde"></mat-datepicker-toggle>
+              <mat-datepicker #pDesde></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field class="fecha-field hora-field">
+              <mat-label>Hora</mat-label>
+              <mat-select [(ngModel)]="horaFrom" (selectionChange)="aplicar()">
+                <mat-option *ngFor="let h of horasOpts" [value]="h">{{ h }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="par">
+            <mat-form-field class="fecha-field" (click)="pHasta.open()">
+              <mat-label>Hasta</mat-label>
+              <input matInput [matDatepicker]="pHasta" [(ngModel)]="hasta" (dateChange)="aplicar()" readonly />
+              <mat-datepicker-toggle matIconSuffix [for]="pHasta"></mat-datepicker-toggle>
+              <mat-datepicker #pHasta></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field class="fecha-field hora-field">
+              <mat-label>Hora</mat-label>
+              <mat-select [(ngModel)]="horaTo" (selectionChange)="aplicar()">
+                <mat-option *ngFor="let h of horasOpts" [value]="h">{{ h }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="filtro slicer" *ngIf="!modoPublico">
-      <label>PRIORIDAD</label>
-      <ul class="opts">
-        <li *ngFor="let o of prioridadOpts" (click)="setPrioridad(o.v)">
-          <span class="chk" [class.on]="prioridad === o.v"></span><span class="txt">{{ o.l }}</span>
-        </li>
-      </ul>
-    </div>
+      <div class="filtro slicer">
+        <label>PRIORIDAD</label>
+        <ul class="opts">
+          <li *ngFor="let o of prioridadOpts" (click)="setPrioridad(o.v)">
+            <span class="chk" [class.on]="prioridad === o.v"></span><span class="txt">{{ o.l }}</span>
+          </li>
+        </ul>
+      </div>
 
-    <div class="filtro slicer" *ngIf="!modoPublico">
-      <label>UNIDAD DEFINITIVA</label>
-      <ul class="opts">
-        <li *ngFor="let o of unidadOpts" (click)="setUnidad(o.v)">
-          <span class="chk" [class.on]="unidad === o.v"></span><span class="txt">{{ o.l }}</span>
-        </li>
-      </ul>
-    </div>
+      <div class="filtro slicer">
+        <label>UNIDAD DEFINITIVA</label>
+        <ul class="opts">
+          <li *ngFor="let o of unidadOpts" (click)="setUnidad(o.v)">
+            <span class="chk" [class.on]="unidad === o.v"></span><span class="txt">{{ o.l }}</span>
+          </li>
+        </ul>
+      </div>
 
-    <div class="filtro" *ngIf="!modoPublico">
-      <label>MOTIVO</label>
-      <select [(ngModel)]="motivo" (change)="aplicar()">
-        <option value="">Todos</option>
-        <option *ngFor="let m of motivos" [value]="m._id">{{ m.Name }}</option>
-      </select>
-    </div>
+      <div class="filtro">
+        <label>MOTIVO</label>
+        <select [(ngModel)]="motivo" (change)="aplicar()">
+          <option value="">Todos</option>
+          <option *ngFor="let m of motivos" [value]="m._id">{{ m.Name }}</option>
+        </select>
+      </div>
 
-    <div class="filtro slicer" *ngIf="!modoPublico">
-      <label>TIPO</label>
-      <ul class="opts">
-        <li *ngFor="let o of tipoOpts" (click)="setTipo(o.v)">
-          <span class="chk" [class.on]="tipo === o.v"></span><span class="txt">{{ o.l }}</span>
-        </li>
-      </ul>
-    </div>
+      <div class="filtro slicer">
+        <label>TIPO</label>
+        <ul class="opts">
+          <li *ngFor="let o of tipoOpts" (click)="setTipo(o.v)">
+            <span class="chk" [class.on]="tipo === o.v"></span><span class="txt">{{ o.l }}</span>
+          </li>
+        </ul>
+      </div>
+    </app-bi-filtros>
+
+    <div class="cam-top-break"></div>
 
     <div class="kpi kpi-num">
       <span class="kpi-title">CANTIDAD DE SERVICIOS</span>

@@ -123,6 +123,12 @@
 
         <app-bi-camilleria4 *ngIf="pantalla === 'camilleria4'"
           [modoPublico]="true" [datosPublicos]="datos"></app-bi-camilleria4>
+
+        <app-bi-nfc *ngIf="pantalla === 'nfc'"
+          [modoPublico]="true" [datosPublicos]="datos"></app-bi-nfc>
+
+        <app-bi-cantidad *ngIf="pantalla === 'cantidad'"
+          [modoPublico]="true" [datosPublicos]="datos"></app-bi-cantidad>
       </div>
 
       <div class="pub-foot">Visitrack · Tablero compartido</div>

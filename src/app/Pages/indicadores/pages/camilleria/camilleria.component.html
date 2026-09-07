@@ -2,10 +2,7 @@
 
   <!-- Barra de acciones -->
   <div class="cam-toolbar" *ngIf="!modoPublico">
-    <button class="btn btn-ayuda" (click)="ayuda()" title="¿Cómo se calcula?">
-      <ion-icon name="information-circle-outline"></ion-icon>
-      <span>¿Cómo se calcula?</span>
-    </button>
+    <app-bi-ayuda pagina="camilleria"></app-bi-ayuda>
     <div class="cam-toolbar-right">
       <button class="btn btn-compartir" (click)="compartir()" title="Compartir link de solo lectura">
         <ion-icon name="share-social-outline"></ion-icon>
@@ -29,53 +26,74 @@
   <!-- Barra de filtros + KPIs -->
   <div class="cam-top" [class.solo-kpis]="modoPublico">
 
-    <div class="filtro fecha-filtro" *ngIf="!modoPublico">
-      <label>FECHA</label>
-      <div class="rango">
-        <mat-form-field class="fecha-field">
-          <mat-label>Desde</mat-label>
-          <input matInput [matDatepicker]="pDesde" [(ngModel)]="desde" (dateChange)="aplicar()" readonly />
-          <mat-datepicker-toggle matIconSuffix [for]="pDesde"></mat-datepicker-toggle>
-          <mat-datepicker #pDesde></mat-datepicker>
-        </mat-form-field>
-        <mat-form-field class="fecha-field">
-          <mat-label>Hasta</mat-label>
-          <input matInput [matDatepicker]="pHasta" [(ngModel)]="hasta" (dateChange)="aplicar()" readonly />
-          <mat-datepicker-toggle matIconSuffix [for]="pHasta"></mat-datepicker-toggle>
-          <mat-datepicker #pHasta></mat-datepicker>
-        </mat-form-field>
+    <!-- Filtros: en pantallas angostas pasan a un menú lateral -->
+    <app-bi-filtros *ngIf="!modoPublico">
+      <div class="filtro fecha-filtro">
+        <label>FECHA</label>
+        <div class="rango">
+          <div class="par">
+            <mat-form-field class="fecha-field" (click)="pDesde.open()">
+              <mat-label>Desde</mat-label>
+              <input matInput [matDatepicker]="pDesde" [(ngModel)]="desde" (dateChange)="aplicar()" readonly />
+              <mat-datepicker-toggle matIconSuffix [for]="pDesde"></mat-datepicker-toggle>
+              <mat-datepicker #pDesde></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field class="fecha-field hora-field">
+              <mat-label>Hora</mat-label>
+              <mat-select [(ngModel)]="horaFrom" (selectionChange)="aplicar()">
+                <mat-option *ngFor="let h of horasOpts" [value]="h">{{ h }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="par">
+            <mat-form-field class="fecha-field" (click)="pHasta.open()">
+              <mat-label>Hasta</mat-label>
+              <input matInput [matDatepicker]="pHasta" [(ngModel)]="hasta" (dateChange)="aplicar()" readonly />
+              <mat-datepicker-toggle matIconSuffix [for]="pHasta"></mat-datepicker-toggle>
+              <mat-datepicker #pHasta></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field class="fecha-field hora-field">
+              <mat-label>Hora</mat-label>
+              <mat-select [(ngModel)]="horaTo" (selectionChange)="aplicar()">
+                <mat-option *ngFor="let h of horasOpts" [value]="h">{{ h }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="filtro slicer" *ngIf="!modoPublico">
-      <label>PRIORIDAD</label>
-      <ul class="opts">
-        <li *ngFor="let o of prioridadOpts" (click)="setPrioridad(o.v)">
-          <span class="chk" [class.on]="prioridad === o.v"></span>
-          <span class="txt">{{ o.l }}</span>
-        </li>
-      </ul>
-    </div>
+      <div class="filtro slicer">
+        <label>PRIORIDAD</label>
+        <ul class="opts">
+          <li *ngFor="let o of prioridadOpts" (click)="setPrioridad(o.v)">
+            <span class="chk" [class.on]="prioridad === o.v"></span>
+            <span class="txt">{{ o.l }}</span>
+          </li>
+        </ul>
+      </div>
 
-    <div class="filtro slicer" *ngIf="!modoPublico">
-      <label>UNIDAD DEFINITIVA</label>
-      <ul class="opts">
-        <li *ngFor="let o of unidadOpts" (click)="setUnidad(o.v)">
-          <span class="chk" [class.on]="unidad === o.v"></span>
-          <span class="txt">{{ o.l }}</span>
-        </li>
-      </ul>
-    </div>
+      <div class="filtro slicer">
+        <label>UNIDAD DEFINITIVA</label>
+        <ul class="opts">
+          <li *ngFor="let o of unidadOpts" (click)="setUnidad(o.v)">
+            <span class="chk" [class.on]="unidad === o.v"></span>
+            <span class="txt">{{ o.l }}</span>
+          </li>
+        </ul>
+      </div>
 
-    <div class="filtro slicer" *ngIf="!modoPublico">
-      <label>TIPO</label>
-      <ul class="opts">
-        <li *ngFor="let o of tipoOpts" (click)="setTipo(o.v)">
-          <span class="chk" [class.on]="tipo === o.v"></span>
-          <span class="txt">{{ o.l }}</span>
-        </li>
-      </ul>
-    </div>
+      <div class="filtro slicer">
+        <label>TIPO</label>
+        <ul class="opts">
+          <li *ngFor="let o of tipoOpts" (click)="setTipo(o.v)">
+            <span class="chk" [class.on]="tipo === o.v"></span>
+            <span class="txt">{{ o.l }}</span>
+          </li>
+        </ul>
+      </div>
+    </app-bi-filtros>
+
+    <div class="cam-top-break"></div>
 
     <div class="kpi kpi-num">
       <span class="kpi-title">CANTIDAD DE SERVICIOS</span>
@@ -96,7 +114,10 @@
   <div class="cam-grid">
 
     <div class="panel">
-      <div class="panel-title">DISTRIBUCIÓN POR MOTIVO</div>
+      <div class="panel-title">
+        DISTRIBUCIÓN POR MOTIVO
+        <span class="panel-hint" *ngIf="!modoPublico">Clic en un motivo para ver su tendencia</span>
+      </div>
       <div class="tabla-wrap">
         <table class="tabla">
           <thead>
@@ -108,7 +129,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let m of distribucion" [class.row-bajo]="m.cumplimiento != null && m.cumplimiento < meta">
+            <tr *ngFor="let m of distribucion" [class.row-bajo]="m.cumplimiento != null && m.cumplimiento < meta"
+              [class.clickable]="!modoPublico" [class.row-sel]="motivoSelNombre === m.motivo"
+              (click)="seleccionarMotivo(m)">
               <td>{{ m.motivo }}</td>
               <td class="num">{{ m.aTiempo | number }}</td>
               <td class="num">{{ m.fueraTiempo | number }}</td>
@@ -133,11 +156,33 @@
     </div>
 
     <div class="panel">
-      <div class="panel-title">% CUMPLIMIENTO</div>
+      <div class="panel-title">
+        % CUMPLIMIENTO
+        <span class="motivo-chip" *ngIf="motivoSelNombre">
+          {{ motivoSelNombre }}
+          <ion-icon name="close-circle" (click)="quitarMotivo()" title="Ver todos los motivos"></ion-icon>
+        </span>
+      </div>
+
+      <!-- Resultado del motivo marcado en la tabla -->
+      <div class="motivo-resumen" *ngIf="motivoSelFila">
+        <span>A tiempo <strong>{{ motivoSelFila.aTiempo | number }}</strong></span>
+        <span>Fuera de tiempo <strong>{{ motivoSelFila.fueraTiempo | number }}</strong></span>
+        <span [class.bajo]="motivoSelFila.cumplimiento != null && motivoSelFila.cumplimiento < meta">
+          Cumplimiento
+          <strong>{{ motivoSelFila.cumplimiento != null ? (motivoSelFila.cumplimiento + '%') : '—' }}</strong>
+        </span>
+      </div>
+
+      <div class="linea-loading" *ngIf="loadingLinea">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+
       <apx-chart *ngIf="line"
         [series]="line.series" [chart]="line.chart" [xaxis]="line.xaxis" [yaxis]="line.yaxis"
         [stroke]="line.stroke" [colors]="line.colors" [markers]="line.markers"
-        [dataLabels]="line.dataLabels" [grid]="line.grid" [responsive]="line.responsive">
+        [dataLabels]="line.dataLabels" [grid]="line.grid" [tooltip]="line.tooltip"
+        [responsive]="line.responsive">
       </apx-chart>
     </div>
 

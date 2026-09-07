@@ -15,9 +15,13 @@ import { Camilleria2Component } from './pages/camilleria2/camilleria2.component'
 import { MapacalorComponent } from './pages/mapacalor/mapacalor.component';
 import { MapacumplimientoComponent } from './pages/mapacumplimiento/mapacumplimiento.component';
 import { Camilleria4Component } from './pages/camilleria4/camilleria4.component';
+import { NfcComponent } from './pages/nfc/nfc.component';
+import { CantidadComponent } from './pages/cantidad/cantidad.component';
+import { AyudaComponent } from './ayuda/ayuda.component';
+import { FiltrosComponent } from './filtros/filtros.component';
 import { CompartirDialogComponent } from './compartir-dialog/compartir-dialog.component';
 
-// Módulo compartido con las 4 pantallas del dashboard BI. Se reutiliza tanto en el
+// Módulo compartido con las pantallas del dashboard BI. Se reutiliza tanto en el
 // dashboard interno (IndicadoresPageModule) como en la vista pública (PublicoPageModule).
 @NgModule({
   imports: [
@@ -38,6 +42,10 @@ import { CompartirDialogComponent } from './compartir-dialog/compartir-dialog.co
     MapacalorComponent,
     MapacumplimientoComponent,
     Camilleria4Component,
+    NfcComponent,
+    CantidadComponent,
+    AyudaComponent,
+    FiltrosComponent,
     CompartirDialogComponent
   ],
   exports: [
@@ -46,6 +54,10 @@ import { CompartirDialogComponent } from './compartir-dialog/compartir-dialog.co
     MapacalorComponent,
     MapacumplimientoComponent,
     Camilleria4Component,
+    NfcComponent,
+    CantidadComponent,
+    AyudaComponent,
+    FiltrosComponent,
     CompartirDialogComponent
   ]
 })

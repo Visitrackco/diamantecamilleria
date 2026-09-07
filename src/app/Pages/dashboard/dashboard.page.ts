@@ -23,6 +23,7 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ObserverService } from 'src/app/Services/observer.service';
 import { DetailComponent } from 'src/app/Components/detail/detail.component';
 import { VersionActivitiesComponent } from 'src/app/Components/version-activities/version-activities.component';
+import { ClinicaService } from 'src/app/Services/clinica.service';
 
 
 @Component({
@@ -98,6 +99,9 @@ export class DashboardPage implements OnInit {
   fechaFrom;
   fechaTo;
 
+  horaFrom = '00:00';
+  horaTo = '23:59';
+
   fromtmp;
   totmp;
 
@@ -113,6 +117,9 @@ export class DashboardPage implements OnInit {
   toTemp;
 
   myZone;
+
+  // Clinica activa: se muestra en el titulo para no confundir Medellin con Rionegro.
+  clinicaNombre = '';
 
 
   myForm: FormGroup<any>;
@@ -132,7 +139,8 @@ export class DashboardPage implements OnInit {
     private alertCtrl: AlertController,
     private modalCtrl: ModalController,
     private fb: FormBuilder,
-    private obs: ObserverService
+    private obs: ObserverService,
+    private clinicaSvc: ClinicaService
   ) {
     this.socket.newActivityOn().subscribe({
       next: async (data: any) => {
@@ -343,6 +351,12 @@ export class DashboardPage implements OnInit {
   }
 
 
+  // Identifica la fila por la solicitud: asi los refrescos actualizan solo lo que
+  // cambio en vez de repintar la tabla entera.
+  trackRow(index: number, row: any) {
+    return row.token;
+  }
+
   filtermobile() {
     this.filtermob = !this.filtermob;
   }
@@ -393,6 +407,10 @@ export class DashboardPage implements OnInit {
     this.fechaTo = '';
     this.fromTemp = '';
     this.toTemp = '';
+    this.fromtmp = '';
+    this.totmp = '';
+    this.horaFrom = '00:00';
+    this.horaTo = '23:59';
     this.filter = true;
     this.isAllStatus = false;
     this.isFilter = false;
@@ -405,6 +423,8 @@ export class DashboardPage implements OnInit {
     if (this.myForm) {
       this.myForm.controls['from'].setValue('');
       this.myForm.controls['to'].setValue('');
+      this.myForm.controls['horaFrom'].setValue(this.horaFrom);
+      this.myForm.controls['horaTo'].setValue(this.horaTo);
     }
   }
 
@@ -423,6 +443,8 @@ export class DashboardPage implements OnInit {
       this.loginid = login[0]._id;
 
       this.myZone = login[0].WorkZone
+
+      this.clinicaNombre = await this.clinicaSvc.nombre();
 
       /*  if (login[0].WorkZone == 6842) {
           this.tiempos  = {
@@ -512,6 +534,8 @@ export class DashboardPage implements OnInit {
 
 
       ]),
+      horaFrom: new FormControl(this.horaFrom),
+      horaTo: new FormControl(this.horaTo),
 
     });
   }
@@ -658,57 +682,84 @@ export class DashboardPage implements OnInit {
   }
 
 
-  async changePicker(event, type) {
-    console.log(event)
+  // Arma la fecha limite "Desde" respetando la hora elegida por el usuario
+  // (antes se forzaba siempre a 00:00:00, perdiendo la hora seleccionada).
+  buildFechaFrom(fecha: string, hora: string) {
+    return moment(fecha + ' ' + (hora || '00:00') + ':00').utc().format('YYYY-MM-DD HH:mm:ss');
+  }
 
-    const login = await this.stg.getLogin()
+  // Arma la fecha limite "Hasta" respetando la hora elegida por el usuario.
+  // Solo se recorta a la hora actual del servidor si el instante resultante
+  // queda en el futuro (por ejemplo, hoy con una hora que aun no llega).
+  buildFechaTo(fecha: string, hora: string) {
+    let candidate = moment(fecha + ' ' + (hora || '23:59') + ':59');
+    let now = moment(this.dateServer);
 
-    if (login) {
-      this.api.getDate({
-        token: login[0].token,
-        format: 'America/Bogota'
-      }).then((server) => {
-
-        this.dateServer = server.date;
-        this.dateTime = server.time;
-        let check = false;
-
-        let fecha = moment(event.value).utc().format('YYYY-MM-DD')
-        if (type == 1) {
-          //   this.fromTemp = fecha;
-          this.fechaFrom = moment(fecha + ' ' + '00:00:00').utc().format('YYYY-MM-DD HH:mm:ss');
-          this.fromtmp = moment(fecha).add(1, 'hours').format('YYYY-MM-DD')
-
-        } else {
-          //  this.toTemp = fecha;
-
-          if (fecha < moment(this.dateServer).format('YYYY-MM-DD')) {
-            check = true;
-            this.fechaTo = moment(fecha + ' ' + '23:59:59').utc().format('YYYY-MM-DD HH:mm:ss');
-          } else {
-
-            this.fechaTo = moment(fecha + ' ' + this.dateTime + ':59').utc().format('YYYY-MM-DD HH:mm:ss');
-          }
-
-          this.totmp = moment(fecha).utc().format('YYYY-MM-DD')
-
-
-        }
-
-        if (this.fechaFrom && this.fechaTo) {
-          if (check) {
-            this.isFilter = true;
-          } else {
-            this.isFilter = false;
-          }
-          this.filter = true;
-          this.getSolicitudes();
-        }
-
-      })
+    if (candidate.isAfter(now)) {
+      this.isFilter = true;
+      candidate = now.clone();
+    } else {
+      this.isFilter = false;
     }
 
+    return candidate.utc().format('YYYY-MM-DD HH:mm:ss');
+  }
 
+  async recalcFechas() {
+    const login = await this.stg.getLogin();
+
+    if (!login) {
+      return;
+    }
+
+    const server = await this.api.getDate({
+      token: login[0].token,
+      format: 'America/Bogota'
+    });
+
+    if (!server) {
+      return;
+    }
+
+    this.dateServer = server.date;
+    this.dateTime = server.time;
+
+    if (this.fromtmp) {
+      this.fechaFrom = this.buildFechaFrom(this.fromtmp, this.horaFrom);
+    }
+
+    if (this.totmp) {
+      this.fechaTo = this.buildFechaTo(this.totmp, this.horaTo);
+    }
+
+    if (this.fechaFrom && this.fechaTo) {
+      this.filter = true;
+      this.getSolicitudes();
+    }
+  }
+
+  async changePicker(event, type) {
+    let fecha = moment(event.value).utc().format('YYYY-MM-DD')
+
+    if (type == 1) {
+      this.fromtmp = fecha;
+    } else {
+      this.totmp = fecha;
+    }
+
+    await this.recalcFechas();
+  }
+
+  async changeHora(event, type) {
+    const value = event.target.value;
+
+    if (type == 1) {
+      this.horaFrom = value || '00:00';
+    } else {
+      this.horaTo = value || '23:59';
+    }
+
+    await this.recalcFechas();
   }
 
   select(event, type) {
@@ -775,12 +826,18 @@ export class DashboardPage implements OnInit {
     this.fechaTo = '';
     this.fromTemp = '';
     this.toTemp = '';
+    this.fromtmp = '';
+    this.totmp = '';
+    this.horaFrom = '00:00';
+    this.horaTo = '23:59';
     this.filter = true;
     this.isAllStatus = false;
     this.isFilter = false;
 
     this.myForm.controls['from'].setValue('');
     this.myForm.controls['to'].setValue('');
+    this.myForm.controls['horaFrom'].setValue(this.horaFrom);
+    this.myForm.controls['horaTo'].setValue(this.horaTo);
 
 
     this.getSolicitudes();
@@ -1100,10 +1157,12 @@ export class DashboardPage implements OnInit {
 
 
         this.dataSource.data = fila;
-        setTimeout(() => {
-          this.dataSource.paginator = this.paginator;
-          this.paginator._intl.itemsPerPageLabel = 'Listado de Solicitudes'
-        }, 100);
+        if (!this.dataSource.paginator) {
+          setTimeout(() => {
+            this.dataSource.paginator = this.paginator;
+            this.paginator._intl.itemsPerPageLabel = 'Listado de Solicitudes'
+          }, 100);
+        }
         this.loadActivities = true;
 
       })
@@ -1272,18 +1331,14 @@ export class DashboardPage implements OnInit {
 
     if (login) {
       try {
-        this.loading = true;
         const rs = await this.api.apiPost('DeletedActivity', {
           WorkZoneID: login[0].WorkZone,
           _id: data._id,
           token: login[0].token
         })
 
-
-
         if (!rs.status) {
           this.toast.MsgError(rs.err);
-          this.loading = false;
           return;
         }
 
@@ -1294,17 +1349,15 @@ export class DashboardPage implements OnInit {
           })
         }
 
-
-
-        this.filter = true;
-
-        this.getSolicitudes();
+        // Se saca la fila de la tabla en vez de recargar el tablero: recargar vacia
+        // el dataSource y hace saltar el scroll y el paginador. El refresco de los
+        // 30 segundos ya se encarga del resto.
+        this.dataSource.data = this.dataSource.data.filter((it: any) => it.acc._id != data._id);
 
         this.toast.MsgOK('Solicitud Eliminada')
 
-        this.loading = false;
       } catch (error) {
-        this.loading = false;
+        this.toast.MsgError('No se pudo eliminar la solicitud');
       }
     }
   }

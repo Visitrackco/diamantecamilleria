@@ -9,6 +9,9 @@ import { ToastService } from 'src/app/Services/toast.service';
 import * as moment from 'moment-timezone'
 import { AlertController } from '@ionic/angular';
 import { elementAt } from 'rxjs';
+import { ClinicaService } from 'src/app/Services/clinica.service';
+import { PermisosService } from 'src/app/Services/permisos.service';
+import { BI_PAGES } from 'src/app/Pages/indicadores/bi-pages';
 
 
 @Component({
@@ -19,10 +22,14 @@ import { elementAt } from 'rxjs';
 export class UsuariosPage implements OnInit {
 
   displayedColumns =
-    ['estado', 'name', 'login', 'clave', 'islock', 'isdelete', 'isassigment', 'perfil', 'central', 'centraladmin', 'programmer', 'zones', 'acc'];
+    ['estado', 'name', 'login', 'clave', 'islock', 'isdelete', 'isassigment', 'perfil', 'dashboard', 'dashboardpages', 'central', 'centraladmin', 'programmer', 'zones', 'acc'];
   dataSource = new MatTableDataSource([]);
 
   perfiles: any[] = [];
+
+  // Pantallas del dashboard que se le pueden habilitar a cada usuario. Sale de la
+  // misma lista que pinta el menu del dashboard, para que no se desincronicen.
+  biPages = BI_PAGES;
 
   @ViewChild('paginatorHistory') paginator: MatPaginator;
 
@@ -33,13 +40,21 @@ export class UsuariosPage implements OnInit {
 
   zones = [6842, 6993, 1001]
 
+  // Descansos de la zona activa: marca a quien ya se le configuraron, para mostrarle
+  // el boton solo al que le faltan. Los valores salen de ConfigDescansos en el
+  // backend, aqui no se copian de nadie.
+  descansosPorUsuario: any = {};
+  descansosCargados = false;
+
 
   constructor(
     private api: ApiService,
     private stg: StorageWebService,
     private toast: ToastService,
     private socket: SocketService,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private clinica: ClinicaService,
+    private permisos: PermisosService
   ) {
 
     this.socket.connectuser().subscribe((data: any) => {
@@ -173,6 +188,8 @@ export class UsuariosPage implements OnInit {
               isassigment: element.isCantAssigment,
               coh: element.COH || 0,
               perfil: element.Perfil || null,
+              dashboard: element.Dashboard || 0,
+              dashboardpages: element.DashboardPages || [],
               central: element.isCentral,
               centraladmin: element.isCentralAdmin,
               programmer: element.isCantProgrammer,
@@ -193,11 +210,94 @@ export class UsuariosPage implements OnInit {
 
           this.loadActivities = true;
 
+          this.cargarDescansos();
 
         }
       } catch (error) {
         this.loadActivities = true;
       }
+    }
+  }
+
+  // Trae los descansos ya creados en la zona para saber a quien le faltan. El
+  // endpoint cruza ConfigDescansos con la coleccion descansos, asi que solo devuelve
+  // a los usuarios que ya tienen registro.
+  async cargarDescansos() {
+    const login = await this.stg.getLogin();
+    if (!login) return;
+
+    this.descansosPorUsuario = {};
+    this.descansosCargados = false;
+
+    try {
+      const rs = await this.api.apiGet('descansos?zone=' + login[0].WorkZone, login[0].token)
+
+      if (!rs || !rs.status) return;
+
+      (rs.response || []).forEach((it) => {
+        if (it.data) this.descansosPorUsuario[it.data.User] = true;
+      });
+
+      this.descansosCargados = true;
+    } catch (error) { }
+  }
+
+  tieneDescansos(ele): boolean {
+    return ele && ele.acc ? !!this.descansosPorUsuario[ele.acc._id] : false;
+  }
+
+  // Le crea al usuario su registro de descansos con los valores de ConfigDescansos
+  // de la zona, igual que se hace al crear un usuario nuevo en POST /users.
+  // Al que ya lo tiene no se le toca: por eso el boton solo sale cuando le falta.
+  async configurarDescansos(ele) {
+    const nombreZona = await this.clinica.nombre();
+
+    const alert = await this.alertCtrl.create({
+      header: 'Configurar descansos',
+      message: 'Se le asignaran a ' + ele.name + ' los descansos configurados para ' + nombreZona + '.',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Aceptar',
+          handler: () => {
+            this.guardarDescansos(ele);
+          }
+        }
+      ]
+    })
+
+    await alert.present();
+  }
+
+  async guardarDescansos(ele) {
+    const login = await this.stg.getLogin();
+    if (!login) return;
+
+    this.loading = true;
+
+    try {
+      const rs = await this.api.apiPost('descansos/user', {
+        userID: ele.acc._id,
+        WorkZoneID: login[0].WorkZone,
+        token: login[0].token
+      })
+
+      this.loading = false;
+
+      if (!rs || !rs.status) {
+        this.toast.MsgError(rs && rs.err ? rs.err : 'No se pudieron configurar los descansos');
+        return;
+      }
+
+      this.descansosPorUsuario[ele.acc._id] = true;
+
+      // El backend avisa si el usuario ya tenia registro y no creo nada.
+      this.toast.MsgOK(rs.created === false
+        ? 'Este usuario ya tenia descansos configurados'
+        : 'Descansos configurados para ' + ele.name);
+    } catch (error) {
+      this.loading = false;
+      this.toast.MsgError('No se pudieron configurar los descansos');
     }
   }
 
@@ -438,6 +538,86 @@ export class UsuariosPage implements OnInit {
       this.toast.MsgOK('Perfil actualizado');
     } catch (error) {
       this.loading = false;
+    }
+  }
+
+  // Acceso al modulo de Indicadores. Al quitarlo el backend le borra tambien las
+  // paginas, asi que aca se refleja lo mismo para no dejar checks colgados.
+  async changeDashboard(event, data) {
+    const permitido = event.detail.checked ? 1 : 0;
+
+    if (data.dashboard == permitido) return;
+
+    const rs = await this.guardarPermisosDashboard(data, { Dashboard: permitido });
+    if (!rs) return;
+
+    data.dashboard = permitido;
+    data.acc.Dashboard = permitido;
+
+    if (!permitido) {
+      data.dashboardpages = [];
+      data.acc.DashboardPages = [];
+    }
+
+    this.toast.MsgOK(permitido ? 'Acceso al dashboard habilitado' : 'Acceso al dashboard retirado');
+  }
+
+  // Paginas del dashboard que puede ver. Asignarle al menos una le da tambien el
+  // acceso al modulo: quedarian guardadas pero sin poder entrar, que no es lo que
+  // se quiso hacer al marcarlas.
+  async changeDashboardPages(event, data) {
+    const paginas = event.detail.value || [];
+
+    const cambios: any = { DashboardPages: paginas };
+    const daAcceso = paginas.length > 0 && data.dashboard != 1;
+
+    if (daAcceso) cambios.Dashboard = 1;
+
+    const rs = await this.guardarPermisosDashboard(data, cambios);
+    if (!rs) return;
+
+    data.dashboardpages = paginas;
+    data.acc.DashboardPages = paginas;
+
+    if (daAcceso) {
+      data.dashboard = 1;
+      data.acc.Dashboard = 1;
+    }
+
+    this.toast.MsgOK(paginas.length
+      ? 'Páginas del dashboard actualizadas'
+      : 'Sin páginas asignadas: no verá ninguna pantalla');
+  }
+
+  private async guardarPermisosDashboard(data, cambios: any) {
+    const login = await this.stg.getLogin();
+    if (!login) return false;
+
+    this.loading = true;
+
+    try {
+      const rs = await this.api.apiPost('dashboardPermisos', {
+        _id: data.acc._id,
+        token: login[0].token,
+        ...cambios
+      })
+
+      this.loading = false;
+
+      if (!rs || !rs.status) {
+        this.toast.MsgError(rs && rs.err ? rs.err : 'No se pudieron guardar los permisos del dashboard');
+        return false;
+      }
+
+      // Si se los cambio a si mismo, relee los suyos: el menu y el guard leen el
+      // login guardado y quedarian con los permisos viejos hasta recargar la pagina.
+      if (login[0]._id == data.acc._id) await this.permisos.refrescar(true);
+
+      return true;
+    } catch (error) {
+      this.loading = false;
+      this.toast.MsgError('No se pudieron guardar los permisos del dashboard');
+      return false;
     }
   }
 

@@ -1,6 +1,6 @@
 <ion-header class="ion-no-border" [translucent]="true">
     <ion-toolbar color="diamante">
-        <ion-title>Tablero de solicitudes</ion-title>
+        <ion-title>Tablero de solicitudes<span *ngIf="clinicaNombre"> · {{ clinicaNombre }}</span></ion-title>
         <ion-buttons slot="end">
             <ion-button (click)="filtermobile()">
                 <ion-icon name="filter"></ion-icon>
@@ -40,12 +40,22 @@
                                 <mat-datepicker #picker></mat-datepicker>
                             </mat-form-field>
 
+                            <mat-form-field class="hora">
+                                <mat-label>Hora Desde</mat-label>
+                                <input type="time" formControlName="horaFrom" matInput (change)="changeHora($event, 1)">
+                            </mat-form-field>
+
                             <mat-form-field>
                                 <mat-label>Fecha Hasta</mat-label>
                                 <input formControlName="to" [max]="dateServer" (dateChange)="changePicker($event, 2)" readonly matInput [matDatepicker]="picker2">
 
                                 <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
                                 <mat-datepicker #picker2></mat-datepicker>
+                            </mat-form-field>
+
+                            <mat-form-field class="hora">
+                                <mat-label>Hora Hasta</mat-label>
+                                <input type="time" formControlName="horaTo" matInput (change)="changeHora($event, 2)">
                             </mat-form-field>
                         </div>
 
@@ -139,7 +149,7 @@
                 </div>
 
 
-                <table class="tables" *ngIf="loadActivities" mat-table [dataSource]="dataSource">
+                <table class="tables" *ngIf="loadActivities" mat-table [dataSource]="dataSource" [trackBy]="trackRow">
 
                     <!-- Name Column -->
                     <ng-container matColumnDef="estado">

@@ -1,0 +1,68 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="diamante">
+    <ion-title>¿De dónde salen estos datos?</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrar()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <p class="intro">
+    El backend registra automáticamente <b>cada llamada</b> que recibe (sin contar los archivos del
+    front: js/css/imágenes).
+  </p>
+
+  <h3>KPIs generales</h3>
+  <dl>
+    <dt>Llamadas totales</dt>
+    <dd>Cantidad de peticiones a la API en el rango seleccionado.</dd>
+
+    <dt>Tasa de error</dt>
+    <dd>% de esas llamadas que respondieron con un error (status 4xx u 5xx).</dd>
+
+    <dt>Caídas (5xx)</dt>
+    <dd>De esas llamadas con error, cuántas fueron por una falla interna del servidor (no del usuario).</dd>
+
+    <dt>Tiempo promedio</dt>
+    <dd>Milisegundos que tarda el backend en responder, medidos en el propio servidor desde que llega la
+      petición hasta que envía la respuesta.</dd>
+
+    <dt>Memoria actual</dt>
+    <dd>Memoria RAM (RSS) que está usando el proceso del backend, promediada en el rango.</dd>
+  </dl>
+
+  <h3>Métricas por hora</h3>
+  <dl>
+    <dt>Llamadas por hora</dt>
+    <dd>Cantidad de peticiones agrupadas por hora (zona horaria Bogotá).</dd>
+
+    <dt>Memoria RSS por hora</dt>
+    <dd>Promedio de memoria RAM usada por el proceso en cada hora.</dd>
+
+    <dt>% CPU usado por hora</dt>
+    <dd>% de CPU que consume el proceso del backend, muestreado cada 5 segundos y promediado por hora.
+      No es el "load average" de Linux (ese valor no existe en Windows), sino el uso real medido con
+      <code>process.cpuUsage()</code>.</dd>
+  </dl>
+
+  <h3>Rankings</h3>
+  <dl>
+    <dt>Servicios más llamados</dt>
+    <dd>Ranking de endpoints (método + ruta) con más peticiones en el rango.</dd>
+
+    <dt>Servicio más llamado por hora</dt>
+    <dd>Para cada hora, cuál endpoint concentró más tráfico.</dd>
+  </dl>
+
+  <h3>Mantenimiento</h3>
+  <dl>
+    <dt>Purgar logs</dt>
+    <dd>Borra permanentemente los registros de auditoría (todos, o solo los más antiguos a N días) para
+      liberar espacio en la base de datos.</dd>
+  </dl>
+
+</ion-content>

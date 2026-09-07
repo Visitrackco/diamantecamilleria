@@ -15,6 +15,7 @@ import { HistoryComponent } from 'src/app/Components/history/history.component';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ObserverService } from 'src/app/Services/observer.service';
 import { DetailComponent } from 'src/app/Components/detail/detail.component';
+import { HORAS_OPTS } from 'src/app/Pages/indicadores/dashboard-filtros.service';
 import * as XLSX from "xlsx";
 
 
@@ -122,6 +123,10 @@ export class TablaPage implements OnInit {
 
   fechaFrom;
   fechaTo;
+
+  horaFrom = '00:00';
+  horaTo = '23:30';
+  horasOpts = HORAS_OPTS;
 
   fromtmp;
   totmp;
@@ -272,6 +277,8 @@ export class TablaPage implements OnInit {
 
 
       ]),
+      horaFrom: new FormControl(this.horaFrom),
+      horaTo: new FormControl(this.horaTo),
 
     });
   }
@@ -279,57 +286,91 @@ export class TablaPage implements OnInit {
 
 
 
-  async changePicker(event, type) {
-    console.log(event)
+  // Arma la fecha limite "Desde" respetando la hora elegida por el usuario
+  // (antes se forzaba siempre a 00:00:00, perdiendo la hora seleccionada).
+  buildFechaFrom(fecha: string, hora: string) {
+    return moment(fecha + ' ' + (hora || '00:00') + ':00').utc().format('YYYY-MM-DD HH:mm:ss');
+  }
 
-    const login = await this.stg.getLogin()
+  // Arma la fecha limite "Hasta" respetando la hora elegida por el usuario.
+  // Solo se recorta a la hora actual del servidor si el instante resultante
+  // queda en el futuro (por ejemplo, hoy con una hora que aun no llega).
+  buildFechaTo(fecha: string, hora: string) {
+    let candidate = moment(fecha + ' ' + (hora || '23:30') + ':59');
+    let now = moment(this.dateServer);
 
-    if (login) {
-      this.api.getDate({
-        token: login[0].token,
-        format: 'America/Bogota'
-      }).then((server) => {
-
-        this.dateServer = server.date;
-        this.dateTime = server.time;
-        let check = false;
-
-        let fecha = moment(event.value).utc().format('YYYY-MM-DD')
-        if (type == 1) {
-          //   this.fromTemp = fecha;
-          this.fechaFrom = moment(fecha + ' ' + '00:00:00').utc().format('YYYY-MM-DD HH:mm:ss');
-          this.fromtmp = moment(fecha).add(1, 'hours').format('YYYY-MM-DD')
-
-        } else {
-          //  this.toTemp = fecha;
-
-          if (fecha < moment(this.dateServer).format('YYYY-MM-DD')) {
-            check = true;
-            this.fechaTo = moment(fecha + ' ' + '23:59:59').utc().format('YYYY-MM-DD HH:mm:ss');
-          } else {
-
-            this.fechaTo = moment(fecha + ' ' + this.dateTime + ':59').utc().format('YYYY-MM-DD HH:mm:ss');
-          }
-
-          this.totmp = moment(fecha).utc().format('YYYY-MM-DD')
-
-
-        }
-
-        if (this.fechaFrom && this.fechaTo) {
-          if (check) {
-            this.isFilter = true;
-          } else {
-            this.isFilter = false;
-          }
-          this.filter = true;
-          this.getSolicitudes();
-        }
-
-      })
+    if (candidate.isAfter(now)) {
+      this.isFilter = true;
+      candidate = now.clone();
+    } else {
+      this.isFilter = false;
     }
 
+    return candidate.utc().format('YYYY-MM-DD HH:mm:ss');
+  }
 
+  async recalcFechas() {
+    const login = await this.stg.getLogin();
+
+    if (!login) {
+      return;
+    }
+
+    const server = await this.api.getDate({
+      token: login[0].token,
+      format: 'America/Bogota'
+    });
+
+    if (!server) {
+      return;
+    }
+
+    this.dateServer = server.date;
+    this.dateTime = server.time;
+
+    if (this.fromtmp) {
+      this.fechaFrom = this.buildFechaFrom(this.fromtmp, this.horaFrom);
+    }
+
+    if (this.totmp) {
+      this.fechaTo = this.buildFechaTo(this.totmp, this.horaTo);
+    }
+  }
+
+  // Dispara la consulta con los filtros armados hasta el momento. Se separa
+  // del cambio de cada filtro para no relanzar la busqueda en cada click:
+  // el usuario arma fecha/hora/checkboxes y recien consulta al presionar el boton.
+  consultar() {
+    if (!this.fechaFrom || !this.fechaTo) {
+      this.toast.MsgError('Seleccione la fecha y hora Desde y Hasta');
+      return;
+    }
+
+    this.filter = true;
+    this.getSolicitudes();
+  }
+
+  async changePicker(event, type) {
+    let fecha = moment(event.value).utc().format('YYYY-MM-DD')
+
+    if (type == 1) {
+      this.fromtmp = fecha;
+    } else {
+      this.totmp = fecha;
+    }
+
+    await this.recalcFechas();
+  }
+
+  // El valor llega del mat-select (formato 24h: '00:00' ... '23:30').
+  async changeHora(value: string, type) {
+    if (type == 1) {
+      this.horaFrom = value || '00:00';
+    } else {
+      this.horaTo = value || '23:30';
+    }
+
+    await this.recalcFechas();
   }
 
   select(event, type) {
@@ -345,8 +386,6 @@ export class TablaPage implements OnInit {
     }
 
     this.filter = true;
-
-    this.getSolicitudes();
   }
 
   onKey2(value) {
@@ -388,7 +427,6 @@ export class TablaPage implements OnInit {
     this.isAdmin = event.detail.checked;
     this.stop = false;
     this.filter = true;
-    this.getSolicitudes()
   }
 
 
@@ -402,6 +440,10 @@ export class TablaPage implements OnInit {
     this.fechaTo = '';
     this.fromTemp = '';
     this.toTemp = '';
+    this.fromtmp = '';
+    this.totmp = '';
+    this.horaFrom = '00:00';
+    this.horaTo = '23:30';
     this.filter = true;
     this.isAllStatus = false;
     this.isFilter = false;
@@ -409,6 +451,8 @@ export class TablaPage implements OnInit {
 
     this.myForm.controls['from'].setValue('');
     this.myForm.controls['to'].setValue('');
+    this.myForm.controls['horaFrom'].setValue(this.horaFrom);
+    this.myForm.controls['horaTo'].setValue(this.horaTo);
 
     this.dataSource.data = [];
     //  this.getSolicitudes();
@@ -453,9 +497,6 @@ export class TablaPage implements OnInit {
   status(event) {
     this.IsDeleted = event.detail.checked;
     this.filter = true;
-    if (this.myForm.controls['from'].value && this.myForm.controls['to'].value) {
-      this.getSolicitudes();
-    }
   }
 
   async getSolicitudes() {
@@ -797,12 +838,18 @@ export class TablaPage implements OnInit {
     this.fechaTo = '';
     this.fromTemp = '';
     this.toTemp = '';
+    this.fromtmp = '';
+    this.totmp = '';
+    this.horaFrom = '00:00';
+    this.horaTo = '23:30';
     this.filter = true;
     this.isAllStatus = false;
     this.isFilter = false;
 
     this.myForm.controls['from'].setValue('');
     this.myForm.controls['to'].setValue('');
+    this.myForm.controls['horaFrom'].setValue(this.horaFrom);
+    this.myForm.controls['horaTo'].setValue(this.horaTo);
     this.dataSource.data = [];
 
   }

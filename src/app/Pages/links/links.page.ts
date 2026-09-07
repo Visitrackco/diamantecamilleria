@@ -34,6 +34,19 @@ const FILTROS_POR_PANTALLA: { [p: string]: { key: string; label: string }[] } = 
   camilleria4: [
     { key: 'unidad', label: 'Unidad definitiva' },
     { key: 'tipo', label: 'Tipo' }
+  ],
+  nfc: [
+    { key: 'prioridad', label: 'Prioridad' },
+    { key: 'unidad', label: 'Unidad definitiva' },
+    { key: 'motivo', label: 'Motivo' },
+    { key: 'tipo', label: 'Tipo' }
+  ],
+  // La HORA no es interactiva en el link: queda fija con la selección de quien comparte.
+  cantidad: [
+    { key: 'prioridad', label: 'Prioridad' },
+    { key: 'unidad', label: 'Unidad definitiva' },
+    { key: 'motivo', label: 'Motivo' },
+    { key: 'tipo', label: 'Tipo' }
   ]
 };
 
@@ -60,7 +73,11 @@ export class LinksPage implements OnInit {
     private alertCtrl: AlertController
   ) { }
 
-  ngOnInit() {
+  ngOnInit() { }
+
+  // Ionic deja la pagina montada al salir: se recarga al volver para que los links
+  // sean los de la clinica activa y no los de la anterior.
+  ionViewWillEnter() {
     this.cargar();
   }
 
@@ -219,7 +236,9 @@ export class LinksPage implements OnInit {
               return;
             }
             this.toast.MsgOK('Link eliminado');
-            this.cargar();
+
+            // Se saca de la lista en vez de volver a pedirla, para no parpadear.
+            this.links = this.links.filter((it) => it._id != l._id);
           }
         }
       ]

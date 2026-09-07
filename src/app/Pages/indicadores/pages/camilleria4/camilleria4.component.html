@@ -2,7 +2,7 @@
 
   <!-- Barra de acciones -->
   <div class="cam-toolbar" *ngIf="!modoPublico">
-    <div></div>
+    <app-bi-ayuda pagina="ayudas"></app-bi-ayuda>
     <div class="cam-toolbar-right">
       <button class="btn btn-compartir" (click)="compartir()" title="Compartir link de solo lectura">
         <ion-icon name="share-social-outline"></ion-icon><span>Compartir</span>
@@ -22,119 +22,119 @@
   <!-- Filtros -->
   <div class="cam-top" *ngIf="!modoPublico">
 
-    <div class="filtro fecha-filtro">
-      <label>FECHA</label>
-      <div class="rango">
-        <mat-form-field class="fecha-field">
-          <mat-label>Desde</mat-label>
-          <input matInput [matDatepicker]="pDesde" [(ngModel)]="desde" (dateChange)="aplicar()" readonly />
-          <mat-datepicker-toggle matIconSuffix [for]="pDesde"></mat-datepicker-toggle>
-          <mat-datepicker #pDesde></mat-datepicker>
-        </mat-form-field>
-        <mat-form-field class="fecha-field">
-          <mat-label>Hasta</mat-label>
-          <input matInput [matDatepicker]="pHasta" [(ngModel)]="hasta" (dateChange)="aplicar()" readonly />
-          <mat-datepicker-toggle matIconSuffix [for]="pHasta"></mat-datepicker-toggle>
-          <mat-datepicker #pHasta></mat-datepicker>
+    <!-- Filtros: en pantallas angostas pasan a un menú lateral -->
+    <app-bi-filtros>
+      <div class="filtro fecha-filtro">
+        <label>FECHA</label>
+        <div class="rango">
+          <div class="par">
+            <mat-form-field class="fecha-field" (click)="pDesde.open()">
+              <mat-label>Desde</mat-label>
+              <input matInput [matDatepicker]="pDesde" [(ngModel)]="desde" (dateChange)="aplicar()" readonly />
+              <mat-datepicker-toggle matIconSuffix [for]="pDesde"></mat-datepicker-toggle>
+              <mat-datepicker #pDesde></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field class="fecha-field hora-field">
+              <mat-label>Hora</mat-label>
+              <mat-select [(ngModel)]="horaFrom" (selectionChange)="aplicar()">
+                <mat-option *ngFor="let h of horasOpts" [value]="h">{{ h }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="par">
+            <mat-form-field class="fecha-field" (click)="pHasta.open()">
+              <mat-label>Hasta</mat-label>
+              <input matInput [matDatepicker]="pHasta" [(ngModel)]="hasta" (dateChange)="aplicar()" readonly />
+              <mat-datepicker-toggle matIconSuffix [for]="pHasta"></mat-datepicker-toggle>
+              <mat-datepicker #pHasta></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field class="fecha-field hora-field">
+              <mat-label>Hora</mat-label>
+              <mat-select [(ngModel)]="horaTo" (selectionChange)="aplicar()">
+                <mat-option *ngFor="let h of horasOpts" [value]="h">{{ h }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="filtro slicer">
+        <label>UNIDAD DEFINITIVA</label>
+        <ul class="opts">
+          <li *ngFor="let o of unidadOpts" (click)="setUnidad(o.v)">
+            <span class="chk" [class.on]="unidad === o.v"></span><span class="txt">{{ o.l }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="filtro filtro-motivo">
+        <label>MOTIVO</label>
+        <mat-form-field class="multi-field">
+          <mat-select [(ngModel)]="motivo" (selectionChange)="aplicar()" panelClass="ubic-panel"
+            placeholder="Todos">
+            <mat-option value="">Todos</mat-option>
+            <mat-option *ngFor="let m of motivos" [value]="m._id">{{ m.Name }}</mat-option>
+          </mat-select>
         </mat-form-field>
       </div>
-    </div>
 
-    <div class="filtro slicer">
-      <label>UNIDAD DEFINITIVA</label>
-      <ul class="opts">
-        <li *ngFor="let o of unidadOpts" (click)="setUnidad(o.v)">
-          <span class="chk" [class.on]="unidad === o.v"></span><span class="txt">{{ o.l }}</span>
-        </li>
-      </ul>
-    </div>
+      <!-- Origen y destino van pegados: son la combinación que mide esta pantalla,
+         así que el par se mueve completo cuando el ancho no alcanza. -->
+      <div class="par-ubic">
+        <div class="filtro filtro-ubic">
+        <label>ORIGEN</label>
+        <mat-form-field class="multi-field">
+          <mat-select [(ngModel)]="origenes" (selectionChange)="aplicar()" (closed)="origenesSearch = ''"
+            panelClass="perfil-select-panel ubic-panel" multiple placeholder="Todas">
+            <div class="select-search">
+              <input type="text" placeholder="Buscar origen..." [(ngModel)]="origenesSearch"
+                [ngModelOptions]="{ standalone: true }" (keydown)="$event.stopPropagation()"
+                (click)="$event.stopPropagation()" />
+            </div>
+            <mat-option *ngFor="let u of filterUbicaciones(origenesSearch, origenes)" [value]="u._id">{{ u.Name }}</mat-option>
+            <div class="select-empty" *ngIf="!filterUbicaciones(origenesSearch, origenes).length">Sin resultados</div>
+          </mat-select>
+        </mat-form-field>
+      </div>
 
-    <div class="filtro">
-      <label>DESTINO</label>
-      <mat-form-field class="multi-field">
-        <mat-select [(ngModel)]="destinos" (selectionChange)="aplicar()" multiple placeholder="Todas">
-          <mat-option *ngFor="let u of ubicaciones" [value]="u._id">{{ u.Name }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
+      <div class="filtro filtro-ubic">
+        <label>DESTINO</label>
+        <mat-form-field class="multi-field">
+          <mat-select [(ngModel)]="destinos" (selectionChange)="aplicar()" (closed)="destinosSearch = ''"
+            panelClass="perfil-select-panel ubic-panel" multiple placeholder="Todas">
+            <div class="select-search">
+              <input type="text" placeholder="Buscar destino..." [(ngModel)]="destinosSearch"
+                [ngModelOptions]="{ standalone: true }" (keydown)="$event.stopPropagation()"
+                (click)="$event.stopPropagation()" />
+            </div>
+            <mat-option *ngFor="let u of filterUbicaciones(destinosSearch, destinos)" [value]="u._id">{{ u.Name }}</mat-option>
+            <div class="select-empty" *ngIf="!filterUbicaciones(destinosSearch, destinos).length">Sin resultados</div>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      </div>
 
-    <div class="filtro">
-      <label>ORIGEN</label>
-      <mat-form-field class="multi-field">
-        <mat-select [(ngModel)]="origenes" (selectionChange)="aplicar()" multiple placeholder="Todas">
-          <mat-option *ngFor="let u of ubicaciones" [value]="u._id">{{ u.Name }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
+      <div class="filtro slicer">
+        <label>TIPO</label>
+        <ul class="opts">
+          <li *ngFor="let o of tipoOpts" (click)="setTipo(o.v)">
+            <span class="chk" [class.on]="tipo === o.v"></span><span class="txt">{{ o.l }}</span>
+          </li>
+        </ul>
+      </div>
+    </app-bi-filtros>
 
-    <div class="filtro slicer">
-      <label>TIPO</label>
-      <ul class="opts">
-        <li *ngFor="let o of tipoOpts" (click)="setTipo(o.v)">
-          <span class="chk" [class.on]="tipo === o.v"></span><span class="txt">{{ o.l }}</span>
-        </li>
-      </ul>
-    </div>
-
-  </div>
-
-  <!-- Tabla por DESTINO -->
-  <div class="panel">
-    <div class="tabla-wrap">
-      <table class="c4-tabla">
-        <thead>
-          <tr>
-            <th rowspan="2" class="lbl">CUMPLIMIENTO<br>DESTINO</th>
-            <th colspan="2" class="grp">A TIEMPO</th>
-            <th colspan="2" class="grp">FUERA DE TIEMPO</th>
-            <th colspan="2" class="grp tot">TOTAL</th>
-          </tr>
-          <tr>
-            <th class="num">CANTIDAD</th><th class="num">PORCENTAJE</th>
-            <th class="num">CANTIDAD</th><th class="num">PORCENTAJE</th>
-            <th class="num tot">CANTIDAD</th><th class="num tot">PORCENTAJE</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let r of destinoPage" [class.row-bajo]="r.aTiempoPct != null && r.aTiempoPct < meta">
-            <td class="lbl">{{ r.nombre }}</td>
-            <td class="num">{{ r.aTiempo || '' }}</td>
-            <td class="num">{{ r.aTiempo ? (r.aTiempoPct | number:'1.2-2') + '%' : '' }}</td>
-            <td class="num">{{ r.fuera || '' }}</td>
-            <td class="num">{{ r.fuera ? (r.fueraPct | number:'1.2-2') + '%' : '' }}</td>
-            <td class="num tot">{{ r.total }}</td>
-            <td class="num tot">100,00%</td>
-          </tr>
-          <tr *ngIf="!destino.length">
-            <td colspan="7" class="vacio">Sin datos para los filtros seleccionados.</td>
-          </tr>
-        </tbody>
-        <tfoot *ngIf="destino.length">
-          <tr>
-            <td class="lbl">Total</td>
-            <td class="num">{{ totalDestino.aTiempo }}</td>
-            <td class="num">{{ totalDestino.aTiempoPct != null ? (totalDestino.aTiempoPct | number:'1.2-2') + '%' : '' }}</td>
-            <td class="num">{{ totalDestino.fuera || '' }}</td>
-            <td class="num">{{ totalDestino.fuera ? (totalDestino.fueraPct | number:'1.2-2') + '%' : '' }}</td>
-            <td class="num tot">{{ totalDestino.total }}</td>
-            <td class="num tot">100,00%</td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-    <div class="pager" *ngIf="destino.length > pageSize">
-      <button class="pg-btn" (click)="prevDestino()" [disabled]="pageDestino === 1">
-        <ion-icon name="chevron-back"></ion-icon>
-      </button>
-      <span class="pg-txt">Página {{ pageDestino }} de {{ totalPagesDestino }} · {{ destino.length }} ubicaciones</span>
-      <button class="pg-btn" (click)="nextDestino()" [disabled]="pageDestino === totalPagesDestino">
-        <ion-icon name="chevron-forward"></ion-icon>
-      </button>
-    </div>
   </div>
 
   <!-- Tabla por ORIGEN -->
   <div class="panel">
+    <div class="panel-head">
+      <span class="panel-title">CUMPLIMIENTO POR ORIGEN</span>
+      <span class="ley">
+        <span class="ley-color"></span>
+        Fila resaltada: el <b>% a tiempo</b> de esa ubicación está por debajo de la meta ({{ meta }}%)
+      </span>
+    </div>
     <div class="tabla-wrap">
       <table class="c4-tabla">
         <thead>
@@ -183,6 +183,68 @@
       </button>
       <span class="pg-txt">Página {{ pageOrigen }} de {{ totalPagesOrigen }} · {{ origen.length }} ubicaciones</span>
       <button class="pg-btn" (click)="nextOrigen()" [disabled]="pageOrigen === totalPagesOrigen">
+        <ion-icon name="chevron-forward"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabla por DESTINO -->
+  <div class="panel">
+    <div class="panel-head">
+      <span class="panel-title">CUMPLIMIENTO POR DESTINO</span>
+      <span class="ley">
+        <span class="ley-color"></span>
+        Fila resaltada: el <b>% a tiempo</b> de esa ubicación está por debajo de la meta ({{ meta }}%)
+      </span>
+    </div>
+    <div class="tabla-wrap">
+      <table class="c4-tabla">
+        <thead>
+          <tr>
+            <th rowspan="2" class="lbl">CUMPLIMIENTO<br>DESTINO</th>
+            <th colspan="2" class="grp">A TIEMPO</th>
+            <th colspan="2" class="grp">FUERA DE TIEMPO</th>
+            <th colspan="2" class="grp tot">TOTAL</th>
+          </tr>
+          <tr>
+            <th class="num">CANTIDAD</th><th class="num">PORCENTAJE</th>
+            <th class="num">CANTIDAD</th><th class="num">PORCENTAJE</th>
+            <th class="num tot">CANTIDAD</th><th class="num tot">PORCENTAJE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of destinoPage" [class.row-bajo]="r.aTiempoPct != null && r.aTiempoPct < meta">
+            <td class="lbl">{{ r.nombre }}</td>
+            <td class="num">{{ r.aTiempo || '' }}</td>
+            <td class="num">{{ r.aTiempo ? (r.aTiempoPct | number:'1.2-2') + '%' : '' }}</td>
+            <td class="num">{{ r.fuera || '' }}</td>
+            <td class="num">{{ r.fuera ? (r.fueraPct | number:'1.2-2') + '%' : '' }}</td>
+            <td class="num tot">{{ r.total }}</td>
+            <td class="num tot">100,00%</td>
+          </tr>
+          <tr *ngIf="!destino.length">
+            <td colspan="7" class="vacio">Sin datos para los filtros seleccionados.</td>
+          </tr>
+        </tbody>
+        <tfoot *ngIf="destino.length">
+          <tr>
+            <td class="lbl">Total</td>
+            <td class="num">{{ totalDestino.aTiempo }}</td>
+            <td class="num">{{ totalDestino.aTiempoPct != null ? (totalDestino.aTiempoPct | number:'1.2-2') + '%' : '' }}</td>
+            <td class="num">{{ totalDestino.fuera || '' }}</td>
+            <td class="num">{{ totalDestino.fuera ? (totalDestino.fueraPct | number:'1.2-2') + '%' : '' }}</td>
+            <td class="num tot">{{ totalDestino.total }}</td>
+            <td class="num tot">100,00%</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div class="pager" *ngIf="destino.length > pageSize">
+      <button class="pg-btn" (click)="prevDestino()" [disabled]="pageDestino === 1">
+        <ion-icon name="chevron-back"></ion-icon>
+      </button>
+      <span class="pg-txt">Página {{ pageDestino }} de {{ totalPagesDestino }} · {{ destino.length }} ubicaciones</span>
+      <button class="pg-btn" (click)="nextDestino()" [disabled]="pageDestino === totalPagesDestino">
         <ion-icon name="chevron-forward"></ion-icon>
       </button>
     </div>

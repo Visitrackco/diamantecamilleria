@@ -143,6 +143,29 @@
         </td>
       </ng-container>
 
+      <ng-container matColumnDef="dashboard">
+        <th style="min-width: 200px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+          mat-header-cell *matHeaderCellDef> PERMISO / DASHBOARD </th>
+        <td mat-cell *matCellDef="let element">
+          <ion-checkbox *ngIf="element.acc.RoleID != 35" [checked]="element.dashboard == 1"
+            (ionChange)="changeDashboard($event, element)"></ion-checkbox>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="dashboardpages">
+        <th style="min-width: 320px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
+          mat-header-cell *matHeaderCellDef> PÁGINAS DEL DASHBOARD </th>
+        <td mat-cell *matCellDef="let element">
+          <!-- Marcar páginas le da el acceso al módulo: no hace falta prender antes
+               el check de la izquierda -->
+          <ion-select *ngIf="element.acc.RoleID != 35" multiple="true" interface="popover"
+            placeholder="Ninguna asignada" [value]="element.dashboardpages"
+            (ionChange)="changeDashboardPages($event, element)">
+            <ion-select-option *ngFor="let p of biPages" [value]="p.key">{{ p.label }}</ion-select-option>
+          </ion-select>
+        </td>
+      </ng-container>
+
       <ng-container matColumnDef="central">
         <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
           mat-header-cell *matHeaderCellDef> PERMISO / CENTRAL </th>
@@ -181,8 +204,15 @@
         <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
           mat-header-cell *matHeaderCellDef> ACCIONES </th>
         <td mat-cell *matCellDef="let element">
-       
-        
+
+          <!-- Solo para el que todavia no tiene descansos: al que ya los tiene no se le tocan -->
+          <ion-button *ngIf="descansosCargados && !tieneDescansos(element)" mode="ios" size="small"
+            color="warning" title="Asignarle los descansos configurados para esta zona"
+            (click)="configurarDescansos(element)">
+            <ion-icon name="cafe" slot="start"></ion-icon>
+            Configurar descansos
+          </ion-button>
+
         </td>
       </ng-container>
 
