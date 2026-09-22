@@ -30,6 +30,7 @@ export class CamilleriaComponent implements OnInit, OnChanges {
   prioridad = 'todos';        // todos | critico | nocritico
   unidad = 'todos';           // todos | Adultos | Infantil
   tipo = 'camilleria';        // camilleria (isAdmin=0) | admin (isAdmin=1) | todos
+  extremos = 'excluir';       // excluir (regla |z| > 3, default) | incluir (sin descartar)
 
   prioridadOpts = [
     { v: 'todos', l: 'Seleccionar todo' },
@@ -40,6 +41,11 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     { v: 'camilleria', l: 'CAMILLERÍA' },
     { v: 'admin', l: 'ADMINISTRATIVAS' },
     { v: 'todos', l: 'TODOS' }
+  ];
+  // Interruptor de la regla de puntos extremos, para comparar con y sin la fórmula.
+  extremosOpts = [
+    { v: 'excluir', l: 'EXCLUIR (|z| > 3)' },
+    { v: 'incluir', l: 'INCLUIR TODOS' }
   ];
   // Se arma segun la clinica en ngOnInit (Medellin: Adultos/Infantil,
   // Rionegro: Alta complejidad/Medicina privada).
@@ -62,6 +68,10 @@ export class CamilleriaComponent implements OnInit, OnChanges {
   totalAtiempo = 0;
   totalFuera = 0;
   meta = 90;   // meta de cumplimiento configurada (colección del dashboard)
+
+  // Puntos extremos descartados por el backend (|z| > 3 sobre el tiempo de respuesta)
+  // y los valores con que se calcularon: { excluidos, medidos, promedio, desviacion, limiteInf, limiteSup }.
+  atipicos: any = null;
 
   // Charts (ApexCharts)
   gauge: any = null;
@@ -90,6 +100,7 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     this.prioridad = this.filtros.prioridad;
     this.unidad = this.filtros.unidad;
     this.tipo = this.filtros.tipo;
+    this.extremos = this.filtros.extremos;
 
     // El slicer UNIDAD solo lista los grupos que existen en la clínica actual.
     const u = await this.clinica.unidadPara(this.unidad);
@@ -116,6 +127,7 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     this.distribucion = r.distribucionPorMotivo || [];
     this.totalAtiempo = r.totales ? r.totales.aTiempo : 0;
     this.totalFuera = r.totales ? r.totales.fueraTiempo : 0;
+    this.atipicos = r.atipicos || null;
     this.buildGauge(r.cumplimiento);
     this.tendenciaGlobal = r.tendencia || [];
     this.buildLine(this.tendenciaGlobal);
@@ -133,7 +145,8 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     const f: any = {
       Desde: this.fmtFecha(this.desde, false),
       Hasta: this.fmtFecha(this.hasta, true),
-      Tipo: this.tipo
+      Tipo: this.tipo,
+      Extremos: this.extremos
     };
     if (this.prioridad !== 'todos') f.Prioridad = this.prioridad;
     if (this.unidad !== 'todos') f.Unidad = this.unidad;
@@ -162,6 +175,7 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     this.filtros.prioridad = this.prioridad;
     this.filtros.unidad = this.unidad;
     this.filtros.tipo = this.tipo;
+    this.filtros.extremos = this.extremos;
   }
 
   // Cuerpo que consume el reporte con los filtros de la barra superior.
@@ -176,6 +190,7 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     if (this.prioridad !== 'todos') body.Prioridad = this.prioridad;
     if (this.unidad !== 'todos') body.Unidad = this.unidad;
     body.Tipo = this.tipo;
+    body.Extremos = this.extremos;
     return body;
   }
 
@@ -300,6 +315,11 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     this.cargar();
   }
 
+  setExtremos(v: string) {
+    this.extremos = v;
+    this.cargar();
+  }
+
   limpiar() {
     this.filtros.reset();
     this.desde = this.filtros.desde;
@@ -309,6 +329,7 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     this.prioridad = this.filtros.prioridad;
     this.unidad = this.filtros.unidad;
     this.tipo = this.filtros.tipo;
+    this.extremos = this.filtros.extremos;
     this.quitarMotivo();
     this.cargar();
   }
@@ -342,7 +363,9 @@ export class CamilleriaComponent implements OnInit, OnChanges {
         dateVisible: x.dateVisible,
         CompanyStatus: x.CompanyStatus,
         isDesnormalized: x.isDesnormalized,
-        enDesnormalizada: x.enDesnormalizada
+        enDesnormalizada: x.enDesnormalizada,
+        respuestaMins: x.respuestaMins,
+        atipico: x.atipico
       }));
 
       const ws = XLSX.utils.json_to_sheet(data);
@@ -351,7 +374,7 @@ export class CamilleriaComponent implements OnInit, OnChanges {
       const nombre = 'camilleria_raw_' + (body.Desde || 'hoy') + '_' + (body.Hasta || 'hoy') + '.xlsx';
       XLSX.writeFile(wb, nombre);
 
-      this.toast.MsgOK(`Descargado: ${r.totalOriginal} registros · faltan ${r.faltantes} en la desnormalizada`);
+      this.toast.MsgOK(`Descargado: ${r.totalOriginal} registros · faltan ${r.faltantes} en la desnormalizada · ${r.atipicos || 0} atípicos`);
     } catch (e) {
       this.loading = false;
       this.toast.MsgError('Error al descargar la data');

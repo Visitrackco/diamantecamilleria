@@ -91,6 +91,16 @@
           </li>
         </ul>
       </div>
+
+      <div class="filtro slicer">
+        <label>PUNTOS EXTREMOS</label>
+        <ul class="opts">
+          <li *ngFor="let o of extremosOpts" (click)="setExtremos(o.v)">
+            <span class="chk" [class.on]="extremos === o.v"></span>
+            <span class="txt">{{ o.l }}</span>
+          </li>
+        </ul>
+      </div>
     </app-bi-filtros>
 
     <div class="cam-top-break"></div>
@@ -98,6 +108,18 @@
     <div class="kpi kpi-num">
       <span class="kpi-title">CANTIDAD DE SERVICIOS</span>
       <span class="kpi-value">{{ cantidadServicios | number }}</span>
+      <!-- Puntos extremos descartados con la regla |z| > 3 (ver ¿Cómo se calcula?) -->
+      <span class="kpi-nota" *ngIf="atipicos && atipicos.excluidos > 0"
+        [title]="'Tiempo de respuesta: promedio ' + atipicos.promedio + ' min · desviación ' + atipicos.desviacion
+          + ' min · se descarta lo que esté por fuera de ' + atipicos.limiteInf + ' a ' + atipicos.limiteSup + ' min'">
+        {{ atipicos.excluidos | number }} {{ atipicos.excluidos === 1 ? 'servicio excluido' : 'servicios excluidos' }}
+        por tiempo atípico
+      </span>
+      <!-- Regla apagada: se avisa para que no se compare este número con el de la regla encendida -->
+      <span class="kpi-nota kpi-nota-off" *ngIf="atipicos && atipicos.activo === false"
+        title="Se están mostrando todos los servicios, sin descartar puntos extremos del tiempo de respuesta">
+        Incluye puntos extremos
+      </span>
     </div>
 
     <div class="kpi kpi-gauge">

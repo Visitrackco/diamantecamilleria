@@ -205,6 +205,19 @@ $border: #e5e7eb;
     line-height: 1.1;
     margin-top: 6px;
   }
+
+  // Aviso de puntos extremos descartados; el detalle (promedio, desviacion,
+  // limites) va en el title para no cargar la tarjeta.
+  .kpi-nota {
+    margin-top: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #b45309;
+    text-align: center;
+    cursor: help;
+
+    &.kpi-nota-off { color: #64748b; }
+  }
 }
 
 .kpi-gauge {

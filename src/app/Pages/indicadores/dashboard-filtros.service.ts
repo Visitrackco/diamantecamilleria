@@ -24,6 +24,9 @@ export class DashboardFiltrosService {
   tipo = 'camilleria';
   motivo = '';
   turno = 'todos';
+  // Puntos extremos del tiempo de respuesta (solo CAMILLERIA):
+  // 'excluir' aplica la regla |z| > 3, 'incluir' muestra todo sin descartar.
+  extremos = 'excluir';
 
   reset() {
     this.desde = moment().startOf('day').toDate();
@@ -35,5 +38,6 @@ export class DashboardFiltrosService {
     this.tipo = 'camilleria';
     this.motivo = '';
     this.turno = 'todos';
+    this.extremos = 'excluir';
   }
 }

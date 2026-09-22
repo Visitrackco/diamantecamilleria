@@ -58,6 +58,11 @@ export class AyudaComponent {
     campo: 'Motivo',
     desc: 'Un motivo puntual. Si además hay prioridad seleccionada, el motivo tiene que pertenecer a esa prioridad.'
   };
+  private static readonly F_EXTREMOS: Filtro = {
+    nombre: 'PUNTOS EXTREMOS',
+    campo: 'respuestaMins',
+    desc: 'Excluir aplica la regla |z| > 3 sobre el tiempo de respuesta (por defecto). Incluir todos muestra el resultado sin la fórmula, para comparar.'
+  };
   private static readonly F_TIPO: Filtro = {
     nombre: 'TIPO',
     campo: 'isAdmin',
@@ -72,6 +77,10 @@ export class AyudaComponent {
     'Una solicitud sin llegada a origen no se puede medir: cuenta en la cantidad, pero no entra en el porcentaje.';
   private static readonly N_ANS_CERO =
     'Los motivos con ANS en 0 no se miden, porque no hay tiempo contra el cual comparar.';
+  private static readonly N_ATIPICOS =
+    'Los servicios excluidos por tiempo atípico salen de la cantidad, de la tabla y de la tendencia; '
+    + 'debajo de CANTIDAD DE SERVICIOS se indica cuántos fueron. El promedio y la desviación se recalculan con cada filtro, '
+    + 'así que al cambiar el rango puede cambiar qué servicios quedan por fuera.';
 
   private get fichas(): { [k: string]: Ficha } {
     const A = AyudaComponent;
@@ -92,6 +101,12 @@ export class AyudaComponent {
             desc: 'Minutos entre la fecha de la solicitud y la llegada del camillero al origen.'
           },
           {
+            titulo: 'Se descartan los puntos extremos',
+            desc: 'Con los tiempos de respuesta del rango se saca el promedio y la desviación estándar. '
+              + 'Cada servicio se compara: (tiempo de respuesta − promedio) ÷ desviación estándar. '
+              + 'Si el resultado es menor a −3 o mayor a 3, el servicio no se tiene en cuenta en ninguna cifra de esta pantalla.'
+          },
+          {
             titulo: 'Se compara contra el ANS del motivo',
             desc: 'Si la respuesta es menor o igual al ANS cuenta como a tiempo; si se pasa, cuenta como fuera de tiempo.'
           },
@@ -100,8 +115,8 @@ export class AyudaComponent {
             desc: 'A tiempo sobre el total de medibles. La meta (90% por defecto) viene de la configuración de la zona.'
           }
         ],
-        filtros: [A.F_FECHA, A.F_PRIORIDAD, A.F_UNIDAD, A.F_TIPO],
-        notas: [A.N_SIN_ORIGEN, A.N_ANS_CERO, A.N_ELIMINADAS, A.N_DESNORM]
+        filtros: [A.F_FECHA, A.F_PRIORIDAD, A.F_UNIDAD, A.F_TIPO, A.F_EXTREMOS],
+        notas: [A.N_ATIPICOS, A.N_SIN_ORIGEN, A.N_ANS_CERO, A.N_ELIMINADAS, A.N_DESNORM]
       },
 
       camilleria2: {
