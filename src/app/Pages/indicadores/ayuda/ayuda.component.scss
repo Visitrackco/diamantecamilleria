@@ -433,3 +433,175 @@ $suave: #64748b;
   .ay-modal { max-width: none; max-height: 100vh; height: 100vh; border-radius: 0; }
   .ay-trigger { flex: 1; }
 }
+
+/* ===== Puntos extremos ===== */
+
+/* La formula del z va en una linea, sin el "x 100" de los porcentajes */
+.ay-formula-z {
+  .res {
+    font-size: 12px;
+    font-weight: 700;
+    color: $diamante;
+  }
+
+  .frac .num, .frac .den { font-size: 12px; }
+}
+
+/* Banda aceptada vs. colas descartadas */
+.ay-z {
+  display: block;
+  width: 100%;
+  min-width: 520px;
+  height: auto;
+
+  .dentro { fill: #dcfce7; stroke: #86efac; }
+  .fuera { fill: #fee2e2; stroke: #fca5a5; }
+
+  .et {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .6px;
+    text-anchor: middle;
+  }
+  .dentro-t { fill: #15803d; }
+  .fuera-t { fill: #b91c1c; }
+
+  .mk {
+    stroke: #94a3b8;
+    stroke-width: 1.5;
+
+    &.prom { stroke: $acento; stroke-width: 2; }
+  }
+
+  .z {
+    font-size: 11px;
+    font-weight: 700;
+    fill: $texto;
+    text-anchor: middle;
+  }
+
+  .val {
+    font-size: 11px;
+    font-weight: 700;
+    fill: $acento;
+    text-anchor: middle;
+  }
+
+  .eje {
+    font-size: 10px;
+    fill: $suave;
+    text-anchor: middle;
+  }
+}
+
+/* Cifras de la consulta que esta en pantalla */
+.ay-cifras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+
+  .ci {
+    flex: 1 1 130px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 9px 12px;
+    border: 1px solid $border;
+    border-radius: 9px;
+    background: #f8fafc;
+
+    .k {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+      color: $suave;
+    }
+    .v {
+      font-size: 14px;
+      font-weight: 800;
+      color: $diamante;
+    }
+
+    &.fuera {
+      border-color: #fecaca;
+      background: #fef2f2;
+      .v { color: #b91c1c; }
+    }
+  }
+}
+
+/* Aviso de que la regla esta apagada */
+.ay-nota-off {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 12px 0 0;
+  padding: 9px 12px;
+  border: 1px solid #fed7aa;
+  border-radius: 9px;
+  background: #fff7ed;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #9a3412;
+
+  ion-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+}
+
+/* Los dos ejemplos resueltos */
+.ay-ejemplos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+
+  .ej {
+    flex: 1 1 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 11px 13px;
+    border: 1px solid $border;
+    border-radius: 10px;
+
+    .cab {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+
+      ion-icon { font-size: 15px; }
+    }
+
+    .cta {
+      font-size: 13px;
+      color: $texto;
+    }
+
+    code {
+      padding: 6px 9px;
+      border-radius: 7px;
+      background: #0f2c42;
+      color: #dbeafe;
+      font-size: 11.5px;
+      word-break: break-word;
+    }
+
+    &.ok {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+      .cab { color: #15803d; }
+    }
+    &.no {
+      border-color: #fecaca;
+      background: #fef2f2;
+      .cab { color: #b91c1c; }
+    }
+  }
+}
+
+.ay-notas-z { margin-top: 14px; }

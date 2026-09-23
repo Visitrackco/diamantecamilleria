@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { ApiService } from 'src/app/Services/api.service';
 import { StorageWebService } from 'src/app/Services/storage.service';
 import { ToastService } from 'src/app/Services/toast.service';
@@ -7,6 +7,7 @@ import * as XLSX from 'xlsx';
 import { DashboardFiltrosService, HORAS_OPTS } from '../../dashboard-filtros.service';
 import { CompartirService } from '../../compartir.service';
 import { ClinicaService } from 'src/app/Services/clinica.service';
+import { AyudaComponent } from '../../ayuda/ayuda.component';
 
 @Component({
   selector: 'app-bi-camilleria',
@@ -16,6 +17,9 @@ import { ClinicaService } from 'src/app/Services/clinica.service';
 export class CamilleriaComponent implements OnInit, OnChanges {
 
   loading = false;
+
+  // La ayuda vive en la barra de acciones, que no se pinta en modo publico.
+  @ViewChild(AyudaComponent) ayuda: AyudaComponent;
 
   // Modo público (link de solo lectura): recibe los datos ya calculados y oculta filtros.
   @Input() modoPublico = false;
@@ -313,6 +317,12 @@ export class CamilleriaComponent implements OnInit, OnChanges {
   setTipo(v: string) {
     this.tipo = v;
     this.cargar();
+  }
+
+  // El aviso bajo el KPI abre la explicacion de la regla. En modo publico no hay
+  // barra de acciones, asi que el componente de ayuda no existe y solo queda el tooltip.
+  verAyudaExtremos() {
+    if (this.ayuda) this.ayuda.abrirExtremos();
   }
 
   setExtremos(v: string) {

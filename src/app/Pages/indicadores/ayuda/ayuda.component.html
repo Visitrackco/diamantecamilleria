@@ -112,6 +112,116 @@
         </ol>
       </section>
 
+      <!-- Puntos extremos: la regla, dibujada y con los numeros de la consulta actual -->
+      <section class="ay-bloque" *ngIf="tieneExtremos" #secExtremos>
+        <h3><ion-icon name="funnel-outline"></ion-icon> Los puntos extremos</h3>
+        <p class="ay-sub">
+          Un servicio con un tiempo de respuesta muy lejos de lo normal (una solicitud que quedó
+          abierta, un marcaje tardío) mueve el indicador sin representar la operación. Por eso se
+          descarta, con esta regla:
+        </p>
+
+        <div class="ay-formula ay-formula-z">
+          <span class="op">z =</span>
+          <div class="frac">
+            <span class="num">tiempo de respuesta − promedio</span>
+            <span class="bar"></span>
+            <span class="den">desviación estándar</span>
+          </div>
+          <span class="op eq">→</span>
+          <span class="res">si z es menor a −3 o mayor a 3, el servicio no se cuenta</span>
+        </div>
+
+        <!-- Banda aceptada vs. colas descartadas -->
+        <div class="ay-tl-wrap">
+          <svg class="ay-z" viewBox="0 0 700 150" role="img"
+            aria-label="Banda de tiempos de respuesta aceptados y colas descartadas">
+
+            <!-- Colas descartadas -->
+            <rect class="fuera" x="40" y="46" width="120" height="34" />
+            <rect class="fuera" x="540" y="46" width="120" height="34" />
+            <!-- Zona aceptada -->
+            <rect class="dentro" x="160" y="46" width="380" height="34" />
+
+            <text class="et fuera-t" x="100" y="36">SE DESCARTA</text>
+            <text class="et dentro-t" x="350" y="36">SE TIENE EN CUENTA</text>
+            <text class="et fuera-t" x="600" y="36">SE DESCARTA</text>
+
+            <!-- Marcas -->
+            <line class="mk" x1="160" y1="42" x2="160" y2="84" />
+            <line class="mk prom" x1="350" y1="38" x2="350" y2="88" />
+            <line class="mk" x1="540" y1="42" x2="540" y2="84" />
+
+            <text class="z" x="160" y="102">z = −3</text>
+            <text class="z" x="350" y="102">promedio</text>
+            <text class="z" x="540" y="102">z = +3</text>
+
+            <!-- Valores reales de la consulta -->
+            <ng-container *ngIf="hayCifras">
+              <text class="val" x="160" y="122">{{ extremos.limiteInf }} min</text>
+              <text class="val" x="350" y="122">{{ extremos.promedio }} min</text>
+              <text class="val" x="540" y="122">{{ extremos.limiteSup }} min</text>
+            </ng-container>
+
+            <text class="eje" x="350" y="142">tiempo de respuesta (minutos)</text>
+          </svg>
+        </div>
+
+        <!-- Cifras de lo que hay en pantalla -->
+        <div class="ay-cifras" *ngIf="hayCifras">
+          <div class="ci">
+            <span class="k">Servicios medidos</span>
+            <span class="v">{{ extremos.medidos | number }}</span>
+          </div>
+          <div class="ci">
+            <span class="k">Promedio</span>
+            <span class="v">{{ extremos.promedio }} min</span>
+          </div>
+          <div class="ci">
+            <span class="k">Desviación estándar</span>
+            <span class="v">{{ extremos.desviacion }} min</span>
+          </div>
+          <div class="ci">
+            <span class="k">Se tiene en cuenta</span>
+            <span class="v">{{ extremos.limiteInf }} a {{ extremos.limiteSup }} min</span>
+          </div>
+          <div class="ci fuera">
+            <span class="k">Descartados</span>
+            <span class="v">{{ extremos.excluidos | number }}</span>
+          </div>
+        </div>
+
+        <p class="ay-nota-off" *ngIf="extremos && extremos.activo === false">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          Ahora mismo el filtro <strong>PUNTOS EXTREMOS</strong> está en “incluir todos”: no se está
+          descartando nada, se ven todos los servicios.
+        </p>
+
+        <!-- Dos ejemplos con los numeros de la consulta -->
+        <div class="ay-ejemplos" *ngIf="hayCifras">
+          <div class="ej ok">
+            <span class="cab"><ion-icon name="checkmark-circle-outline"></ion-icon> Sí se cuenta</span>
+            <span class="cta">Un servicio de <strong>{{ ejemploOk.mins }} min</strong></span>
+            <code>z = ({{ ejemploOk.mins }} − {{ extremos.promedio }}) ÷ {{ extremos.desviacion }} = {{ ejemploOk.z }}</code>
+          </div>
+          <div class="ej no">
+            <span class="cab"><ion-icon name="close-circle-outline"></ion-icon> No se cuenta</span>
+            <span class="cta">Un servicio de <strong>{{ ejemploFuera.mins }} min</strong></span>
+            <code>z = ({{ ejemploFuera.mins }} − {{ extremos.promedio }}) ÷ {{ extremos.desviacion }} = {{ ejemploFuera.z }}</code>
+          </div>
+        </div>
+
+        <ul class="ay-notas ay-notas-z">
+          <li>El promedio y la desviación se calculan con los servicios <strong>medidos</strong> del
+            rango y los filtros que estén puestos, así que cambian con cada consulta: al mover el
+            rango puede cambiar qué servicios quedan por fuera.</li>
+          <li>Los servicios sin llegada a origen no tienen tiempo de respuesta, así que nunca se
+            descartan por esta regla (tampoco entran en el porcentaje).</li>
+          <li>Con el filtro <strong>PUNTOS EXTREMOS</strong> en “incluir todos” se ve el mismo
+            periodo sin aplicar la fórmula, para comparar.</li>
+        </ul>
+      </section>
+
       <!-- Qué hace cada filtro -->
       <section class="ay-bloque">
         <h3><ion-icon name="funnel-outline"></ion-icon> Los filtros</h3>

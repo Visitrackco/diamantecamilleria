@@ -37,10 +37,28 @@ $border: #e5e7eb;
   gap: 8px;
 
   label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
     font-size: 13px;
     font-weight: 700;
     color: #6b7280;
     letter-spacing: .3px;
+
+    /* Interrogante que abre la ayuda de la regla (puntos extremos) */
+    .lbl-ayuda {
+      display: inline-flex;
+      align-items: center;
+      padding: 0;
+      border: none;
+      background: none;
+      color: #b45309;
+      cursor: pointer;
+      line-height: 1;
+
+      ion-icon { font-size: 16px; }
+      &:hover { color: $pink; }
+    }
   }
 
   input[type="date"] {
@@ -215,6 +233,14 @@ $border: #e5e7eb;
     color: #b45309;
     text-align: center;
     cursor: help;
+
+    &.clickable {
+      cursor: pointer;
+      text-decoration: underline dotted;
+      text-underline-offset: 3px;
+
+      &:hover { color: $pink; }
+    }
 
     &.kpi-nota-off { color: #64748b; }
   }

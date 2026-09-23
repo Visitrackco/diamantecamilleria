@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 
 // Un paso del cálculo del indicador
 interface Paso { titulo: string; desc: string; }
@@ -34,6 +34,13 @@ export class AyudaComponent {
   // Clave de la pantalla: camilleria | camilleria2 | mapacalor | mapacumplimiento |
   //                       ayudas | nfc | cantidad
   @Input() pagina = 'camilleria';
+
+  // Cifras de la regla de puntos extremos de la consulta que esta en pantalla
+  // (lo que devuelve el backend en response.atipicos). Solo lo manda CAMILLERIA:
+  // con esto la ayuda explica la regla con los numeros reales y no en abstracto.
+  @Input() extremos: any = null;
+
+  @ViewChild('secExtremos') secExtremos: ElementRef<HTMLElement>;
 
   abierto = false;
 
@@ -324,4 +331,43 @@ export class AyudaComponent {
 
   abrir() { this.abierto = true; }
   cerrar() { this.abierto = false; }
+
+  // Abre la ayuda directamente en la explicacion de los puntos extremos (lo llama
+  // el interrogante que esta al lado del slicer).
+  abrirExtremos() {
+    this.abierto = true;
+    setTimeout(() => {
+      if (this.secExtremos) this.secExtremos.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  // ---- Explicacion de los puntos extremos con los numeros de la consulta ----
+
+  // Solo la pantalla de camilleria descarta puntos extremos.
+  get tieneExtremos(): boolean {
+    return this.pagina === 'camilleria';
+  }
+
+  // Hay cifras reales que mostrar (la regla esta encendida y hubo datos suficientes).
+  get hayCifras(): boolean {
+    return !!(this.extremos && this.extremos.activo !== false && this.extremos.desviacion != null);
+  }
+
+  // Un servicio corriente (promedio + 1 desviacion): z = 1, se tiene en cuenta.
+  get ejemploOk(): { mins: number; z: number } {
+    if (!this.hayCifras) return null;
+    const mins = Math.round(this.extremos.promedio + this.extremos.desviacion);
+    return { mins, z: this.z(mins) };
+  }
+
+  // Un servicio extremo (justo por encima del limite): z > 3, se descarta.
+  get ejemploFuera(): { mins: number; z: number } {
+    if (!this.hayCifras) return null;
+    const mins = Math.round(this.extremos.limiteSup + this.extremos.desviacion);
+    return { mins, z: this.z(mins) };
+  }
+
+  private z(mins: number): number {
+    return Math.round(((mins - this.extremos.promedio) / this.extremos.desviacion) * 10) / 10;
+  }
 }

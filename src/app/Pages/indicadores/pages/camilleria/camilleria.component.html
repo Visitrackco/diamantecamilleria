@@ -2,7 +2,7 @@
 
   <!-- Barra de acciones -->
   <div class="cam-toolbar" *ngIf="!modoPublico">
-    <app-bi-ayuda pagina="camilleria"></app-bi-ayuda>
+    <app-bi-ayuda pagina="camilleria" [extremos]="atipicos"></app-bi-ayuda>
     <div class="cam-toolbar-right">
       <button class="btn btn-compartir" (click)="compartir()" title="Compartir link de solo lectura">
         <ion-icon name="share-social-outline"></ion-icon>
@@ -93,7 +93,12 @@
       </div>
 
       <div class="filtro slicer">
-        <label>PUNTOS EXTREMOS</label>
+        <label>
+          PUNTOS EXTREMOS
+          <button class="lbl-ayuda" (click)="verAyudaExtremos()" title="¿Cómo se calculan los puntos extremos?">
+            <ion-icon name="help-circle-outline"></ion-icon>
+          </button>
+        </label>
         <ul class="opts">
           <li *ngFor="let o of extremosOpts" (click)="setExtremos(o.v)">
             <span class="chk" [class.on]="extremos === o.v"></span>
@@ -110,8 +115,11 @@
       <span class="kpi-value">{{ cantidadServicios | number }}</span>
       <!-- Puntos extremos descartados con la regla |z| > 3 (ver ¿Cómo se calcula?) -->
       <span class="kpi-nota" *ngIf="atipicos && atipicos.excluidos > 0"
-        [title]="'Tiempo de respuesta: promedio ' + atipicos.promedio + ' min · desviación ' + atipicos.desviacion
-          + ' min · se descarta lo que esté por fuera de ' + atipicos.limiteInf + ' a ' + atipicos.limiteSup + ' min'">
+        [class.clickable]="!modoPublico" (click)="verAyudaExtremos()"
+        [title]="modoPublico
+          ? ('Tiempo de respuesta: promedio ' + atipicos.promedio + ' min · desviación ' + atipicos.desviacion
+             + ' min · se descarta lo que esté por fuera de ' + atipicos.limiteInf + ' a ' + atipicos.limiteSup + ' min')
+          : 'Ver cómo se calculan los puntos extremos'">
         {{ atipicos.excluidos | number }} {{ atipicos.excluidos === 1 ? 'servicio excluido' : 'servicios excluidos' }}
         por tiempo atípico
       </span>
