@@ -31,8 +31,8 @@ export class Camilleria4Component implements OnInit, OnChanges {
   unidad = 'todos';
   tipo = 'camilleria';
   motivo = '';                // id de motivo o '' (todos)
-  destinos: string[] = [];
-  origenes: string[] = [];
+  origenes: string[] = [];   // ORIGEN: ids de ubicacion ([] = todas)
+  destinos: string[] = [];   // DESTINO: ids de ubicacion ([] = todas)
 
   // Se arma segun la clinica en ngOnInit (Medellin: Adultos/Infantil,
   // Rionegro: Alta complejidad/Medicina privada).
@@ -44,11 +44,6 @@ export class Camilleria4Component implements OnInit, OnChanges {
   ];
 
   motivos: any[] = [];       // motivos de la zona para el filtro MOTIVO
-  ubicaciones: any[] = [];   // lista para los selects Origen / Destino
-
-  // Texto del buscador interno de cada select (mismo patron que Perfiles)
-  destinosSearch = '';
-  origenesSearch = '';
 
   // Datos
   meta = 90;
@@ -84,6 +79,8 @@ export class Camilleria4Component implements OnInit, OnChanges {
     this.unidad = this.filtros.unidad;
     this.tipo = this.filtros.tipo;
     this.motivo = this.filtros.motivo;
+    this.origenes = this.filtros.origenes;
+    this.destinos = this.filtros.destinos;
 
     // El slicer UNIDAD solo lista los grupos que existen en la clínica actual.
     const u = await this.clinica.unidadPara(this.unidad, 'Todas', false);
@@ -92,7 +89,6 @@ export class Camilleria4Component implements OnInit, OnChanges {
     this.filtros.unidad = this.unidad;
 
     this.cargarMotivos();
-    this.cargarUbicaciones();
     this.cargar();
   }
 
@@ -109,25 +105,6 @@ export class Camilleria4Component implements OnInit, OnChanges {
     if (rs && rs.status) this.motivos = rs.response || [];
   }
 
-  async cargarUbicaciones() {
-    const login = await this.stg.getLogin();
-    if (!login) return;
-    const rs: any = await this.api.apiGet('locations?WorkZoneID=' + login[0].WorkZone, login[0].token);
-    if (rs && rs.status) this.ubicaciones = rs.response || [];
-  }
-
-  // Buscador interno de los selects Destino / Origen.
-  // Las ya seleccionadas se conservan aunque no coincidan con el texto, para no
-  // perder la seleccion al filtrar (mismo criterio que Perfiles).
-  filterUbicaciones(term: string, selected: string[] = []): any[] {
-    const t = (term || '').trim().toLowerCase();
-    if (!t) return this.ubicaciones;
-    const sel = selected || [];
-    return this.ubicaciones.filter(
-      (u) => (u.Name || '').toLowerCase().includes(t) || sel.includes(u._id)
-    );
-  }
-
   private guardarFiltros() {
     this.filtros.desde = this.desde;
     this.filtros.hasta = this.hasta;
@@ -136,6 +113,8 @@ export class Camilleria4Component implements OnInit, OnChanges {
     this.filtros.unidad = this.unidad;
     this.filtros.tipo = this.tipo;
     this.filtros.motivo = this.motivo;
+    this.filtros.origenes = this.origenes;
+    this.filtros.destinos = this.destinos;
   }
 
   private fmtFecha(d: Date, fin: boolean): string {
@@ -236,15 +215,15 @@ export class Camilleria4Component implements OnInit, OnChanges {
     this.unidad = this.filtros.unidad;
     this.tipo = this.filtros.tipo;
     this.motivo = this.filtros.motivo;
-    this.destinos = [];
-    this.origenes = [];
-    this.destinosSearch = '';
-    this.origenesSearch = '';
+    this.origenes = this.filtros.origenes;
+    this.destinos = this.filtros.destinos;
     this.cargar();
   }
 
   setUnidad(v: string) { this.unidad = v; this.cargar(); }
   setTipo(v: string) { this.tipo = v; this.cargar(); }
+  setOrigenes(v: string[]) { this.origenes = v; this.cargar(); }
+  setDestinos(v: string[]) { this.destinos = v; this.cargar(); }
 
   // Excel con la data cruda con la que se construyó el indicador
   descargar() {

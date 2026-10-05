@@ -20,6 +20,7 @@ import { CantidadComponent } from './pages/cantidad/cantidad.component';
 import { AyudaComponent } from './ayuda/ayuda.component';
 import { FiltrosComponent } from './filtros/filtros.component';
 import { CompartirDialogComponent } from './compartir-dialog/compartir-dialog.component';
+import { UbicacionSelectComponent } from './ubicacion-select/ubicacion-select.component';
 
 // Módulo compartido con las pantallas del dashboard BI. Se reutiliza tanto en el
 // dashboard interno (IndicadoresPageModule) como en la vista pública (PublicoPageModule).
@@ -46,7 +47,8 @@ import { CompartirDialogComponent } from './compartir-dialog/compartir-dialog.co
     CantidadComponent,
     AyudaComponent,
     FiltrosComponent,
-    CompartirDialogComponent
+    CompartirDialogComponent,
+    UbicacionSelectComponent
   ],
   exports: [
     CamilleriaComponent,
@@ -58,7 +60,8 @@ import { CompartirDialogComponent } from './compartir-dialog/compartir-dialog.co
     CantidadComponent,
     AyudaComponent,
     FiltrosComponent,
-    CompartirDialogComponent
+    CompartirDialogComponent,
+    UbicacionSelectComponent
   ]
 })
 export class IndicadoresSharedModule {}

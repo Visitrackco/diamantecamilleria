@@ -2,6 +2,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { ClinicaService } from 'src/app/Services/clinica.service';
 import { PermisosService } from 'src/app/Services/permisos.service';
 import { DashboardFiltrosService } from './dashboard-filtros.service';
+import { UbicacionesService } from './ubicaciones.service';
 import { BiPage, BI_PAGES } from './bi-pages';
 import * as moment from 'moment-timezone';
 
@@ -47,7 +48,8 @@ export class IndicadoresPage implements OnInit {
   constructor(
     private clinicaSvc: ClinicaService,
     private permisos: PermisosService,
-    private filtros: DashboardFiltrosService
+    private filtros: DashboardFiltrosService,
+    private ubicaciones: UbicacionesService
   ) { }
 
   ngOnInit() { }
@@ -55,6 +57,8 @@ export class IndicadoresPage implements OnInit {
   // Ionic deja la pagina montada al salir, asi que sin esto al volver quedarian los
   // permisos y los datos de la entrada anterior hasta recargar el navegador.
   async ionViewWillEnter() {
+    // Lista de ORIGEN / DESTINO fresca en cada entrada (pudieron crear ubicaciones).
+    this.ubicaciones.invalidar();
     await this.cargarPaginas();
     await this.sincronizarZona();
     this.montarPagina();

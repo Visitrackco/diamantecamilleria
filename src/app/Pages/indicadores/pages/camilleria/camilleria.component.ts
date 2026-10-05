@@ -34,6 +34,8 @@ export class CamilleriaComponent implements OnInit, OnChanges {
   prioridad = 'todos';        // todos | critico | nocritico
   unidad = 'todos';           // todos | Adultos | Infantil
   tipo = 'camilleria';        // camilleria (isAdmin=0) | admin (isAdmin=1) | todos
+  origenes: string[] = [];   // ORIGEN: ids de ubicacion ([] = todas)
+  destinos: string[] = [];   // DESTINO: ids de ubicacion ([] = todas)
   extremos = 'excluir';       // excluir (regla |z| > 3, default) | incluir (sin descartar)
 
   prioridadOpts = [
@@ -104,6 +106,8 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     this.prioridad = this.filtros.prioridad;
     this.unidad = this.filtros.unidad;
     this.tipo = this.filtros.tipo;
+    this.origenes = this.filtros.origenes;
+    this.destinos = this.filtros.destinos;
     this.extremos = this.filtros.extremos;
 
     // El slicer UNIDAD solo lista los grupos que existen en la clínica actual.
@@ -154,6 +158,8 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     };
     if (this.prioridad !== 'todos') f.Prioridad = this.prioridad;
     if (this.unidad !== 'todos') f.Unidad = this.unidad;
+    if (this.origenes.length) f.Origenes = this.origenes;
+    if (this.destinos.length) f.Destinos = this.destinos;
     return f;
   }
 
@@ -179,6 +185,8 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     this.filtros.prioridad = this.prioridad;
     this.filtros.unidad = this.unidad;
     this.filtros.tipo = this.tipo;
+    this.filtros.origenes = this.origenes;
+    this.filtros.destinos = this.destinos;
     this.filtros.extremos = this.extremos;
   }
 
@@ -193,6 +201,8 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     };
     if (this.prioridad !== 'todos') body.Prioridad = this.prioridad;
     if (this.unidad !== 'todos') body.Unidad = this.unidad;
+    if (this.origenes.length) body.Origenes = this.origenes;
+    if (this.destinos.length) body.Destinos = this.destinos;
     body.Tipo = this.tipo;
     body.Extremos = this.extremos;
     return body;
@@ -296,6 +306,9 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     }
   }
 
+  setOrigenes(v: string[]) { this.origenes = v; this.cargar(); }
+  setDestinos(v: string[]) { this.destinos = v; this.cargar(); }
+
   aplicar() {
     this.cargar();
   }
@@ -339,6 +352,8 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     this.prioridad = this.filtros.prioridad;
     this.unidad = this.filtros.unidad;
     this.tipo = this.filtros.tipo;
+    this.origenes = this.filtros.origenes;
+    this.destinos = this.filtros.destinos;
     this.extremos = this.filtros.extremos;
     this.quitarMotivo();
     this.cargar();

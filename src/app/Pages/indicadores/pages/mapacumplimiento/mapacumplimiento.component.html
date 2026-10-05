@@ -82,6 +82,21 @@
         </select>
       </div>
 
+      <!-- Origen y destino van pegados (igual que en COMBINACION DE UBICACIONES). -->
+      <div class="par-ubic">
+        <div class="filtro filtro-ubic">
+          <label>ORIGEN</label>
+          <app-bi-ubicacion-select [seleccion]="origenes" (seleccionChange)="setOrigenes($event)"
+            buscar="Buscar origen..."></app-bi-ubicacion-select>
+        </div>
+
+        <div class="filtro filtro-ubic">
+          <label>DESTINO</label>
+          <app-bi-ubicacion-select [seleccion]="destinos" (seleccionChange)="setDestinos($event)"
+            buscar="Buscar destino..."></app-bi-ubicacion-select>
+        </div>
+      </div>
+
       <div class="filtro slicer">
         <label>TIPO</label>
         <ul class="opts">

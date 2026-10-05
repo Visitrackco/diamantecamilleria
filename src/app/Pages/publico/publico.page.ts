@@ -26,9 +26,10 @@ export class PublicoPage implements OnInit, OnDestroy {
   datos: any = null;
 
   // Filtros interactivos
-  interactivos: any = {};       // { prioridad, unidad, tipo, motivo, turno } -> 1/0
+  interactivos: any = {};       // { prioridad, unidad, tipo, motivo, turno, origen, destino } -> 1/0
   motivos: any[] = [];
-  fVals: any = { Prioridad: 'todos', Unidad: 'todos', Tipo: 'camilleria', Motivo: '', Turno: 'todos' };
+  ubicaciones: any[] = [];      // para los selects ORIGEN / DESTINO (solo si son interactivos)
+  fVals: any = { Prioridad: 'todos', Unidad: 'todos', Tipo: 'camilleria', Motivo: '', Turno: 'todos', Origenes: [], Destinos: [] };
 
   prioridadOpts = [
     { v: 'todos', l: 'Todos' },
@@ -102,13 +103,15 @@ export class PublicoPage implements OnInit, OnDestroy {
       case 'turno': return this.fVals.Turno !== 'todos';
       case 'motivo': return !!this.fVals.Motivo;
       case 'tipo': return this.fVals.Tipo !== 'camilleria';
+      case 'origen': return this.fVals.Origenes.length > 0;
+      case 'destino': return this.fVals.Destinos.length > 0;
       default: return false;
     }
   }
 
   // Cantidad de filtros aplicados (para el resumen)
   get filtrosActivosCount(): number {
-    return ['prioridad', 'unidad', 'turno', 'motivo', 'tipo']
+    return ['prioridad', 'unidad', 'origen', 'destino', 'turno', 'motivo', 'tipo']
       .filter(k => this.interactivos[k] && this.filtroActivo(k)).length;
   }
 
@@ -116,6 +119,16 @@ export class PublicoPage implements OnInit, OnDestroy {
   get motivoNombre(): string {
     const m = this.motivos.find(x => x._id === this.fVals.Motivo);
     return m ? m.Name : '';
+  }
+
+  // Nombres de las ubicaciones seleccionadas (para el chip): las dos primeras y "+N".
+  nombresUbic(ids: string[]): string {
+    const nombres = (ids || []).map((id) => {
+      const u = this.ubicaciones.find((x) => x._id === id);
+      return u ? u.Name : '';
+    }).filter(Boolean);
+    if (nombres.length <= 2) return nombres.join(', ');
+    return nombres.slice(0, 2).join(', ') + ' +' + (nombres.length - 2);
   }
 
   async cargar(inicial: boolean) {
@@ -150,6 +163,7 @@ export class PublicoPage implements OnInit, OnDestroy {
     this.nombre = rs.nombre || '';
     this.interactivos = rs.filtrosInteractivos || {};
     this.motivos = rs.motivos || [];
+    this.ubicaciones = rs.ubicaciones || [];
 
     // Sincroniza los controles con los filtros efectivos
     const f = rs.filtros || {};
@@ -158,7 +172,9 @@ export class PublicoPage implements OnInit, OnDestroy {
       Unidad: f.Unidad || 'todos',
       Tipo: f.Tipo || 'camilleria',
       Motivo: f.Motivo || '',
-      Turno: f.Turno || 'todos'
+      Turno: f.Turno || 'todos',
+      Origenes: Array.isArray(f.Origenes) ? f.Origenes : [],
+      Destinos: Array.isArray(f.Destinos) ? f.Destinos : []
     };
 
     // Nueva referencia para disparar ngOnChanges en el componente de pantalla
@@ -173,5 +189,15 @@ export class PublicoPage implements OnInit, OnDestroy {
   // Cambio de un filtro interactivo -> recarga trayendo nuevos datos
   cambiarFiltro() {
     this.cargar(false);
+  }
+
+  setOrigenes(v: string[]) {
+    this.fVals.Origenes = v;
+    this.cambiarFiltro();
+  }
+
+  setDestinos(v: string[]) {
+    this.fVals.Destinos = v;
+    this.cambiarFiltro();
   }
 }

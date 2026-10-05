@@ -444,3 +444,19 @@ $border: #e5e7eb;
   .tabla { font-size: 14px; }
   .tabla th, .tabla td { padding: 8px 10px; }
 }
+
+/* ORIGEN + DESTINO (el mismo par de COMBINACION DE UBICACIONES): viajan juntos,
+   el par se acomoda o baja completo, nunca queda uno arriba y el otro abajo. */
+.par-ubic {
+  display: flex;
+  gap: 12px;
+  flex: 3 1 620px;
+  min-width: 280px;
+
+  .filtro-ubic { flex: 1 1 0; min-width: 0; }
+}
+
+@media (max-width: 640px) {
+  /* En pantalla angosta el par sigue junto, pero uno debajo del otro. */
+  .par-ubic { flex: 1 1 100%; flex-direction: column; }
+}

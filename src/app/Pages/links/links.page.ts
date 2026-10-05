@@ -4,51 +4,8 @@ import { ApiService } from 'src/app/Services/api.service';
 import { StorageWebService } from 'src/app/Services/storage.service';
 import { ToastService } from 'src/app/Services/toast.service';
 import * as moment from 'moment-timezone';
-
 // Filtros que cada pantalla permite volver interactivos (la FECHA nunca).
-const FILTROS_POR_PANTALLA: { [p: string]: { key: string; label: string }[] } = {
-  camilleria: [
-    { key: 'prioridad', label: 'Prioridad' },
-    { key: 'unidad', label: 'Unidad definitiva' },
-    { key: 'tipo', label: 'Tipo' }
-  ],
-  camilleria2: [
-    { key: 'prioridad', label: 'Prioridad' },
-    { key: 'unidad', label: 'Unidad definitiva' },
-    { key: 'turno', label: 'Turno' },
-    { key: 'motivo', label: 'Motivo' },
-    { key: 'tipo', label: 'Tipo' }
-  ],
-  mapacalor: [
-    { key: 'prioridad', label: 'Prioridad' },
-    { key: 'unidad', label: 'Unidad definitiva' },
-    { key: 'motivo', label: 'Motivo' },
-    { key: 'tipo', label: 'Tipo' }
-  ],
-  mapacumplimiento: [
-    { key: 'prioridad', label: 'Prioridad' },
-    { key: 'unidad', label: 'Unidad definitiva' },
-    { key: 'motivo', label: 'Motivo' },
-    { key: 'tipo', label: 'Tipo' }
-  ],
-  camilleria4: [
-    { key: 'unidad', label: 'Unidad definitiva' },
-    { key: 'tipo', label: 'Tipo' }
-  ],
-  nfc: [
-    { key: 'prioridad', label: 'Prioridad' },
-    { key: 'unidad', label: 'Unidad definitiva' },
-    { key: 'motivo', label: 'Motivo' },
-    { key: 'tipo', label: 'Tipo' }
-  ],
-  // La HORA no es interactiva en el link: queda fija con la selección de quien comparte.
-  cantidad: [
-    { key: 'prioridad', label: 'Prioridad' },
-    { key: 'unidad', label: 'Unidad definitiva' },
-    { key: 'motivo', label: 'Motivo' },
-    { key: 'tipo', label: 'Tipo' }
-  ]
-};
+import { FILTROS_POR_PANTALLA } from '../indicadores/compartir.service';
 
 // Administración de links compartidos del dashboard (solo personal con todos los permisos).
 @Component({

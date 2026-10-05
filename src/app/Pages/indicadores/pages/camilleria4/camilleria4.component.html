@@ -83,34 +83,14 @@
       <div class="par-ubic">
         <div class="filtro filtro-ubic">
         <label>ORIGEN</label>
-        <mat-form-field class="multi-field">
-          <mat-select [(ngModel)]="origenes" (selectionChange)="aplicar()" (closed)="origenesSearch = ''"
-            panelClass="perfil-select-panel ubic-panel" multiple placeholder="Todas">
-            <div class="select-search">
-              <input type="text" placeholder="Buscar origen..." [(ngModel)]="origenesSearch"
-                [ngModelOptions]="{ standalone: true }" (keydown)="$event.stopPropagation()"
-                (click)="$event.stopPropagation()" />
-            </div>
-            <mat-option *ngFor="let u of filterUbicaciones(origenesSearch, origenes)" [value]="u._id">{{ u.Name }}</mat-option>
-            <div class="select-empty" *ngIf="!filterUbicaciones(origenesSearch, origenes).length">Sin resultados</div>
-          </mat-select>
-        </mat-form-field>
+        <app-bi-ubicacion-select [seleccion]="origenes" (seleccionChange)="setOrigenes($event)"
+          buscar="Buscar origen..."></app-bi-ubicacion-select>
       </div>
 
       <div class="filtro filtro-ubic">
         <label>DESTINO</label>
-        <mat-form-field class="multi-field">
-          <mat-select [(ngModel)]="destinos" (selectionChange)="aplicar()" (closed)="destinosSearch = ''"
-            panelClass="perfil-select-panel ubic-panel" multiple placeholder="Todas">
-            <div class="select-search">
-              <input type="text" placeholder="Buscar destino..." [(ngModel)]="destinosSearch"
-                [ngModelOptions]="{ standalone: true }" (keydown)="$event.stopPropagation()"
-                (click)="$event.stopPropagation()" />
-            </div>
-            <mat-option *ngFor="let u of filterUbicaciones(destinosSearch, destinos)" [value]="u._id">{{ u.Name }}</mat-option>
-            <div class="select-empty" *ngIf="!filterUbicaciones(destinosSearch, destinos).length">Sin resultados</div>
-          </mat-select>
-        </mat-form-field>
+        <app-bi-ubicacion-select [seleccion]="destinos" (seleccionChange)="setDestinos($event)"
+          buscar="Buscar destino..."></app-bi-ubicacion-select>
       </div>
       </div>
 

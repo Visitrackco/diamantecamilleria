@@ -19,10 +19,13 @@ export interface CompartirEstado {
 }
 
 // Filtros que cada pantalla permite volver interactivos en el link (la FECHA nunca).
-const FILTROS_POR_PANTALLA: { [p: string]: { key: string; label: string }[] } = {
+// La usan tambien la administracion de links (links.page.ts).
+export const FILTROS_POR_PANTALLA: { [p: string]: { key: string; label: string }[] } = {
   camilleria: [
     { key: 'prioridad', label: 'Prioridad' },
     { key: 'unidad', label: 'Unidad definitiva' },
+    { key: 'origen', label: 'Origen' },
+    { key: 'destino', label: 'Destino' },
     { key: 'tipo', label: 'Tipo' }
   ],
   camilleria2: [
@@ -30,28 +33,38 @@ const FILTROS_POR_PANTALLA: { [p: string]: { key: string; label: string }[] } = 
     { key: 'unidad', label: 'Unidad definitiva' },
     { key: 'turno', label: 'Turno' },
     { key: 'motivo', label: 'Motivo' },
+    { key: 'origen', label: 'Origen' },
+    { key: 'destino', label: 'Destino' },
     { key: 'tipo', label: 'Tipo' }
   ],
   mapacalor: [
     { key: 'prioridad', label: 'Prioridad' },
     { key: 'unidad', label: 'Unidad definitiva' },
     { key: 'motivo', label: 'Motivo' },
+    { key: 'origen', label: 'Origen' },
+    { key: 'destino', label: 'Destino' },
     { key: 'tipo', label: 'Tipo' }
   ],
   mapacumplimiento: [
     { key: 'prioridad', label: 'Prioridad' },
     { key: 'unidad', label: 'Unidad definitiva' },
     { key: 'motivo', label: 'Motivo' },
+    { key: 'origen', label: 'Origen' },
+    { key: 'destino', label: 'Destino' },
     { key: 'tipo', label: 'Tipo' }
   ],
   camilleria4: [
     { key: 'unidad', label: 'Unidad definitiva' },
+    { key: 'origen', label: 'Origen' },
+    { key: 'destino', label: 'Destino' },
     { key: 'tipo', label: 'Tipo' }
   ],
   nfc: [
     { key: 'prioridad', label: 'Prioridad' },
     { key: 'unidad', label: 'Unidad definitiva' },
     { key: 'motivo', label: 'Motivo' },
+    { key: 'origen', label: 'Origen' },
+    { key: 'destino', label: 'Destino' },
     { key: 'tipo', label: 'Tipo' }
   ],
   // La HORA no es interactiva en el link: queda fija con la selección de quien comparte.
@@ -59,6 +72,8 @@ const FILTROS_POR_PANTALLA: { [p: string]: { key: string; label: string }[] } = 
     { key: 'prioridad', label: 'Prioridad' },
     { key: 'unidad', label: 'Unidad definitiva' },
     { key: 'motivo', label: 'Motivo' },
+    { key: 'origen', label: 'Origen' },
+    { key: 'destino', label: 'Destino' },
     { key: 'tipo', label: 'Tipo' }
   ]
 };

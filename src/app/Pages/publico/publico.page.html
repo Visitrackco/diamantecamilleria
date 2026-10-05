@@ -68,6 +68,18 @@
             </select>
           </div>
 
+          <div class="pub-filtro pub-filtro-ubic" *ngIf="interactivos.origen" [class.activo]="filtroActivo('origen')">
+            <label>Origen <span class="dot" *ngIf="filtroActivo('origen')"></span></label>
+            <app-bi-ubicacion-select [opciones]="ubicaciones" [seleccion]="fVals.Origenes"
+              (seleccionChange)="setOrigenes($event)" buscar="Buscar origen..."></app-bi-ubicacion-select>
+          </div>
+
+          <div class="pub-filtro pub-filtro-ubic" *ngIf="interactivos.destino" [class.activo]="filtroActivo('destino')">
+            <label>Destino <span class="dot" *ngIf="filtroActivo('destino')"></span></label>
+            <app-bi-ubicacion-select [opciones]="ubicaciones" [seleccion]="fVals.Destinos"
+              (seleccionChange)="setDestinos($event)" buscar="Buscar destino..."></app-bi-ubicacion-select>
+          </div>
+
           <div class="pub-filtro" *ngIf="interactivos.turno" [class.activo]="filtroActivo('turno')">
             <label>Turno <span class="dot" *ngIf="filtroActivo('turno')"></span></label>
             <select [(ngModel)]="fVals.Turno" (change)="cambiarFiltro()">
@@ -101,6 +113,8 @@
             Prioridad: {{ fVals.Prioridad === 'critico' ? 'Crítico' : 'No crítico' }}
           </span>
           <span class="chip" *ngIf="interactivos.unidad && filtroActivo('unidad')">Unidad: {{ fVals.Unidad }}</span>
+          <span class="chip" *ngIf="interactivos.origen && filtroActivo('origen')">Origen: {{ nombresUbic(fVals.Origenes) }}</span>
+          <span class="chip" *ngIf="interactivos.destino && filtroActivo('destino')">Destino: {{ nombresUbic(fVals.Destinos) }}</span>
           <span class="chip" *ngIf="interactivos.turno && filtroActivo('turno')">Turno: {{ fVals.Turno === 'dia' ? 'Día' : 'Noche' }}</span>
           <span class="chip" *ngIf="interactivos.motivo && filtroActivo('motivo')">Motivo: {{ motivoNombre }}</span>
           <span class="chip" *ngIf="interactivos.tipo && filtroActivo('tipo')">Tipo: {{ fVals.Tipo === 'admin' ? 'Administrativas' : 'Todos' }}</span>

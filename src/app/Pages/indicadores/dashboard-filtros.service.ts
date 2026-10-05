@@ -27,6 +27,9 @@ export class DashboardFiltrosService {
   // Puntos extremos del tiempo de respuesta (solo CAMILLERIA):
   // 'excluir' aplica la regla |z| > 3, 'incluir' muestra todo sin descartar.
   extremos = 'excluir';
+  // ORIGEN / DESTINO: ids de ubicacion ([] = todas).
+  origenes: string[] = [];
+  destinos: string[] = [];
 
   reset() {
     this.desde = moment().startOf('day').toDate();
@@ -39,5 +42,7 @@ export class DashboardFiltrosService {
     this.motivo = '';
     this.turno = 'todos';
     this.extremos = 'excluir';
+    this.origenes = [];
+    this.destinos = [];
   }
 }

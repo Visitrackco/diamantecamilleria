@@ -60,6 +60,16 @@ export class AyudaComponent {
     campo: 'Destino.Grupo',
     desc: 'Adultos, Infantil, Alta complejidad o Medicina privada. Se decide por el grupo de la ubicación de DESTINO, no del origen.'
   };
+  private static readonly F_ORIGEN: Filtro = {
+    nombre: 'ORIGEN',
+    campo: 'Origen',
+    desc: 'Selección múltiple de ubicaciones de origen, con buscador. Sin selección entran todas.'
+  };
+  private static readonly F_DESTINO: Filtro = {
+    nombre: 'DESTINO',
+    campo: 'Destino',
+    desc: 'Selección múltiple de ubicaciones de destino, con buscador. Si ya hay unidad definitiva seleccionada, se cruzan las dos condiciones.'
+  };
   private static readonly F_MOTIVO: Filtro = {
     nombre: 'MOTIVO',
     campo: 'Motivo',
@@ -122,7 +132,7 @@ export class AyudaComponent {
             desc: 'A tiempo sobre el total de medibles. La meta (90% por defecto) viene de la configuración de la zona.'
           }
         ],
-        filtros: [A.F_FECHA, A.F_PRIORIDAD, A.F_UNIDAD, A.F_TIPO, A.F_EXTREMOS],
+        filtros: [A.F_FECHA, A.F_PRIORIDAD, A.F_UNIDAD, A.F_ORIGEN, A.F_DESTINO, A.F_TIPO, A.F_EXTREMOS],
         notas: [A.N_ATIPICOS, A.N_SIN_ORIGEN, A.N_ANS_CERO, A.N_ELIMINADAS, A.N_DESNORM]
       },
 
@@ -148,7 +158,7 @@ export class AyudaComponent {
         filtros: [
           A.F_FECHA,
           { nombre: 'TURNO', campo: 'hora de la solicitud', desc: 'Deja solo día o solo noche. Con "todos" se muestran los dos bloques.' },
-          A.F_PRIORIDAD, A.F_UNIDAD, A.F_MOTIVO, A.F_TIPO
+          A.F_PRIORIDAD, A.F_UNIDAD, A.F_ORIGEN, A.F_DESTINO, A.F_MOTIVO, A.F_TIPO
         ],
         notas: [
           'El turno se decide por la hora de la SOLICITUD, no por la hora en que se asignó ni por el turno del camillero.',
@@ -175,7 +185,7 @@ export class AyudaComponent {
             desc: 'La celda con más solicitudes queda al 100% de intensidad y el resto en proporción, por eso el color es relativo al rango que estés viendo.'
           }
         ],
-        filtros: [A.F_FECHA, A.F_PRIORIDAD, A.F_UNIDAD, A.F_MOTIVO, A.F_TIPO],
+        filtros: [A.F_FECHA, A.F_PRIORIDAD, A.F_UNIDAD, A.F_ORIGEN, A.F_DESTINO, A.F_MOTIVO, A.F_TIPO],
         notas: [
           'Acá el Total de la columna sí es la suma de las horas, porque son servicios. En CANTIDAD DE CAMILLEROS no lo es.',
           'Cambiar el rango cambia los colores aunque los números sean los mismos: la escala se recalcula.',
@@ -202,7 +212,7 @@ export class AyudaComponent {
             desc: 'El Total de la columna es el cumplimiento del día completo, no el promedio de las celdas.'
           }
         ],
-        filtros: [A.F_FECHA, A.F_PRIORIDAD, A.F_UNIDAD, A.F_MOTIVO, A.F_TIPO],
+        filtros: [A.F_FECHA, A.F_PRIORIDAD, A.F_UNIDAD, A.F_ORIGEN, A.F_DESTINO, A.F_MOTIVO, A.F_TIPO],
         notas: [
           'Una celda con 100% puede tener una sola solicitud medida. Conviene leerla junto al mapa de calor para saber el volumen.',
           'Las celdas sin solicitudes medibles quedan vacías, que no es lo mismo que 0%.',
@@ -231,8 +241,8 @@ export class AyudaComponent {
         ],
         filtros: [
           A.F_FECHA,
-          { nombre: 'ORÍGENES', campo: 'Origen', desc: 'Selección múltiple de ubicaciones de origen.' },
-          { nombre: 'DESTINOS', campo: 'Destino', desc: 'Selección múltiple de ubicaciones. Si ya hay unidad definitiva seleccionada, se cruzan las dos condiciones.' },
+          A.F_ORIGEN,
+          A.F_DESTINO,
           A.F_UNIDAD, A.F_MOTIVO, A.F_TIPO
         ],
         notas: [
@@ -260,7 +270,7 @@ export class AyudaComponent {
             desc: 'Cada fila es qué tajada del total representa esa tecnología.'
           }
         ],
-        filtros: [A.F_FECHA, A.F_PRIORIDAD, A.F_UNIDAD, A.F_MOTIVO, A.F_TIPO],
+        filtros: [A.F_FECHA, A.F_PRIORIDAD, A.F_UNIDAD, A.F_ORIGEN, A.F_DESTINO, A.F_MOTIVO, A.F_TIPO],
         notas: [
           'SIN TECNOLOGÍA no es un error: son los marcajes hechos desde la web en lugar del móvil.',
           'Una solicitud sin marcar todavía también cae en SIN TECNOLOGÍA, así que en rangos con solicitudes abiertas esa fila se infla.',
@@ -297,7 +307,7 @@ export class AyudaComponent {
         filtros: [
           { nombre: 'FECHA', campo: 'AssignedOn', desc: 'Rango sobre la fecha de ASIGNACIÓN, no sobre la de la solicitud, para que las columnas coincidan con lo que ves.' },
           { nombre: 'HORA', campo: 'hora de la asignación', desc: 'Selección múltiple. Recorta las filas y recalcula los totales por día solo con esas horas.' },
-          A.F_PRIORIDAD, A.F_UNIDAD, A.F_MOTIVO, A.F_TIPO
+          A.F_PRIORIDAD, A.F_UNIDAD, A.F_ORIGEN, A.F_DESTINO, A.F_MOTIVO, A.F_TIPO
         ],
         notas: [
           'El Total de la columna NO es la suma de las horas: son personas, y la misma persona trabaja varias horas.',

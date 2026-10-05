@@ -30,6 +30,8 @@ export class Camilleria2Component implements OnInit, OnChanges {
   prioridad = 'todos';
   unidad = 'todos';
   tipo = 'camilleria';
+  origenes: string[] = [];   // ORIGEN: ids de ubicacion ([] = todas)
+  destinos: string[] = [];   // DESTINO: ids de ubicacion ([] = todas)
   turno = 'todos';            // todos | dia | noche
   motivo = '';                // id de motivo o '' (todos)
 
@@ -88,6 +90,8 @@ export class Camilleria2Component implements OnInit, OnChanges {
     this.prioridad = this.filtros.prioridad;
     this.unidad = this.filtros.unidad;
     this.tipo = this.filtros.tipo;
+    this.origenes = this.filtros.origenes;
+    this.destinos = this.filtros.destinos;
     this.turno = this.filtros.turno;
     this.motivo = this.filtros.motivo;
 
@@ -124,6 +128,8 @@ export class Camilleria2Component implements OnInit, OnChanges {
     };
     if (this.prioridad !== 'todos') f.Prioridad = this.prioridad;
     if (this.unidad !== 'todos') f.Unidad = this.unidad;
+    if (this.origenes.length) f.Origenes = this.origenes;
+    if (this.destinos.length) f.Destinos = this.destinos;
     if (this.motivo) f.Motivo = this.motivo;
     return f;
   }
@@ -140,6 +146,8 @@ export class Camilleria2Component implements OnInit, OnChanges {
     this.filtros.prioridad = this.prioridad;
     this.filtros.unidad = this.unidad;
     this.filtros.tipo = this.tipo;
+    this.filtros.origenes = this.origenes;
+    this.filtros.destinos = this.destinos;
     this.filtros.turno = this.turno;
     this.filtros.motivo = this.motivo;
   }
@@ -186,6 +194,8 @@ export class Camilleria2Component implements OnInit, OnChanges {
     };
     if (this.prioridad !== 'todos') body.Prioridad = this.prioridad;
     if (this.unidad !== 'todos') body.Unidad = this.unidad;
+    if (this.origenes.length) body.Origenes = this.origenes;
+    if (this.destinos.length) body.Destinos = this.destinos;
     if (this.motivo) body.Motivo = this.motivo;
 
     try {
@@ -204,6 +214,9 @@ export class Camilleria2Component implements OnInit, OnChanges {
     }
   }
 
+  setOrigenes(v: string[]) { this.origenes = v; this.cargar(); }
+  setDestinos(v: string[]) { this.destinos = v; this.cargar(); }
+
   aplicar() { this.cargar(); }
   recargar() { this.cargar(); }
 
@@ -216,6 +229,8 @@ export class Camilleria2Component implements OnInit, OnChanges {
     this.prioridad = this.filtros.prioridad;
     this.unidad = this.filtros.unidad;
     this.tipo = this.filtros.tipo;
+    this.origenes = this.filtros.origenes;
+    this.destinos = this.filtros.destinos;
     this.turno = this.filtros.turno;
     this.motivo = this.filtros.motivo;
     this.cargar();
