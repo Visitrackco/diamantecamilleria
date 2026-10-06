@@ -224,7 +224,13 @@ export class HomePage {
 
     await this.storage.insertUser(obj)
 
-
+    // El menu lateral solo calcula "Indicadores (Dashboard)" al arrancar la app
+    // (dataRole) o cuando llegan permisos por $permisos. Sin esto, al iniciar sesion
+    // el item no aparece hasta recargar el navegador.
+    this.obs.permisosDashboard({
+      Dashboard: obj.Dashboard == 1 ? 1 : 0,
+      DashboardPages: Array.isArray(obj.DashboardPages) ? obj.DashboardPages : []
+    })
 
     this.socketService.connectEmit();
     this.socketService.initUser()

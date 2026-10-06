@@ -78,8 +78,13 @@ export class PermisosService {
 
     const rs: any = await this.api.apiGet('misPermisos', login[0].token);
 
-    // Sin respuesta util (API caido o token vencido): se conserva lo guardado.
-    if (!rs || !rs.status || !rs.response) return this.guardados();
+    // Sin respuesta util (API caido o token vencido): se conserva lo guardado, y se
+    // avisa igual al menu para que muestre lo que dice el login.
+    if (!rs || !rs.status || !rs.response) {
+      const guardados = await this.guardados();
+      this.obs.permisosDashboard(guardados);
+      return guardados;
+    }
 
     const permisos: PermisosDashboard = {
       Dashboard: rs.response.Dashboard == 1 ? 1 : 0,
