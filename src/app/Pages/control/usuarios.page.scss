@@ -2,11 +2,55 @@
     font-size: 12px;
 }
 
+.cu-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.tabla-zona {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
 .table {
     width: 100%;
-    overflow: scroll;
-    height: calc(100vh - 200px);
+    height: 100%;
+    overflow: auto;
+}
 
+mat-paginator {
+    flex: 0 0 auto;
+    border-top: 1px solid #e5e7eb;
+}
+
+.buscando {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, .7);
+    font-size: 14px;
+    font-weight: 700;
+    color: #0E3651;
+
+    ion-spinner {
+        width: 40px;
+        height: 40px;
+        color: #0E3651;
+    }
+}
+
+.sin-resultados {
+    padding: 40px 16px;
+    text-align: center;
+    font-size: 14px;
+    color: #94a3b8;
 }
 
 .circle {
@@ -68,3 +112,198 @@ font-size: 24px;
     height: 100vh;
     z-index: 100;
   }
+
+.filtros {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 6px 12px 10px;
+
+    .filtro-buscar {
+        flex: 0 1 420px;
+        padding: 0;
+    }
+
+    .filtro {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 0 1 220px;
+
+        label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        select {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 14px;
+            color: #1f2937;
+            background: #fff;
+            outline: none;
+            width: 100%;
+        }
+    }
+
+    .filtro-total {
+        font-size: 12px;
+        font-weight: 700;
+        color: #64748b;
+        padding-bottom: 10px;
+    }
+}
+
+// Anchos por columna: solo lo necesario para su contenido. Material le pone a cada
+// celda la clase mat-column-<nombre del matColumnDef>.
+.cu-tabla {
+    width: max-content;
+    min-width: 100%;
+
+    th.mat-mdc-header-cell {
+        background-color: #f1f1f1;
+        color: #000;
+        font-size: 12px;
+        font-weight: bold;
+        line-height: 1.2;
+        white-space: normal;
+        padding: 8px 10px;
+    }
+
+    td.mat-mdc-cell {
+        padding: 4px 10px;
+    }
+
+    .mat-column-estado { width: 130px; }
+    .mat-column-name { width: 200px; }
+    .mat-column-login { width: 190px; word-break: break-all; }
+    .mat-column-rol { width: 140px; }
+    .mat-column-clave { width: 200px; }
+    .mat-column-perfil { width: 190px; }
+    .mat-column-dashboardpages { width: 200px; }
+    .mat-column-zones { width: 380px; }
+    .mat-column-acc { width: 150px; }
+
+    // Columnas de un solo check
+    .mat-column-islock,
+    .mat-column-isdelete,
+    .mat-column-isassigment,
+    .mat-column-coh,
+    .mat-column-dashboard,
+    .mat-column-central,
+    .mat-column-centraladmin,
+    .mat-column-programmer {
+        width: 95px;
+        text-align: center;
+    }
+}
+
+.zonas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px 0;
+}
+
+.zona {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid #d1d5db;
+    border-radius: 999px;
+    padding: 5px 11px 5px 7px;
+    background: #fff;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
+
+    ion-icon {
+        font-size: 17px;
+        flex: 0 0 auto;
+    }
+
+    small {
+        font-size: 9px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+        background: rgba(255, 255, 255, .25);
+        border-radius: 999px;
+        padding: 1px 6px;
+    }
+
+    &:hover {
+        border-color: #0E3651;
+        color: #0E3651;
+    }
+
+    &.on {
+        background: #0E3651;
+        border-color: #0E3651;
+        color: #fff;
+    }
+
+    &:disabled {
+        opacity: .55;
+        cursor: progress;
+    }
+}
+
+.clave {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    ion-input {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+}
+
+.clave-ojo {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+
+    ion-icon { font-size: 18px; }
+
+    &:hover {
+        background: #f1f5f9;
+        color: #0E3651;
+    }
+}
+
+.clave-oculta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #64748b;
+}
+
+.tag-sa {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+}

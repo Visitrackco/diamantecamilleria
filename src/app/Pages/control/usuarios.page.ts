@@ -22,7 +22,7 @@ import { BI_PAGES } from 'src/app/Pages/indicadores/bi-pages';
 export class UsuariosPage implements OnInit {
 
   displayedColumns =
-    ['estado', 'name', 'login', 'clave', 'islock', 'isdelete', 'isassigment', 'perfil', 'dashboard', 'dashboardpages', 'central', 'centraladmin', 'programmer', 'zones', 'acc'];
+    ['estado', 'name', 'login', 'rol', 'clave', 'islock', 'isdelete', 'isassigment', 'perfil', 'dashboard', 'dashboardpages', 'central', 'centraladmin', 'programmer', 'zones', 'acc'];
   dataSource = new MatTableDataSource([]);
 
   perfiles: any[] = [];
@@ -49,6 +49,22 @@ export class UsuariosPage implements OnInit {
   // Muestra el boton del modulo Super Admin. Se relee del API al entrar: si se lo
   // acaban de dar (o quitar) aplica sin cerrar sesion.
   superAdmin = false;
+
+  // Filtros de la consulta (servicio /controlUsuarios, exclusivo de esta pantalla:
+  // /usersworkzone lo usa el movil y no se toca). Clinica vacia = todas las que
+  // puede ver quien consulta; arranca en la clinica activa, como antes.
+  filtroTexto = '';
+  filtroRol: any = '';
+  filtroZona: any = '';
+  rolesFiltro: any[] = [];
+  zonasFiltro: any[] = [];
+  zonaActiva: number = null;
+  totalUsuarios = 0;
+  buscando = false;
+  private buscarTimer: any = null;
+  private consulta = 0;
+  private catalogosZona: number = null;
+  private zonesCatalogo: any[] = [];
 
 
   constructor(
@@ -134,7 +150,8 @@ export class UsuariosPage implements OnInit {
   }
 
   cancel() {
-    this.dataSource.filter = '';
+    this.filtroTexto = '';
+    this.getUsers();
   }
 
   async ionViewWillEnter() {
@@ -142,6 +159,11 @@ export class UsuariosPage implements OnInit {
 
     if (login) {
 
+      // Al entrar (o al cambiar de clinica desde el perfil) se vuelve a la activa.
+      this.zonaActiva = Number(login[0].WorkZone);
+      this.filtroZona = this.zonaActiva;
+
+      this.cargarFiltros();
       this.getUsers();
 
       this.permisos.refrescar().then((p) => this.superAdmin = p.SuperAdmin === true);
@@ -159,16 +181,41 @@ export class UsuariosPage implements OnInit {
     if (login) {
       try {
 
-        this.dataSource.data = [];
-        const zones = await this.api.apiGet('workzones', login[0].token)
+        const consulta = ++this.consulta;
+        this.buscando = true;
 
+        // Zonas y perfiles no cambian con los filtros: se piden una vez por clinica
+        // activa y no en cada busqueda.
+        if (this.catalogosZona !== this.zonaActiva) {
+          const zonesRs = await this.api.apiGet('workzones', login[0].token)
+          this.zonesCatalogo = zonesRs && zonesRs.response ? zonesRs.response : [];
+
+          const perfilesRs: any = await this.api.apiGet('perfiles?WorkZoneID=' + login[0].WorkZone, login[0].token)
+          this.perfiles = perfilesRs && perfilesRs.status ? perfilesRs.response : [];
+
+          this.catalogosZona = this.zonaActiva;
+        }
+
+        const zones = { response: this.zonesCatalogo };
         this.zones = zones.response;
 
-        const perfilesRs: any = await this.api.apiGet('perfiles?WorkZoneID=' + login[0].WorkZone, login[0].token)
-        this.perfiles = perfilesRs && perfilesRs.status ? perfilesRs.response : [];
+        const params = 'controlUsuarios?WorkZoneID=' + (this.filtroZona || '')
+          + '&RoleID=' + (this.filtroRol === '' || this.filtroRol === null ? '' : this.filtroRol)
+          + '&q=' + encodeURIComponent(this.filtroTexto || '');
 
+        const rs = await this.api.apiGet(params, login[0].token)
 
-        const rs = await this.api.apiGet('usersworkzone?WorkZoneID=' + login[0].WorkZone + '&all=1', login[0].token)
+        // Si mientras tanto se lanzo otra busqueda, esta respuesta ya no sirve.
+        if (consulta !== this.consulta) return;
+
+        this.buscando = false;
+        this.dataSource.data = [];
+
+        if (rs && !rs.status) {
+          this.toast.MsgError(rs.err);
+          this.loadActivities = true;
+          return;
+        }
 
         if (rs) {
           let fila = [...this.dataSource.data];
@@ -188,7 +235,6 @@ export class UsuariosPage implements OnInit {
 
             })
 
-            console.log(nuevo, element.WorkZoneID, element.FirstName)
             let obj = {
               estado: element.isConnect,
               name: element.FirstName + ' ' + element.LastName,
@@ -211,11 +257,7 @@ export class UsuariosPage implements OnInit {
           });
           this.dataSource.data = fila;
 
-          this.dataSource.filterPredicate = (data: any, filter: string) => {
-            const name = data.name ? data.name.toLowerCase() : '';
-            const login = data.login ? data.login.toLowerCase() : '';
-            return name.includes(filter) || login.includes(filter);
-          };
+          this.totalUsuarios = rs.total || fila.length;
 
           this.dataSource.paginator = this.paginator;
 
@@ -225,6 +267,7 @@ export class UsuariosPage implements OnInit {
 
         }
       } catch (error) {
+        this.buscando = false;
         this.loadActivities = true;
       }
     }
@@ -359,58 +402,82 @@ export class UsuariosPage implements OnInit {
   }
 
 
-  filtrar(event: Event) {
-    const filtro = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filtro.trim().toLowerCase();
+  // La busqueda va al API (login, nombre, apellido o clinica). Se espera a que deje
+  // de escribir para no consultar en cada tecla.
+  filtrar(event: any) {
+    this.filtroTexto = (event.target && event.target.value ? event.target.value : '').trim();
+
+    clearTimeout(this.buscarTimer);
+    this.buscarTimer = setTimeout(() => this.getUsers(), 400);
   }
 
-  async changeWorzone(event) {
+  cambiarFiltro() {
+    this.getUsers();
+  }
+
+  async cargarFiltros() {
     const login = await this.stg.getLogin();
+    if (!login) return;
 
-    this.loading = true;
+    const rs: any = await this.api.apiGet('controlUsuarios/filtros', login[0].token);
 
-    if (login) {
+    if (rs && rs.status) {
+      this.rolesFiltro = rs.response.roles || [];
+      this.zonasFiltro = rs.response.zonas || [];
+    }
+  }
 
-      if (event.detail.checked) {
-        let idx = event.detail.value.data.WorkZoneID.findIndex((it) => it == event.detail.value.id)
+  nombreRol(id) {
+    const rol = this.rolesFiltro.find((r) => r.IDVT == id);
+    return rol ? rol.Name : 'Rol ' + id;
+  }
 
-        if (idx < 0) {
-          event.detail.value.data.WorkZoneID.push(event.detail.value.id)
-        }
-      } else {
-        let idx = event.detail.value.data.WorkZoneID.findIndex((it) => it == event.detail.value.id)
+  // Los descansos se revisan contra la clinica activa: el boton solo tiene sentido
+  // para quien trabaja en ella (con el filtro en "todas" salen usuarios de otras).
+  esDeZonaActiva(ele): boolean {
+    return ele && ele.acc && Array.isArray(ele.acc.WorkZoneID)
+      && ele.acc.WorkZoneID.some((z) => Number(z) === this.zonaActiva);
+  }
 
-        if (idx >= 0) {
-          event.detail.value.data.WorkZoneID.splice(idx, 1)
-        }
-      }
+  // Agrega o quita una zona de trabajo del usuario. Se guarda al momento y, si el
+  // API falla, el chip vuelve a como estaba. No se deja sin zonas: al iniciar sesion
+  // entra con la primera (WorkZoneID[0]).
+  async toggleZonaUsuario(item, element) {
+    const login = await this.stg.getLogin();
+    if (!login) return;
 
-      try {
-        let rs = await this.api.apiPost('changeZones', {
-          _id: event.detail.value.data._id,
-          token: login[0].token,
-          zones:  event.detail.value.data.WorkZoneID
-        })
+    const actuales: any[] = Array.isArray(element.acc.WorkZoneID) ? element.acc.WorkZoneID : [];
+    const nuevas = item.check
+      ? actuales.filter((z) => z != item.IDVT)
+      : [...actuales, item.IDVT];
 
-        if (rs) {
-
-          if (!rs.status) {
-            this.toast.MsgError(rs.err)
-            this.loading = false;
-            return;
-          }
-
-   
-
-          this.loading = false;
-        }
-      } catch (error) {
-        this.loading = false;
-      }
-
-
+    if (!nuevas.length) {
+      this.toast.MsgError('El usuario debe quedar con al menos una zona de trabajo');
+      return;
     }
 
+    item.guardando = true;
+
+    try {
+      const rs = await this.api.apiPost('changeZones', {
+        _id: element.acc._id,
+        token: login[0].token,
+        zones: nuevas
+      })
+
+      item.guardando = false;
+
+      if (!rs || !rs.status) {
+        this.toast.MsgError(rs && rs.err ? rs.err : 'No se pudo actualizar la zona');
+        return;
+      }
+
+      element.acc.WorkZoneID = nuevas;
+      item.check = !item.check;
+    } catch (error) {
+      item.guardando = false;
+      this.toast.MsgError('No se pudo actualizar la zona');
+    }
   }
 
   async changeLock(event, data) {

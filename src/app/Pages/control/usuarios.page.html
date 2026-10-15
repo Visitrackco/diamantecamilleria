@@ -13,15 +13,48 @@
 </ion-header>
 
 
-<ion-content>
+<ion-content [scrollY]="false">
 
-  <ion-searchbar matInput (keyup)="filtrar($event)" placeholder="Buscar Usuario" mode="ios" (ionClear)="cancel()"></ion-searchbar>
+ <!-- La pantalla ocupa el alto de la ventana: filtros arriba, la tabla se estira y
+      hace su propio scroll, y el paginador queda siempre visible abajo -->
+ <div class="cu-layout">
+
+  <div class="filtros">
+    <ion-searchbar class="filtro-buscar" (keyup)="filtrar($event)" [value]="filtroTexto"
+      placeholder="Buscar por login, nombre, apellido o clínica" mode="ios" (ionClear)="cancel()"></ion-searchbar>
+
+    <div class="filtro">
+      <label>Rol</label>
+      <select [(ngModel)]="filtroRol" (ngModelChange)="cambiarFiltro()">
+        <option value="">Todos los roles</option>
+        <option *ngFor="let r of rolesFiltro" [ngValue]="r.IDVT">{{ r.Name }}</option>
+      </select>
+    </div>
+
+    <div class="filtro">
+      <label>Clínica</label>
+      <select [(ngModel)]="filtroZona" (ngModelChange)="cambiarFiltro()">
+        <option value="">Todas mis clínicas</option>
+        <option *ngFor="let z of zonasFiltro" [ngValue]="z.IDVT">{{ z.Name }}</option>
+      </select>
+    </div>
+
+    <span class="filtro-total" *ngIf="loadActivities">{{ totalUsuarios }} usuario(s)</span>
+  </div>
 
 
   <div class="loading" *ngIf="loading">
     <mat-spinner></mat-spinner>
    </div>
 
+
+  <div class="tabla-zona">
+
+  <!-- Mientras corre una busqueda o un filtro -->
+  <div class="buscando" *ngIf="buscando && loadActivities">
+    <ion-spinner name="crescent"></ion-spinner>
+    <span>Buscando usuarios…</span>
+  </div>
 
   <div class="table">
      
@@ -46,12 +79,11 @@
     </div>
 
 
-    <table *ngIf="loadActivities" mat-table [dataSource]="dataSource">
+    <table *ngIf="loadActivities" mat-table [dataSource]="dataSource" class="cu-tabla">
 
       <!-- Name Column -->
       <ng-container matColumnDef="estado">
-        <th style="min-width: 350px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> ESTADO </th>
+        <th mat-header-cell *matHeaderCellDef> ESTADO </th>
         <td mat-cell *matCellDef="let element">
 
           <div class="fl" *ngIf="element.estado == 1">
@@ -81,37 +113,48 @@
       </ng-container>
 
       <ng-container matColumnDef="name">
-        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> NOMBRE </th>
+        <th mat-header-cell *matHeaderCellDef> NOMBRE </th>
         <td mat-cell *matCellDef="let element"> {{element.name}} </td>
       </ng-container>
 
       <ng-container matColumnDef="login">
-        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> LOGIN </th>
+        <th mat-header-cell *matHeaderCellDef> LOGIN </th>
         <td mat-cell *matCellDef="let element"> {{element.login}} </td>
       </ng-container>
 
+      <ng-container matColumnDef="rol">
+        <th mat-header-cell *matHeaderCellDef> ROL </th>
+        <td mat-cell *matCellDef="let element"> {{ nombreRol(element.acc.RoleID) }} </td>
+      </ng-container>
+
       <ng-container matColumnDef="clave">
-        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> CLAVE </th>
+        <th mat-header-cell *matHeaderCellDef> CLAVE </th>
         <td mat-cell *matCellDef="let element"> 
-        <div *ngIf="element.login == 'appdiamante'">********</div>
-        <div style="display: flex; justify-content: space-between;" *ngIf="element.login != 'appdiamante'">
-          
-          <ion-input (ionChange)="changeClave($event, element.acc)" type="number" [value]="element.clave"></ion-input>
-          <ion-button (click)="saveClave(element)" color="warning" fill="outline">
+        <!-- La de appdiamante y la de los super admin no se ven ni se cambian aqui -->
+        <div class="clave-oculta" *ngIf="element.login == 'appdiamante' || element.acc.SuperAdmin === true">
+          ********
+          <span class="tag-sa" *ngIf="element.acc.SuperAdmin === true">Super admin</span>
+        </div>
+        <!-- Oculta por defecto: solo se ve al darle al ojito de esa fila -->
+        <div class="clave" *ngIf="element.login != 'appdiamante' && element.acc.SuperAdmin !== true">
+
+          <ion-input (ionChange)="changeClave($event, element.acc)" [type]="element.verClave ? 'text' : 'password'"
+            [value]="element.clave"></ion-input>
+          <button type="button" class="clave-ojo" (click)="element.verClave = !element.verClave"
+            [title]="element.verClave ? 'Ocultar clave' : 'Ver clave'">
+            <ion-icon [name]="element.verClave ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </button>
+          <ion-button (click)="saveClave(element)" color="warning" fill="outline" size="small" title="Guardar clave">
             <ion-icon name="pencil"></ion-icon>
           </ion-button>
-        
-        </div>  
+
+        </div>
         </td>
       </ng-container>
 
 
       <ng-container matColumnDef="islock">
-        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> BLOQUEAR </th>
+        <th mat-header-cell *matHeaderCellDef> BLOQUEAR </th>
         <td mat-cell *matCellDef="let element">
         
           <ion-checkbox [checked]="element.islock == 1 ? true : false" (ionChange)="changeLock($event,element)"></ion-checkbox>
@@ -119,27 +162,23 @@
       </ng-container>
 
       <ng-container matColumnDef="isdelete">
-        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> PERMISO / ELIMINAR </th>
+        <th mat-header-cell *matHeaderCellDef> PERMISO / ELIMINAR </th>
         <td mat-cell *matCellDef="let element">  <ion-checkbox *ngIf="element.acc.RoleID != 35" [checked]="element.isdelete == 1 ? true : false" (ionChange)="changeDelete($event,element)"></ion-checkbox></td>
       </ng-container>
 
 
       <ng-container matColumnDef="isassigment">
-        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> PERMISO / ASIGNAR </th>
+        <th mat-header-cell *matHeaderCellDef> PERMISO / ASIGNAR </th>
         <td mat-cell *matCellDef="let element">  <ion-checkbox *ngIf="element.acc.RoleID != 35" [checked]="element.isassigment == 1 ? true : false" (ionChange)="changeAssigment($event,element)"></ion-checkbox> </td>
       </ng-container>
 
       <ng-container matColumnDef="coh">
-        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> PERMISO / COH </th>
+        <th mat-header-cell *matHeaderCellDef> PERMISO / COH </th>
         <td mat-cell *matCellDef="let element">  <ion-checkbox *ngIf="element.acc.RoleID != 35" [checked]="element.coh == 1 ? true : false" (ionChange)="changeCOH($event,element)"></ion-checkbox> </td>
       </ng-container>
 
       <ng-container matColumnDef="perfil">
-        <th style="min-width: 280px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> PERFIL DE SOLICITUD </th>
+        <th mat-header-cell *matHeaderCellDef> PERFIL DE SOLICITUD </th>
         <td mat-cell *matCellDef="let element">
           <ion-select interface="popover" placeholder="Sin perfil (ve todo)"
             [value]="element.perfil"
@@ -151,8 +190,7 @@
       </ng-container>
 
       <ng-container matColumnDef="dashboard">
-        <th style="min-width: 200px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> PERMISO / DASHBOARD </th>
+        <th mat-header-cell *matHeaderCellDef> PERMISO / DASHBOARD </th>
         <td mat-cell *matCellDef="let element">
           <ion-checkbox *ngIf="element.acc.RoleID != 35" [checked]="element.dashboard == 1"
             (ionChange)="changeDashboard($event, element)"></ion-checkbox>
@@ -160,8 +198,7 @@
       </ng-container>
 
       <ng-container matColumnDef="dashboardpages">
-        <th style="min-width: 320px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> PÁGINAS DEL DASHBOARD </th>
+        <th mat-header-cell *matHeaderCellDef> PÁGINAS DEL DASHBOARD </th>
         <td mat-cell *matCellDef="let element">
           <!-- Marcar páginas le da el acceso al módulo: no hace falta prender antes
                el check de la izquierda -->
@@ -174,33 +211,35 @@
       </ng-container>
 
       <ng-container matColumnDef="central">
-        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> PERMISO / CENTRAL </th>
+        <th mat-header-cell *matHeaderCellDef> PERMISO / CENTRAL </th>
         <td mat-cell *matCellDef="let element">  <ion-checkbox *ngIf="element.acc.RoleID == 18" [checked]="element.central == 1 ? true : false" (ionChange)="changeC($event,element)"></ion-checkbox> </td>
       </ng-container>
 
       <ng-container matColumnDef="centraladmin">
-        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> PERMISO / CENTRAL ADMINISTRATIVA </th>
+        <th mat-header-cell *matHeaderCellDef> PERMISO / CENTRAL ADMINISTRATIVA </th>
         <td mat-cell *matCellDef="let element">  <ion-checkbox *ngIf="element.acc.RoleID == 18" [checked]="element.centraladmin == 1 ? true : false" (ionChange)="changeCA($event,element)"></ion-checkbox> </td>
       </ng-container>
 
       <ng-container matColumnDef="programmer">
-        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> TURNOS </th>
+        <th mat-header-cell *matHeaderCellDef> TURNOS </th>
         <td mat-cell *matCellDef="let element">  <ion-checkbox *ngIf="element.acc.RoleID != 35" [checked]="element.programmer == 1 ? true : false" ></ion-checkbox> </td>
       </ng-container>
 
       <ng-container matColumnDef="zones">
-        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> ZONAS </th>
+        <th mat-header-cell *matHeaderCellDef> ZONAS DE TRABAJO </th>
         <td mat-cell *matCellDef="let element">
-          
-          <div *ngFor="let item of element.zones" style="margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
-            <ion-checkbox [checked]="item.check" [value]="{id: item.IDVT, data: element.acc}" (ionChange)="changeWorzone($event)"></ion-checkbox>
-            <ion-label>{{ item.Name }}</ion-label> <br>
+
+          <div class="zonas">
+            <button type="button" class="zona" *ngFor="let item of element.zones"
+              [class.on]="item.check" [disabled]="item.guardando"
+              [title]="item.check ? 'Quitar ' + item.Name : 'Agregar ' + item.Name"
+              (click)="toggleZonaUsuario(item, element)">
+              <ion-icon [name]="item.check ? 'checkmark-circle' : 'add-circle-outline'"></ion-icon>
+              <span>{{ item.Name }}</span>
+              <small *ngIf="item.check && element.acc.WorkZoneID[0] == item.IDVT">principal</small>
+            </button>
           </div>
-        
+
         </td>
       </ng-container>
 
@@ -208,12 +247,11 @@
       
 
       <ng-container matColumnDef="acc">
-        <th style="min-width: 300px; background-color: #f1f1f1; color: #000; font-size: 14px; font-weight: bold;"
-          mat-header-cell *matHeaderCellDef> ACCIONES </th>
+        <th mat-header-cell *matHeaderCellDef> ACCIONES </th>
         <td mat-cell *matCellDef="let element">
 
           <!-- Solo para el que todavia no tiene descansos: al que ya los tiene no se le tocan -->
-          <ion-button *ngIf="descansosCargados && !tieneDescansos(element)" mode="ios" size="small"
+          <ion-button *ngIf="descansosCargados && esDeZonaActiva(element) && !tieneDescansos(element)" mode="ios" size="small"
             color="warning" title="Asignarle los descansos configurados para esta zona"
             (click)="configurarDescansos(element)">
             <ion-icon name="cafe" slot="start"></ion-icon>
@@ -233,11 +271,18 @@
       </tr>
     </table>
 
+    <div class="sin-resultados" *ngIf="loadActivities && !buscando && !dataSource.data.length">
+      No se encontraron usuarios con estos filtros
+    </div>
+
+  </div>
 
   </div>
 
   <mat-paginator #paginatorHistory [pageSizeOptions]="[50, 100, 150]" showFirstLastButtons
     aria-label="Seleccionar pagina">
   </mat-paginator>
- 
+
+ </div>
+
 </ion-content>
