@@ -5,6 +5,7 @@ import { FormMEDGuard } from './Guards/formmed.guard';
 import { FormRNGGuard } from './Guards/formrng.guard';
 import { LoginGuard } from './Guards/login.guard';
 import { PageGuard } from './Guards/page.guard';
+import { SuperAdminGuard } from './Guards/superadmin.guard';
 
 const routes: Routes = [
   {
@@ -66,6 +67,12 @@ const routes: Routes = [
     path: 'control',
     loadChildren: () => import('./Pages/control/usuarios.module').then(m => m.UsuariosPageModule),
     canActivate: [PageGuard]
+  },
+  {
+    // Crear usuarios y administrar roles: solo usuarios con Users.SuperAdmin
+    path: 'superadmin',
+    loadChildren: () => import('./Pages/superadmin/superadmin.module').then(m => m.SuperAdminPageModule),
+    canActivate: [PageGuard, SuperAdminGuard]
   },
   {
     path: 'historial/:id/:name',

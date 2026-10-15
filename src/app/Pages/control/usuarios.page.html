@@ -1,6 +1,13 @@
 <ion-header class="ion-no-border" [translucent]="true">
   <ion-toolbar color="diamante">
     <ion-title>Control de Usuarios</ion-title>
+    <!-- Solo el super admin (Users.SuperAdmin): crear usuarios y administrar roles -->
+    <ion-buttons slot="end" *ngIf="superAdmin">
+      <ion-button fill="solid" color="warning" (click)="abrirSuperAdmin()">
+        <ion-icon name="shield-checkmark" slot="start"></ion-icon>
+        Super Admin
+      </ion-button>
+    </ion-buttons>
     <app-options slot="end"></app-options>
   </ion-toolbar>
 </ion-header>

@@ -6,6 +6,9 @@ import { ObserverService } from './observer.service';
 export interface PermisosDashboard {
   Dashboard: number;
   DashboardPages: string[];
+  // Modulo Super Admin (crear usuarios y administrar roles). Viaja en el mismo
+  // endpoint para no sumar otra llamada.
+  SuperAdmin?: boolean;
 }
 
 // Permisos del dashboard de Indicadores (Users.Dashboard y Users.DashboardPages).
@@ -35,11 +38,12 @@ export class PermisosService {
   async guardados(): Promise<PermisosDashboard> {
     const login = await this.stg.getLogin();
 
-    if (!login || login.length === 0) return { Dashboard: 0, DashboardPages: [] };
+    if (!login || login.length === 0) return { Dashboard: 0, DashboardPages: [], SuperAdmin: false };
 
     return {
       Dashboard: login[0].Dashboard == 1 ? 1 : 0,
-      DashboardPages: Array.isArray(login[0].DashboardPages) ? login[0].DashboardPages : []
+      DashboardPages: Array.isArray(login[0].DashboardPages) ? login[0].DashboardPages : [],
+      SuperAdmin: login[0].SuperAdmin === true
     };
   }
 
@@ -74,7 +78,7 @@ export class PermisosService {
   private async consultar(): Promise<PermisosDashboard> {
     const login = await this.stg.getLogin();
 
-    if (!login || login.length === 0) return { Dashboard: 0, DashboardPages: [] };
+    if (!login || login.length === 0) return { Dashboard: 0, DashboardPages: [], SuperAdmin: false };
 
     const rs: any = await this.api.apiGet('misPermisos', login[0].token);
 
@@ -88,10 +92,11 @@ export class PermisosService {
 
     const permisos: PermisosDashboard = {
       Dashboard: rs.response.Dashboard == 1 ? 1 : 0,
-      DashboardPages: Array.isArray(rs.response.DashboardPages) ? rs.response.DashboardPages : []
+      DashboardPages: Array.isArray(rs.response.DashboardPages) ? rs.response.DashboardPages : [],
+      SuperAdmin: rs.response.SuperAdmin === true
     };
 
-    await this.stg.putPermisosDashboard(permisos.Dashboard, permisos.DashboardPages);
+    await this.stg.putPermisosDashboard(permisos.Dashboard, permisos.DashboardPages, permisos.SuperAdmin);
 
     // El menu lateral lo escucha para mostrar u ocultar Indicadores en el momento.
     this.obs.permisosDashboard(permisos);

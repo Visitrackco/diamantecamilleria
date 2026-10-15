@@ -1,0 +1,250 @@
+<ion-header class="ion-no-border" [translucent]="true">
+  <ion-toolbar color="diamante">
+    <ion-buttons slot="start">
+      <ion-button (click)="volver()" title="Volver a Control de Usuarios">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Super Admin</ion-title>
+    <app-options slot="end"></app-options>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="sa-wrap">
+
+    <div class="sa-tabs">
+      <button class="sa-tab" [class.on]="tab === 'usuario'" (click)="tab = 'usuario'">
+        <ion-icon name="person-add"></ion-icon><span>Crear usuario</span>
+      </button>
+      <button class="sa-tab" [class.on]="tab === 'roles'" (click)="tab = 'roles'">
+        <ion-icon name="shield-checkmark"></ion-icon><span>Roles</span>
+      </button>
+    </div>
+
+    <div class="sa-estado" *ngIf="cargando">
+      <ion-spinner></ion-spinner>
+    </div>
+
+    <!-- ===================== CREAR USUARIO ===================== -->
+    <ng-container *ngIf="!cargando && tab === 'usuario'">
+
+      <section class="sa-card">
+        <h3>Datos del usuario</h3>
+        <div class="sa-grid">
+          <div class="sa-field">
+            <label class="sa-label">Nombre *</label>
+            <input class="sa-input" [(ngModel)]="usuario.FirstName" placeholder="Nombre" />
+          </div>
+          <div class="sa-field">
+            <label class="sa-label">Apellido *</label>
+            <input class="sa-input" [(ngModel)]="usuario.LastName" placeholder="Apellido" />
+          </div>
+          <div class="sa-field">
+            <label class="sa-label">Login *</label>
+            <input class="sa-input" [(ngModel)]="usuario.Login" (ngModelChange)="disponible.Login = null"
+              (blur)="revisar('Login')" placeholder="usuario.login" autocomplete="off"
+              [class.mal]="disponible.Login === false" />
+            <span class="sa-hint mal" *ngIf="disponible.Login === false">Este login ya está en uso</span>
+            <span class="sa-hint ok" *ngIf="disponible.Login === true">Disponible</span>
+          </div>
+          <div class="sa-field">
+            <label class="sa-label">Clave *</label>
+            <input class="sa-input" type="password" [(ngModel)]="usuario.Password" placeholder="Mínimo 4 caracteres"
+              autocomplete="new-password" />
+          </div>
+          <div class="sa-field">
+            <label class="sa-label">Email</label>
+            <input class="sa-input" type="email" [(ngModel)]="usuario.Email" (ngModelChange)="disponible.Email = null"
+              (blur)="revisar('Email')" placeholder="correo@dominio.com" [class.mal]="disponible.Email === false" />
+            <span class="sa-hint mal" *ngIf="disponible.Email === false">Este email ya está registrado</span>
+          </div>
+          <div class="sa-field">
+            <label class="sa-label">ID Visitrack <span>(opcional)</span></label>
+            <input class="sa-input" type="number" [(ngModel)]="usuario.IDVT" (ngModelChange)="disponible.IDVT = null"
+              (blur)="revisar('IDVT')" placeholder="0" [class.mal]="disponible.IDVT === false" />
+            <span class="sa-hint mal" *ngIf="disponible.IDVT === false">Este ID ya está asignado</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="sa-card">
+        <h3>Rol y zonas</h3>
+        <div class="sa-grid">
+          <div class="sa-field">
+            <label class="sa-label">Rol *</label>
+            <select class="sa-input" [(ngModel)]="usuario.RoleID">
+              <option [ngValue]="null" disabled>Seleccione un rol</option>
+              <option *ngFor="let r of roles" [ngValue]="r.IDVT">{{ r.Name }} ({{ r.IDVT }})</option>
+            </select>
+            <div class="sa-chips" *ngIf="rolSeleccionado">
+              <span class="sa-chip" *ngFor="let f of funcionesActivas(rolSeleccionado)">{{ f.label }}</span>
+              <span class="sa-hint" *ngIf="!funcionesActivas(rolSeleccionado).length">Este rol no tiene funciones habilitadas</span>
+            </div>
+          </div>
+
+          <div class="sa-field">
+            <label class="sa-label">Zonas * <span>(la primera marcada es con la que entra)</span></label>
+            <div class="sa-checks">
+              <label class="sa-check" *ngFor="let z of zonas">
+                <input type="checkbox" [checked]="tieneZona(z.IDVT)" (change)="toggleZona(z.IDVT)" />
+                <span>{{ z.Name }}</span>
+                <small *ngIf="usuario.WorkZoneID[0] === z.IDVT">principal</small>
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sa-card" *ngIf="usuario.RoleID">
+        <h3>Permisos</h3>
+
+        <p class="sa-sub" *ngIf="esCamillero">
+          Los camilleros (rol {{ usuario.RoleID }}) no tienen permisos web: solo se configuran rol y zonas.
+        </p>
+
+        <ng-container *ngIf="!esCamillero">
+          <div class="sa-switches">
+            <div class="sa-switch">
+              <span>Eliminar solicitudes</span>
+              <mat-slide-toggle color="primary" [(ngModel)]="usuario.isCantDelete"></mat-slide-toggle>
+            </div>
+            <div class="sa-switch">
+              <span>Asignar solicitudes</span>
+              <mat-slide-toggle color="primary" [(ngModel)]="usuario.isCantAssigment"></mat-slide-toggle>
+            </div>
+            <div class="sa-switch">
+              <span>COH</span>
+              <mat-slide-toggle color="primary" [(ngModel)]="usuario.COH"></mat-slide-toggle>
+            </div>
+            <ng-container *ngIf="esDispatcher">
+              <div class="sa-switch">
+                <span>Central</span>
+                <mat-slide-toggle color="primary" [(ngModel)]="usuario.isCentral"></mat-slide-toggle>
+              </div>
+              <div class="sa-switch">
+                <span>Central administrativa</span>
+                <mat-slide-toggle color="primary" [(ngModel)]="usuario.isCentralAdmin"></mat-slide-toggle>
+              </div>
+            </ng-container>
+          </div>
+
+          <div class="sa-grid">
+            <div class="sa-field">
+              <label class="sa-label">Perfil de solicitud</label>
+              <select class="sa-input" [(ngModel)]="usuario.Perfil" [disabled]="!usuario.WorkZoneID.length">
+                <option [ngValue]="null">Sin perfil (ve todo)</option>
+                <option *ngFor="let p of perfilesZona" [ngValue]="p._id">{{ p.Name }} — {{ nombreZona(p.WorkZoneID) }}</option>
+              </select>
+            </div>
+
+            <div class="sa-field">
+              <label class="sa-label">Páginas del dashboard <span>(marcar alguna da acceso a Indicadores)</span></label>
+              <div class="sa-checks">
+                <label class="sa-check" *ngFor="let p of biPages">
+                  <input type="checkbox" [checked]="tienePagina(p.key)" (change)="togglePagina(p.key)" />
+                  <span>{{ p.label }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </section>
+
+      <section class="sa-card">
+        <h3>Estado</h3>
+        <div class="sa-switches">
+          <div class="sa-switch">
+            <span>Crear bloqueado</span>
+            <mat-slide-toggle color="primary" [(ngModel)]="usuario.IsLocked"></mat-slide-toggle>
+          </div>
+          <div class="sa-switch warn">
+            <span>Super administrador <small>puede crear usuarios y administrar roles</small></span>
+            <mat-slide-toggle color="warn" [(ngModel)]="usuario.SuperAdmin"></mat-slide-toggle>
+          </div>
+        </div>
+      </section>
+
+      <div class="sa-actions">
+        <span class="sa-hint mal" *ngIf="erroresUsuario.length">Falta: {{ erroresUsuario.join(', ') }}</span>
+        <button class="sa-btn sa-btn-sec" (click)="limpiarUsuario()" [disabled]="guardando">Limpiar</button>
+        <button class="sa-btn sa-btn-pri" (click)="crearUsuario()" [disabled]="guardando || erroresUsuario.length">
+          <ion-spinner name="crescent" *ngIf="guardando"></ion-spinner>
+          <span *ngIf="!guardando">Crear usuario</span>
+        </button>
+      </div>
+
+    </ng-container>
+
+    <!-- ===================== ROLES ===================== -->
+    <ng-container *ngIf="!cargando && tab === 'roles'">
+
+      <section class="sa-card">
+        <h3>Nuevo rol</h3>
+        <div class="sa-grid">
+          <div class="sa-field">
+            <label class="sa-label">Nombre *</label>
+            <input class="sa-input" [(ngModel)]="nuevoRol.Name" placeholder="Nombre del rol" />
+          </div>
+          <div class="sa-field">
+            <label class="sa-label">ID <span>(vacío = siguiente disponible)</span></label>
+            <input class="sa-input" type="number" [(ngModel)]="nuevoRol.IDVT" placeholder="Automático" />
+          </div>
+        </div>
+        <div class="sa-switches">
+          <div class="sa-switch" *ngFor="let f of funciones" [title]="f.descripcion">
+            <span>{{ f.label }} <small>{{ f.descripcion }}</small></span>
+            <mat-slide-toggle color="primary" [(ngModel)]="nuevoRol[f.key]"></mat-slide-toggle>
+          </div>
+        </div>
+        <div class="sa-actions">
+          <button class="sa-btn sa-btn-pri" (click)="crearRol()" [disabled]="guardando">
+            <ion-spinner name="crescent" *ngIf="guardando"></ion-spinner>
+            <span *ngIf="!guardando">Crear rol</span>
+          </button>
+        </div>
+      </section>
+
+      <div class="sa-tabla-wrap">
+        <table class="sa-tabla">
+          <thead>
+            <tr>
+              <th class="num">ID</th>
+              <th>Rol</th>
+              <th class="num" *ngFor="let f of funciones" [title]="f.descripcion">{{ f.label }}</th>
+              <th class="num">Usuarios</th>
+              <th class="acc">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of rolesTabla">
+              <td class="num">{{ r.IDVT }}</td>
+              <td>
+                <span class="sa-nombre">{{ r.Name }}</span>
+                <span class="sa-tag" *ngIf="r.Sistema" title="Lo usa el sistema: se pueden cambiar sus funciones pero no eliminarlo">sistema</span>
+              </td>
+              <td class="num" *ngFor="let f of funciones">
+                <mat-slide-toggle color="primary" [ngModel]="r[f.key] == 1"
+                  (ngModelChange)="cambiarFuncion(r, f.key, $event)"></mat-slide-toggle>
+              </td>
+              <td class="num">{{ r.Usuarios }}</td>
+              <td class="acc">
+                <button class="sa-ico" title="Renombrar" (click)="renombrar(r)">
+                  <ion-icon name="create-outline"></ion-icon>
+                </button>
+                <button class="sa-ico sa-ico-del" (click)="eliminarRol(r)" [disabled]="r.Sistema || r.Usuarios > 0"
+                  [title]="r.Sistema ? 'Rol del sistema' : (r.Usuarios > 0 ? 'Tiene usuarios asignados' : 'Eliminar')">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </ng-container>
+
+  </div>
+
+</ion-content>

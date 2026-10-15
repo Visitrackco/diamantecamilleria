@@ -7,7 +7,7 @@ import { SocketService } from 'src/app/Services/Sockets.service';
 import { StorageWebService } from 'src/app/Services/storage.service';
 import { ToastService } from 'src/app/Services/toast.service';
 import * as moment from 'moment-timezone'
-import { AlertController } from '@ionic/angular';
+import { AlertController, NavController } from '@ionic/angular';
 import { elementAt } from 'rxjs';
 import { ClinicaService } from 'src/app/Services/clinica.service';
 import { PermisosService } from 'src/app/Services/permisos.service';
@@ -46,6 +46,10 @@ export class UsuariosPage implements OnInit {
   descansosPorUsuario: any = {};
   descansosCargados = false;
 
+  // Muestra el boton del modulo Super Admin. Se relee del API al entrar: si se lo
+  // acaban de dar (o quitar) aplica sin cerrar sesion.
+  superAdmin = false;
+
 
   constructor(
     private api: ApiService,
@@ -54,7 +58,8 @@ export class UsuariosPage implements OnInit {
     private socket: SocketService,
     private alertCtrl: AlertController,
     private clinica: ClinicaService,
-    private permisos: PermisosService
+    private permisos: PermisosService,
+    private nav: NavController
   ) {
 
     this.socket.connectuser().subscribe((data: any) => {
@@ -139,7 +144,13 @@ export class UsuariosPage implements OnInit {
 
       this.getUsers();
 
+      this.permisos.refrescar().then((p) => this.superAdmin = p.SuperAdmin === true);
+
     }
+  }
+
+  abrirSuperAdmin() {
+    this.nav.navigateForward(['/superadmin']);
   }
 
   async getUsers() {
