@@ -5,10 +5,9 @@ import { StorageWebService } from 'src/app/Services/storage.service';
 import { ToastService } from 'src/app/Services/toast.service';
 import { BI_PAGES } from 'src/app/Pages/indicadores/bi-pages';
 
-// Roles con reglas propias en el resto de la app (Control de Usuarios, verifyToken).
-// Tienen que coincidir con ROL_CAMILLERO / ROL_DISPATCHER de routes/Users/superAdmin.js.
+// Rol con reglas propias en el resto de la app (Control de Usuarios, verifyToken).
+// Tiene que coincidir con ROL_CAMILLERO de routes/Users/superAdmin.js.
 const ROL_CAMILLERO = 35;
-const ROL_DISPATCHER = 18;
 
 interface FuncionRol {
   key: string;
@@ -16,8 +15,9 @@ interface FuncionRol {
   descripcion: string;
 }
 
-// Modulo Super Admin: crear usuarios con todos sus permisos y administrar los roles
-// (crear, renombrar, prender/apagar cada funcion, eliminar). Solo entra quien tenga
+// Modulo Super Admin: crear usuarios con todos sus permisos, administrar los roles
+// (crear, renombrar, prender/apagar cada funcion, eliminar) y las zonas de trabajo
+// (crear, editar, eliminar las que no tienen nada asociado). Solo entra quien tenga
 // Users.SuperAdmin (SuperAdminGuard) y el API lo vuelve a validar en cada endpoint.
 @Component({
   selector: 'app-superadmin',
@@ -26,7 +26,7 @@ interface FuncionRol {
 })
 export class SuperAdminPage {
 
-  tab: 'usuario' | 'roles' = 'usuario';
+  tab: 'usuario' | 'roles' | 'zonas' = 'usuario';
 
   cargando = false;
   guardando = false;
@@ -44,6 +44,9 @@ export class SuperAdminPage {
 
   nuevoRol: any = this.rolVacio();
   rolesTabla: any[] = [];
+
+  nuevaZona: any = this.zonaVacia();
+  zonasTabla: any[] = [];
 
   constructor(
     private api: ApiService,
@@ -83,6 +86,10 @@ export class SuperAdminPage {
     return { Name: '', IDVT: '', Web: true, Mobile: false, Historial: false, Reportes: false, Listas: false, Sesiones: false };
   }
 
+  private zonaVacia() {
+    return { Name: '', IDVT: '', Code: '', TagUID: '' };
+  }
+
   private async token() {
     const login = await this.stg.getLogin();
     return login && login.length ? login[0].token : null;
@@ -94,9 +101,10 @@ export class SuperAdminPage {
 
     this.cargando = true;
 
-    const [cat, roles]: any[] = await Promise.all([
+    const [cat, roles, zonas]: any[] = await Promise.all([
       this.api.apiGet('superadmin/catalogos', token),
-      this.api.apiGet('superadmin/roles', token)
+      this.api.apiGet('superadmin/roles', token),
+      this.api.apiGet('superadmin/zonas', token)
     ]);
 
     this.cargando = false;
@@ -112,6 +120,7 @@ export class SuperAdminPage {
     this.funciones = cat.response.funciones || [];
 
     if (roles && roles.status) this.rolesTabla = roles.response;
+    if (zonas && zonas.status) this.zonasTabla = zonas.response;
   }
 
   // ===================== USUARIO =====================
@@ -122,10 +131,6 @@ export class SuperAdminPage {
 
   get esCamillero() {
     return this.usuario.RoleID == ROL_CAMILLERO;
-  }
-
-  get esDispatcher() {
-    return this.usuario.RoleID == ROL_DISPATCHER;
   }
 
   // Los perfiles de solicitud son por zona: solo se ofrecen los de las zonas marcadas.
@@ -372,6 +377,113 @@ export class SuperAdminPage {
   private sincronizarCatalogo(rol) {
     const idx = this.roles.findIndex((r) => r._id == rol._id);
     if (idx >= 0) this.roles[idx] = { ...this.roles[idx], ...rol };
+  }
+
+  // ===================== ZONAS =====================
+
+  // Algo cuelga de la zona: el API no la deja eliminar.
+  zonaEnUso(z) {
+    return z.Operativa || z.Usuarios > 0 || z.Ubicaciones > 0 || z.Motivos > 0 || z.Perfiles > 0;
+  }
+
+  async crearZona() {
+    if (!this.nuevaZona.Name.trim()) {
+      this.toast.MsgError('El nombre de la zona es obligatorio');
+      return;
+    }
+
+    const token = await this.token();
+    if (!token) return;
+
+    this.guardando = true;
+    const rs: any = await this.api.apiPost('superadmin/zonas', { token, ...this.nuevaZona });
+    this.guardando = false;
+
+    if (!rs || !rs.status) {
+      this.toast.MsgError(rs && rs.err ? rs.err : 'No se pudo crear la zona');
+      return;
+    }
+
+    this.toast.MsgOK('Zona ' + rs.response.Name + ' creada con ID ' + rs.response.IDVT);
+    this.nuevaZona = this.zonaVacia();
+    await this.cargar();
+  }
+
+  async editarZona(zona) {
+    const alert = await this.alertCtrl.create({
+      header: 'Editar zona ' + zona.IDVT,
+      inputs: [
+        { name: 'Name', type: 'text', value: zona.Name, placeholder: 'Nombre' },
+        { name: 'Code', type: 'text', value: zona.Code, placeholder: 'Código' },
+        { name: 'TagUID', type: 'text', value: zona.TagUID, placeholder: 'TagUID' }
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Guardar',
+          handler: (data) => {
+            this.guardarZona(zona, data);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private async guardarZona(zona, data) {
+    if (!data.Name || !data.Name.trim()) {
+      this.toast.MsgError('El nombre de la zona es obligatorio');
+      return;
+    }
+
+    const token = await this.token();
+    const rs: any = await this.api.apiPost('superadmin/zonas/' + zona._id, {
+      token,
+      Name: data.Name,
+      Code: data.Code,
+      TagUID: data.TagUID
+    });
+
+    if (!rs || !rs.status) {
+      this.toast.MsgError(rs && rs.err ? rs.err : 'No se pudo actualizar la zona');
+      return;
+    }
+
+    this.toast.MsgOK('Zona actualizada');
+    await this.cargar();
+  }
+
+  async eliminarZona(zona) {
+    const alert = await this.alertCtrl.create({
+      header: 'Eliminar zona',
+      message: '¿Eliminar la zona ' + zona.Name + '? Esta acción no se puede deshacer.',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: () => {
+            this.confirmarEliminarZona(zona);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private async confirmarEliminarZona(zona) {
+    const token = await this.token();
+    const rs: any = await this.api.apiDelete('superadmin/zonas/' + zona._id, token);
+
+    if (!rs || !rs.status) {
+      this.toast.MsgError(rs && rs.err ? rs.err : 'No se pudo eliminar la zona');
+      return;
+    }
+
+    this.toast.MsgOK('Zona eliminada');
+    await this.cargar();
   }
 
   volver() {

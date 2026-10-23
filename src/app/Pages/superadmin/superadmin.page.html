@@ -21,6 +21,9 @@
       <button class="sa-tab" [class.on]="tab === 'roles'" (click)="tab = 'roles'">
         <ion-icon name="shield-checkmark"></ion-icon><span>Roles</span>
       </button>
+      <button class="sa-tab" [class.on]="tab === 'zonas'" (click)="tab = 'zonas'">
+        <ion-icon name="business"></ion-icon><span>Zonas</span>
+      </button>
     </div>
 
     <div class="sa-estado" *ngIf="cargando">
@@ -118,16 +121,14 @@
               <span>COH</span>
               <mat-slide-toggle color="primary" [(ngModel)]="usuario.COH"></mat-slide-toggle>
             </div>
-            <ng-container *ngIf="esDispatcher">
-              <div class="sa-switch">
-                <span>Central</span>
-                <mat-slide-toggle color="primary" [(ngModel)]="usuario.isCentral"></mat-slide-toggle>
-              </div>
-              <div class="sa-switch">
-                <span>Central administrativa</span>
-                <mat-slide-toggle color="primary" [(ngModel)]="usuario.isCentralAdmin"></mat-slide-toggle>
-              </div>
-            </ng-container>
+            <div class="sa-switch">
+              <span>Central</span>
+              <mat-slide-toggle color="primary" [(ngModel)]="usuario.isCentral"></mat-slide-toggle>
+            </div>
+            <div class="sa-switch">
+              <span>Central administrativa</span>
+              <mat-slide-toggle color="primary" [(ngModel)]="usuario.isCentralAdmin"></mat-slide-toggle>
+            </div>
           </div>
 
           <div class="sa-grid">
@@ -160,7 +161,7 @@
             <mat-slide-toggle color="primary" [(ngModel)]="usuario.IsLocked"></mat-slide-toggle>
           </div>
           <div class="sa-switch warn">
-            <span>Super administrador <small>puede crear usuarios y administrar roles</small></span>
+            <span>Super administrador <small>puede crear usuarios y administrar roles y zonas</small></span>
             <mat-slide-toggle color="warn" [(ngModel)]="usuario.SuperAdmin"></mat-slide-toggle>
           </div>
         </div>
@@ -235,6 +236,84 @@
                 </button>
                 <button class="sa-ico sa-ico-del" (click)="eliminarRol(r)" [disabled]="r.Sistema || r.Usuarios > 0"
                   [title]="r.Sistema ? 'Rol del sistema' : (r.Usuarios > 0 ? 'Tiene usuarios asignados' : 'Eliminar')">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </ng-container>
+
+    <!-- ===================== ZONAS ===================== -->
+    <ng-container *ngIf="!cargando && tab === 'zonas'">
+
+      <section class="sa-card">
+        <h3>Nueva zona de trabajo</h3>
+        <p class="sa-sub">
+          La zona queda disponible para asignar usuarios, ubicaciones y motivos. Para recibir solicitudes
+          necesita su colección propia en el sistema: hasta entonces aparece como "sin solicitudes".
+        </p>
+        <div class="sa-grid">
+          <div class="sa-field">
+            <label class="sa-label">Nombre *</label>
+            <input class="sa-input" [(ngModel)]="nuevaZona.Name" placeholder="Nombre de la zona" />
+          </div>
+          <div class="sa-field">
+            <label class="sa-label">ID <span>(vacío = siguiente disponible)</span></label>
+            <input class="sa-input" type="number" [(ngModel)]="nuevaZona.IDVT" placeholder="Automático" />
+          </div>
+          <div class="sa-field">
+            <label class="sa-label">Código <span>(opcional)</span></label>
+            <input class="sa-input" [(ngModel)]="nuevaZona.Code" placeholder="Código" />
+          </div>
+          <div class="sa-field">
+            <label class="sa-label">TagUID <span>(opcional)</span></label>
+            <input class="sa-input" [(ngModel)]="nuevaZona.TagUID" placeholder="TagUID" />
+          </div>
+        </div>
+        <div class="sa-actions">
+          <button class="sa-btn sa-btn-pri" (click)="crearZona()" [disabled]="guardando">
+            <ion-spinner name="crescent" *ngIf="guardando"></ion-spinner>
+            <span *ngIf="!guardando">Crear zona</span>
+          </button>
+        </div>
+      </section>
+
+      <div class="sa-tabla-wrap">
+        <table class="sa-tabla">
+          <thead>
+            <tr>
+              <th class="num">ID</th>
+              <th>Zona</th>
+              <th>Código</th>
+              <th class="num">Usuarios</th>
+              <th class="num">Ubicaciones</th>
+              <th class="num">Motivos</th>
+              <th class="num">Perfiles</th>
+              <th class="acc">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let z of zonasTabla">
+              <td class="num">{{ z.IDVT }}</td>
+              <td>
+                <span class="sa-nombre">{{ z.Name }}</span>
+                <span class="sa-tag on" *ngIf="z.Operativa" title="Tiene colección de solicitudes: no se puede eliminar">operativa</span>
+                <span class="sa-tag" *ngIf="!z.Operativa" title="Todavía no tiene colección de solicitudes">sin solicitudes</span>
+              </td>
+              <td>{{ z.Code }}</td>
+              <td class="num">{{ z.Usuarios }}</td>
+              <td class="num">{{ z.Ubicaciones }}</td>
+              <td class="num">{{ z.Motivos }}</td>
+              <td class="num">{{ z.Perfiles }}</td>
+              <td class="acc">
+                <button class="sa-ico" title="Editar" (click)="editarZona(z)">
+                  <ion-icon name="create-outline"></ion-icon>
+                </button>
+                <button class="sa-ico sa-ico-del" (click)="eliminarZona(z)" [disabled]="zonaEnUso(z)"
+                  [title]="z.Operativa ? 'Zona operativa' : (zonaEnUso(z) ? 'Tiene datos asociados' : 'Eliminar')">
                   <ion-icon name="trash-outline"></ion-icon>
                 </button>
               </td>

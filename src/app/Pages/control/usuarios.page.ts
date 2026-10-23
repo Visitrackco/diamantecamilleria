@@ -50,6 +50,10 @@ export class UsuariosPage implements OnInit {
   // acaban de dar (o quitar) aplica sin cerrar sesion.
   superAdmin = false;
 
+  // Central / central administrativa: solo los cambian administradores (rol 8) y
+  // super admin. El API valida lo mismo (verifyCentral).
+  puedeCentral = false;
+
   // Filtros de la consulta (servicio /controlUsuarios, exclusivo de esta pantalla:
   // /usersworkzone lo usa el movil y no se toca). Clinica vacia = todas las que
   // puede ver quien consulta; arranca en la clinica activa, como antes.
@@ -166,7 +170,12 @@ export class UsuariosPage implements OnInit {
       this.cargarFiltros();
       this.getUsers();
 
-      this.permisos.refrescar().then((p) => this.superAdmin = p.SuperAdmin === true);
+      this.puedeCentral = login[0].RoleID == 8;
+
+      this.permisos.refrescar().then((p) => {
+        this.superAdmin = p.SuperAdmin === true;
+        this.puedeCentral = login[0].RoleID == 8 || this.superAdmin;
+      });
 
     }
   }
@@ -749,6 +758,8 @@ export class UsuariosPage implements OnInit {
         if (rs) {
 
           if (!rs.status) {
+            // Rechazado por el API (sin permiso, camillero...): el check vuelve a como estaba
+            event.target.checked = !event.detail.checked;
             this.toast.MsgError(rs.err)
             this.loading = false;
             return;
@@ -787,6 +798,8 @@ export class UsuariosPage implements OnInit {
         if (rs) {
 
           if (!rs.status) {
+            // Rechazado por el API (sin permiso, camillero...): el check vuelve a como estaba
+            event.target.checked = !event.detail.checked;
             this.toast.MsgError(rs.err)
             this.loading = false;
             return;

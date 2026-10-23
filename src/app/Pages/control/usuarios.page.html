@@ -212,12 +212,21 @@
 
       <ng-container matColumnDef="central">
         <th mat-header-cell *matHeaderCellDef> PERMISO / CENTRAL </th>
-        <td mat-cell *matCellDef="let element">  <ion-checkbox *ngIf="element.acc.RoleID == 18" [checked]="element.central == 1 ? true : false" (ionChange)="changeC($event,element)"></ion-checkbox> </td>
+        <td mat-cell *matCellDef="let element">
+          <!-- Todos menos camilleros. Solo lo cambian administradores (rol 8) y super admin -->
+          <ion-checkbox *ngIf="element.acc.RoleID != 35" [disabled]="!puedeCentral"
+            [title]="puedeCentral ? '' : 'Solo un administrador puede cambiarlo'"
+            [checked]="element.central == 1 ? true : false" (ionChange)="changeC($event,element)"></ion-checkbox>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="centraladmin">
         <th mat-header-cell *matHeaderCellDef> PERMISO / CENTRAL ADMINISTRATIVA </th>
-        <td mat-cell *matCellDef="let element">  <ion-checkbox *ngIf="element.acc.RoleID == 18" [checked]="element.centraladmin == 1 ? true : false" (ionChange)="changeCA($event,element)"></ion-checkbox> </td>
+        <td mat-cell *matCellDef="let element">
+          <ion-checkbox *ngIf="element.acc.RoleID != 35" [disabled]="!puedeCentral"
+            [title]="puedeCentral ? '' : 'Solo un administrador puede cambiarlo'"
+            [checked]="element.centraladmin == 1 ? true : false" (ionChange)="changeCA($event,element)"></ion-checkbox>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="programmer">
