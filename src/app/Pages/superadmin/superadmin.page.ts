@@ -94,7 +94,9 @@ export class SuperAdminPage {
   modosLogin = [
     { value: 'NFC', label: 'Tarjeta NFC' },
     { value: 'QR', label: 'Código QR' },
-    { value: 'AMBOS', label: 'NFC o QR' }
+    { value: 'AMBOS', label: 'NFC o QR' },
+    // Sin lectura: para la zona de pruebas (revisión de Google Play), no para clínicas.
+    { value: 'NINGUNO', label: 'Solo usuario y contraseña' }
   ];
 
   private async token() {
