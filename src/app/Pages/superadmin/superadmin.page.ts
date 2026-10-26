@@ -87,7 +87,7 @@ export class SuperAdminPage {
   }
 
   private zonaVacia() {
-    return { Name: '', IDVT: '', Code: '', TagUID: '', LoginModo: 'NFC' };
+    return { Name: '', IDVT: '', Code: '', TagUID: '', LoginModo: 'NFC', LogoutModo: 'NFC' };
   }
 
   // Como inicia y cierra sesion el camillero en la app movil, por zona.
@@ -438,21 +438,22 @@ export class SuperAdminPage {
     await alert.present();
   }
 
-  // Se guarda al cambiar el select de la tabla.
-  async cambiarModoLogin(zona, modo) {
-    const anterior = zona.LoginModo;
-    zona.LoginModo = modo;
+  // Se guarda al cambiar el select de la tabla. campo: LoginModo (inicio) o LogoutModo (cierre).
+  async cambiarModoLogin(zona, campo: 'LoginModo' | 'LogoutModo', modo) {
+    const anterior = zona[campo];
+    zona[campo] = modo;
 
     const token = await this.token();
-    const rs: any = await this.api.apiPost('superadmin/zonas/' + zona._id, { token, LoginModo: modo });
+    const rs: any = await this.api.apiPost('superadmin/zonas/' + zona._id, { token, [campo]: modo });
 
     if (!rs || !rs.status) {
-      zona.LoginModo = anterior;
-      this.toast.MsgError(rs && rs.err ? rs.err : 'No se pudo cambiar el modo de inicio');
+      zona[campo] = anterior;
+      this.toast.MsgError(rs && rs.err ? rs.err : 'No se pudo cambiar el modo');
       return;
     }
 
-    this.toast.MsgOK(zona.Name + ': los camilleros entran con ' + this.modosLogin.find((m) => m.value == modo).label);
+    const label = this.modosLogin.find((m) => m.value == modo).label;
+    this.toast.MsgOK(zona.Name + ': los camilleros ' + (campo == 'LoginModo' ? 'entran' : 'cierran sesión') + ' con ' + label);
   }
 
   private async guardarZona(zona, data) {
