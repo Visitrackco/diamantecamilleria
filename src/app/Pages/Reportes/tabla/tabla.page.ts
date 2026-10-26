@@ -755,7 +755,7 @@ export class TablaPage implements OnInit {
             'fesperaf': !this.getField(element.JSONAnswers, 'Esperafin') ? '' : moment(this.getField(element.JSONAnswers, 'Esperafin')).tz('America/Bogota').format('YYYY-MM-DD'),
             'fesperah': !this.getField(element.JSONAnswers, 'Esperafin') ? '' : moment(this.getField(element.JSONAnswers, 'Esperafin')).tz('America/Bogota').format('HH:mm'),
             'demora': this.getField(element.JSONAnswers, 'DEMORA'),
-            'hospital': element.WorkZoneID == 6842 ? 'HOSPITAL MEDELLIN' : 'HOSPITAL RIONEGRO',
+            'hospital': element.WorkZoneID == 6842 ? 'HOSPITAL MEDELLIN' : (element.WorkZoneID == 627867 ? 'CLINICA REINA SOFIA' : 'HOSPITAL RIONEGRO'),
             'obscamillero': this.getField(element.JSONAnswers, 'OBSERVACIONES3'),
             'calificacion': '',
             'apoyo': this.getField(element.JSONAnswers, 'ADICIONAL') ? 'SI' : 'NO',

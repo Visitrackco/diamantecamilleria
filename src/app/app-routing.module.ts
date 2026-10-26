@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { DashboardGuard } from './Guards/dashboard.guard';
 import { FormMEDGuard } from './Guards/formmed.guard';
+import { FormRSGuard } from './Guards/formrs.guard';
 import { FormRNGGuard } from './Guards/formrng.guard';
 import { LoginGuard } from './Guards/login.guard';
 import { PageGuard } from './Guards/page.guard';
@@ -27,6 +28,11 @@ const routes: Routes = [
     path: 'medellinform',
     loadChildren: () => import('./Pages/form-medellin/form-medellin.module').then(m => m.FormMedellinPageModule),
     canActivate: [FormMEDGuard]
+  },
+  {
+    path: 'reinasofiaform',
+    loadChildren: () => import('./Pages/form-reinasofia/form-reinasofia.module').then(m => m.FormReinaSofiaPageModule),
+    canActivate: [FormRSGuard]
   },
   {
     path: 'dashboard',

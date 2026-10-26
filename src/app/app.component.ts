@@ -238,6 +238,10 @@ export class AppComponent {
           if (work == 1001) {
             this.router.navigate(['/form-pruebas'])
           }
+
+          if (work == 627867) {
+            this.router.navigate(['/reinasofiaform'])
+          }
         
 
         this.menuCtrl.toggle('menu')

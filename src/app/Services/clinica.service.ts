@@ -13,7 +13,8 @@ export interface UnidadOpt {
 const CLINICAS = {
   6842: { nombre: 'MEDELLIN', grupos: ['Adultos', 'Infantil'] },
   6993: { nombre: 'RIONEGRO', grupos: ['Alta complejidad', 'Medicina privada'] },
-  1001: { nombre: 'PRUEBAS', grupos: ['Adultos', 'Infantil', 'Alta complejidad', 'Medicina privada'] }
+  1001: { nombre: 'PRUEBAS', grupos: ['Adultos', 'Infantil', 'Alta complejidad', 'Medicina privada'] },
+  627867: { nombre: 'REINA SOFIA', grupos: ['Adultos', 'Infantil', 'Alta complejidad', 'Medicina privada'] }
 };
 
 const TODOS_LOS_GRUPOS = ['Adultos', 'Infantil', 'Alta complejidad', 'Medicina privada'];

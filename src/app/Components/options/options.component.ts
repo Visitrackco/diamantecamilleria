@@ -71,6 +71,9 @@ export class OptionsComponent implements OnInit {
           if (work == 6993) {
             this.router.navigate(['/rionegroform'])
           }
+          if (work == 627867) {
+            this.router.navigate(['/reinasofiaform'])
+          }
     
       }
     } catch (error) {

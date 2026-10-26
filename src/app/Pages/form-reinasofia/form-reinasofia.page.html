@@ -1,0 +1,410 @@
+<ion-header class="ion-no-border" [translucent]="true">
+    <ion-toolbar color="diamante">
+        <ion-title>Formulario Reina Sofia</ion-title>
+        <app-options slot="end"></app-options>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+    <div class="main" *ngIf="!loadInfo">
+        <ion-skeleton-text [animated]="true" style="width: 100%; height: 40px"></ion-skeleton-text>
+        <ion-grid>
+            <ion-row>
+                <ion-col size="6">
+                    <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+                </ion-col>
+                <ion-col size="6">
+                    <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col size="6">
+                    <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+                </ion-col>
+                <ion-col size="6">
+                    <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+                </ion-col>
+            </ion-row>
+
+            <ion-row>
+                <ion-col size="6">
+                    <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+                </ion-col>
+                <ion-col size="6">
+                    <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+
+        <ion-skeleton-text [animated]="true" style="width: 100%; height: 40px"></ion-skeleton-text>
+
+        <ion-grid>
+            <ion-row>
+                <ion-col size="6">
+                    <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+                </ion-col>
+                <ion-col size="6">
+                    <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col size="6">
+                    <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+                </ion-col>
+                <ion-col size="6">
+                    <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+                </ion-col>
+            </ion-row>
+
+            <ion-row>
+                <ion-col size="6">
+                    <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+                </ion-col>
+                <ion-col size="6">
+                    <ion-skeleton-text [animated]="true" style="width: 90%; height: 70px"></ion-skeleton-text>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+
+    <form *ngIf="loadInfo" class="main" [formGroup]="myForm" (ngSubmit)="doSomething()">
+
+        <h3 class="title">Solicitud de camilleria</h3>
+        <br>
+
+        <ion-grid>
+            <ion-row>
+                <ion-col size="6">FECHA DE SOLICITUD</ion-col>
+                <ion-col size="6">
+
+                    <mat-form-field>
+                        <mat-label>Seleccione fecha</mat-label>
+                        <input readonly matInput [min]="dateServer" [matDatepicker]="picker" formControlName="fecha" (dateChange)="addEvent('change', $event)">
+
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
+
+            <ion-row>
+                <ion-col size="6">HORA DE SOLICITUD</ion-col>
+                <ion-col size="6">
+
+
+                    <mat-form-field>
+                        <mat-label>Seleccione Hora</mat-label>
+                        <input readonly matInput [format]="24" [min]="timeServer" [ngxTimepicker]="pickera"
+                            formControlName="hora" />
+
+                        <ngx-material-timepicker-toggle matIconSuffix [for]="pickera"></ngx-material-timepicker-toggle>
+                        <ngx-material-timepicker (timeSet)="timeChanged($event)" color="primary" #pickera>
+                        </ngx-material-timepicker>
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
+
+
+            <ion-row>
+                <ion-col size="6">NOMBRE DE QUIEN SOLIICITA</ion-col>
+                <ion-col size="6">
+
+
+                    <mat-form-field>
+                        <mat-label>Escriba un nombre</mat-label>
+                        <input matInput formControlName="solicita" />
+
+
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
+
+            <h4 class="title">Origen y Destino</h4>
+            <br>
+
+
+            <ion-row>
+                <ion-col size="6">DONDE ESTA UBICADO LO QUE SE DEBE TRANSPORTAR</ion-col>
+                <ion-col size="6">
+
+                    <mat-form-field>
+                        <mat-label>Punto</mat-label>
+                        <mat-select formControlName="origen">
+                            <input placeholder="Buscar punto" class="search" (keyup)="onKey($event)">
+
+                            <mat-option *ngFor="let state of selectedStates" [value]="state">{{state.Name}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
+
+            <ion-row>
+                <ion-col size="6">HACIA DONDE SE DEBE TRANSPORTAR</ion-col>
+                <ion-col size="6">
+
+                    <mat-form-field>
+                        <mat-label>Punto</mat-label>
+                        <mat-select formControlName="destino">
+                            <input placeholder="Buscar punto" class="search" (keyup)="onKey2($event)">
+
+                            <mat-option *ngFor="let state of selectedStates2" [value]="state">{{state.Name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
+
+
+
+            <ion-row>
+                <ion-col size="12" class="title">MOTIVOS DE SOLICITUD - CLINICA REINA SOFIA</ion-col>
+
+            </ion-row>
+            <ion-row>
+                <ion-col size="12" [class.rojo]="(isClick && myForm.controls['motivos']['errors'])">
+
+                    <ion-radio-group formControlName="motivos" (ionChange)="changeMot($event)">
+
+                        <ion-item lines="none" *ngFor="let motivo of motivosList">
+                            <ion-radio [value]="motivo" slot="start">
+                            </ion-radio>
+                            <ion-label>{{ motivo.Name }}</ion-label>
+                        </ion-item>
+
+                    </ion-radio-group>
+                </ion-col>
+            </ion-row>
+
+            <ion-row *ngIf="isInsumos">
+                <ion-col size="12" class="title">NOMBRE DEL INSUMO REQUERIDO</ion-col>
+
+            </ion-row>
+
+            <ion-row *ngIf="isInsumos">
+                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['nominsumo'].value)">
+
+                    <mat-form-field>
+                        <mat-label>Nombre</mat-label>
+
+                        <input formControlName="nominsumo" placeholder="Escriba Nombre" matInput>
+
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
+
+
+            <ion-row *ngIf="isInsumos">
+                <ion-col size="12" class="title">NOMBRE DEL SOLICITANTE</ion-col>
+
+            </ion-row>
+
+            <ion-row *ngIf="isInsumos">
+                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['nomsoli'].value)">
+
+                    <mat-form-field>
+                        <mat-label>Nombre</mat-label>
+
+                        <input formControlName="nomsoli" placeholder="Escriba Nombre" matInput>
+
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
+
+            <ion-row *ngIf="isInsumos">
+                <ion-col size="12" class="title">CARGO DEL SOLICITANTE</ion-col>
+
+            </ion-row>
+
+            <ion-row *ngIf="isInsumos">
+                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['cargosoli'].value)">
+
+                    <mat-form-field>
+                        <mat-label>Cargo</mat-label>
+
+                        <input formControlName="cargosoli" placeholder="Escriba Cargo" matInput>
+
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
+
+
+
+
+            <ion-row *ngIf="isPaciente || isInsumos">
+                <ion-col size="12" class="title">NOMBRE DEL PACIENTE</ion-col>
+
+            </ion-row>
+
+            <ion-row *ngIf="isPaciente || isInsumos">
+                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['nombrepac'].value)">
+
+                    <mat-form-field>
+                        <mat-label>Nombre</mat-label>
+
+                        <input formControlName="nombrepac" placeholder="Escriba Nombre" matInput>
+
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
+
+               <ion-row *ngIf="isPaciente">
+                <ion-col size="12" class="title">Número de identificación del paciente(Cédula, Tarjeta de Identidad,
+                    Registro Civil o Pasaporte. Para pacientes NN digite 0000)</ion-col>
+
+            </ion-row>
+
+            <ion-row *ngIf="isPaciente">
+                <ion-col size="12">
+                    <div class="help" style="padding: 10px; background-color: rgb(255, 253, 207);">
+                        <strong>Si es un paciente NN, por favor digite 0000, </strong>
+                    </div>
+                </ion-col>
+            </ion-row>
+
+            <ion-row *ngIf="isPaciente">
+                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['idpac'].value)">
+
+                    <mat-form-field>
+
+
+                        <input onlyNumbers type="text" formControlName="idpac" placeholder="Ingrese el ID del paciente" matInput>
+
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
+
+              <!-- <ion-row *ngIf="isPaciente">
+                <ion-col size="12" class="title">Número de identificación del paciente(Cédula, Tarjeta de Identidad, Registro Civil o Pasaporte. Para pacientes NN digite 0000)</ion-col>
+
+            </ion-row>
+
+            <ion-row *ngIf="isPaciente">
+                <ion-col size="12">
+                    <div class="help" style="padding: 10px; background-color: rgb(255, 253, 207);">
+                        <strong>Si es un paciente NN, por favor digite 0000, </strong>
+                    </div>
+                </ion-col>
+            </ion-row>
+
+            <ion-row *ngIf="isPaciente">
+                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['idpac'].value)">
+
+                    <mat-form-field>
+                   
+
+                        <input formControlName="idpac" placeholder="Ingrese el ID del paciente" matInput>
+
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
+
+             <ion-row *ngIf="isPaciente && myForm.controls['idpac'].errors">
+                <ion-col size="12">
+                    <div +ngIf="(myForm.controls['idpac'].errors | json).includes('minlength')" style="padding: 10px; background-color: rgb(255, 207, 207); color: red;">
+                        <strong>Debe ingresar como mínimo 4 carácteres</strong>
+               
+                    </div>
+                </ion-col>
+            </ion-row> -->
+
+            <ion-row *ngIf="isPaciente">
+                <ion-col size="12" class="title">RECURSOS NECESARIOS</ion-col>
+
+            </ion-row>
+            <ion-row *ngIf="isPaciente">
+                <ion-col size="12" [class.rojo]="(isClick && invalid)">
+                    <ion-item lines="none" *ngFor="let rec of recursos">
+                        <ion-checkbox [value]="rec.Name" slot="start" (ionChange)="change($event)"></ion-checkbox>
+                        <ion-label>{{ rec.Name }}</ion-label>
+                    </ion-item>
+
+                </ion-col>
+            </ion-row>
+
+
+            <ion-row *ngIf="isPaciente">
+                <ion-col size="12" class="title">SE ENCUENTRA AISLADO</ion-col>
+
+            </ion-row>
+            <ion-row *ngIf="isPaciente">
+                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['aislado'].value)">
+
+                    <ion-radio-group formControlName="aislado">
+
+                        <ion-item lines="none">
+                            <ion-radio value="SI" slot="start">
+                            </ion-radio>
+                            <ion-label>SI</ion-label>
+                        </ion-item>
+
+                        <ion-item lines="none">
+                            <ion-radio value="NO" slot="start">
+                            </ion-radio>
+                            <ion-label>NO</ion-label>
+                        </ion-item>
+
+                    </ion-radio-group>
+                </ion-col>
+            </ion-row>
+
+
+            <div *ngFor="let option of myQuestion">
+                <ion-row>
+                    <ion-col size="12" class="title">{{ option.Name | uppercase }}</ion-col>
+
+                </ion-row>
+                <ion-row>
+                    <ion-col size="12" [class.rojo]="(isClick && !myForm.controls[option.Api.toString().toLowerCase()].value)">
+
+                        <ion-radio-group formControlName="{{option.Api.toString().toLowerCase()}}">
+
+                            <ion-item lines="none">
+                                <ion-radio value="SI" slot="start">
+                                </ion-radio>
+                                <ion-label>SI</ion-label>
+                            </ion-item>
+
+                            <ion-item lines="none">
+                                <ion-radio value="NO" slot="start">
+                                </ion-radio>
+                                <ion-label>NO</ion-label>
+                            </ion-item>
+
+                        </ion-radio-group>
+                    </ion-col>
+                </ion-row>
+            </div>
+
+            <ion-row>
+                <ion-col size="12" class="title">OBSERVACIONES ADICIONALES</ion-col>
+            </ion-row>
+
+            <ion-row>
+                <ion-col size="12">
+
+                    <mat-form-field>
+                        <mat-label>Observaciòn</mat-label>
+
+                        <textarea formControlName="obs" placeholder="Escriba Observaciòn" matInput></textarea>
+
+                    </mat-form-field>
+                </ion-col>
+            </ion-row>
+
+
+
+        </ion-grid>
+
+
+
+
+        <app-loading *ngIf="saving"></app-loading>
+
+        <input class="btn" type="submit" value="Guardar">
+
+    </form>
+
+
+
+</ion-content>

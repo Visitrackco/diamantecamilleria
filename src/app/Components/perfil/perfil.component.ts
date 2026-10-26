@@ -49,6 +49,8 @@ export class PerfilComponent implements OnInit {
           this.zoneName = 'RioNegro'
         } else  if (this.zoneSelect == 6842) {
           this.zoneName = 'Medellin'
+        } else if (this.zoneSelect == 627867) {
+          this.zoneName = 'Reina Sofia'
         }
         if (data[0].WorkZoneID.length > 1) {
           this.getworkzones(data[0].WorkZoneID)
@@ -155,6 +157,8 @@ export class PerfilComponent implements OnInit {
         this.zoneName = 'RioNegro'
       } else  if (this.zoneSelect == 6842) {
         this.zoneName = 'Medellin'
+      } else if (this.zoneSelect == 627867) {
+        this.zoneName = 'Reina Sofia'
       }
 
       if (login[0].isCentral == 1) {
@@ -180,12 +184,12 @@ export class PerfilComponent implements OnInit {
 
   }
 
-  // Los formularios estan atados a la sede por guard (FormRNGGuard / FormMEDGuard):
+  // Los formularios estan atados a la sede por guard (FormRNGGuard / FormMEDGuard / FormRSGuard):
   // si el usuario cambia de clinica parado en uno, hay que pasarlo al de la otra.
   private irAlFormularioDeLaZona(): boolean {
     const url = this.router.url;
 
-    if (url.indexOf('rionegroform') < 0 && url.indexOf('medellinform') < 0) {
+    if (url.indexOf('rionegroform') < 0 && url.indexOf('medellinform') < 0 && url.indexOf('reinasofiaform') < 0) {
       return false;
     }
 
@@ -195,6 +199,10 @@ export class PerfilComponent implements OnInit {
     }
     if (this.zoneSelect == 6993) {
       this.router.navigate(['/rionegroform'])
+      return true;
+    }
+    if (this.zoneSelect == 627867) {
+      this.router.navigate(['/reinasofiaform'])
       return true;
     }
 

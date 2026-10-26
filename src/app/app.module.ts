@@ -14,6 +14,7 @@ import { LoginGuard } from './Guards/login.guard';
 import { PageGuard } from './Guards/page.guard';
 import { FormRNGGuard } from './Guards/formrng.guard';
 import { FormMEDGuard } from './Guards/formmed.guard';
+import { FormRSGuard } from './Guards/formrs.guard';
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 
@@ -41,7 +42,7 @@ initializeApp(environment.configFirebase);
     }),
    SocketIoModule.forRoot(config)
   ],
-  providers: [ LoginGuard, PageGuard, FormRNGGuard, FormMEDGuard, Storage,{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [ LoginGuard, PageGuard, FormRNGGuard, FormMEDGuard, FormRSGuard, Storage,{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
