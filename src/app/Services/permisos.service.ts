@@ -9,6 +9,10 @@ export interface PermisosDashboard {
   // Modulo Super Admin (crear usuarios y administrar roles). Viaja en el mismo
   // endpoint para no sumar otra llamada.
   SuperAdmin?: boolean;
+  // Permisos de la central en el tablero y zonas del usuario (tarjeta de perfil).
+  isCantDelete?: number;
+  isCantAssigment?: number;
+  WorkZoneID?: any[];
 }
 
 // Permisos del dashboard de Indicadores (Users.Dashboard y Users.DashboardPages).
@@ -17,6 +21,8 @@ export interface PermisosDashboard {
 // recargar el navegador. Aca se releen del API en cada punto de entrada (arranque,
 // guard del dashboard, entrada a Indicadores y al asignarselos uno mismo) y se
 // vuelven a guardar, para que un permiso recien dado (o quitado) aplique de una.
+// Tambien trae asignar / eliminar (tablero de la central) y las zonas del usuario
+// (tarjeta de perfil), con la misma idea.
 @Injectable({ providedIn: 'root' })
 export class PermisosService {
 
@@ -43,7 +49,10 @@ export class PermisosService {
     return {
       Dashboard: login[0].Dashboard == 1 ? 1 : 0,
       DashboardPages: Array.isArray(login[0].DashboardPages) ? login[0].DashboardPages : [],
-      SuperAdmin: login[0].SuperAdmin === true
+      SuperAdmin: login[0].SuperAdmin === true,
+      isCantDelete: login[0].isCantDelete == 1 ? 1 : 0,
+      isCantAssigment: login[0].isCantAssigment == 1 ? 1 : 0,
+      WorkZoneID: Array.isArray(login[0].WorkZoneID) ? login[0].WorkZoneID : []
     };
   }
 
@@ -78,7 +87,7 @@ export class PermisosService {
   private async consultar(): Promise<PermisosDashboard> {
     const login = await this.stg.getLogin();
 
-    if (!login || login.length === 0) return { Dashboard: 0, DashboardPages: [], SuperAdmin: false };
+    if (!login || login.length === 0) return this.guardados();
 
     const rs: any = await this.api.apiGet('misPermisos', login[0].token);
 
@@ -93,10 +102,18 @@ export class PermisosService {
     const permisos: PermisosDashboard = {
       Dashboard: rs.response.Dashboard == 1 ? 1 : 0,
       DashboardPages: Array.isArray(rs.response.DashboardPages) ? rs.response.DashboardPages : [],
-      SuperAdmin: rs.response.SuperAdmin === true
+      SuperAdmin: rs.response.SuperAdmin === true,
+      isCantDelete: rs.response.isCantDelete == 1 ? 1 : 0,
+      isCantAssigment: rs.response.isCantAssigment == 1 ? 1 : 0,
+      WorkZoneID: Array.isArray(rs.response.WorkZoneID) ? rs.response.WorkZoneID : []
     };
 
     await this.stg.putPermisosDashboard(permisos.Dashboard, permisos.DashboardPages, permisos.SuperAdmin);
+
+    // Un API anterior a estos campos no los manda: ahi se deja lo que ya estaba guardado.
+    if (rs.response.isCantDelete !== undefined) {
+      await this.stg.putPermisosCentral(permisos.isCantDelete, permisos.isCantAssigment, permisos.WorkZoneID);
+    }
 
     // El menu lateral lo escucha para mostrar u ocultar Indicadores en el momento.
     this.obs.permisosDashboard(permisos);

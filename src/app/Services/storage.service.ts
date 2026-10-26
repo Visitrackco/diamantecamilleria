@@ -63,6 +63,24 @@ export class StorageWebService {
           });
      }
 
+     // Permisos de la central (asignar / eliminar) y zonas del usuario, releidos del API
+     // por PermisosService: asi un cambio hecho en Control de Usuarios aplica sin
+     // cerrar sesion. La zona activa (WorkZone) no se toca.
+     async putPermisosCentral(isCantDelete: number, isCantAssigment: number, zonas: any[]) {
+          return this.storage.get('login').then(async (dataLogin: any[]) => {
+               if (dataLogin && dataLogin.length > 0) {
+                    dataLogin[0].isCantDelete = isCantDelete;
+                    dataLogin[0].isCantAssigment = isCantAssigment;
+                    if (Array.isArray(zonas) && zonas.length > 0) {
+                         dataLogin[0].WorkZoneID = zonas;
+                    }
+                    await this.storage.set('login', dataLogin);
+               }
+          }).catch((err) => {
+               console.log('Error ', err);
+          });
+     }
+
      async getLogin() {
           return await this.storage.get('login');
      }

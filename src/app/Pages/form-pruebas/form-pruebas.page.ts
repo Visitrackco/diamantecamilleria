@@ -8,6 +8,7 @@ import { ApiService } from 'src/app/Services/api.service';
 import { SocketService } from 'src/app/Services/Sockets.service';
 import { StorageWebService } from 'src/app/Services/storage.service';
 import { ToastService } from 'src/app/Services/toast.service';
+import { camposFaltantes, Faltante } from '../form-requeridos';
 
 @Component({
   selector: 'app-form-pruebas',
@@ -39,6 +40,9 @@ export class FormPruebasPage implements OnInit {
   customQuestion = []
   myQuestion = []
   selectMotivo = false;
+
+  // Se prende al intentar guardar: desde ahi se marcan en rojo los campos que faltan.
+  intentoGuardar = false;
 
 
   constructor(
@@ -183,6 +187,7 @@ export class FormPruebasPage implements OnInit {
   }
 
   loadForm() {
+    this.intentoGuardar = false;
     this.myForm = this.fb.group({
       fecha: new FormControl('', [
         // validaciones síncronas
@@ -279,62 +284,18 @@ export class FormPruebasPage implements OnInit {
 
 
     let isValid = false;
-    if (this.isPaciente) {
-      if (this.myForm.controls['nombrepac']['value'] == '') {
-        this.invalid = true;
-        this.isClick = false;
-        this.toast.MsgError('El nombre del paciente es obligatorio.')
-        return;
-      }
+    // Lo que falta se lista en el mensaje y queda en rojo (falta()) hasta que se llene.
+    this.intentoGuardar = true;
+    const faltan = this.camposFaltantes();
 
-
-      if (this.myForm.controls['idpac']['value'] == '') {
-        this.invalid = true;
-        this.isClick = false;
-        this.toast.MsgError('La identificación del paciente es obligatoria.')
-        return;
-      } else {
-        if (this.myForm.controls['idpac']['value'].length < 4) {
-          this.invalid = true;
-          this.isClick = false;
-          this.toast.MsgError('La identificación del paciente debe tener como mínimo 4 carácteres.')
-          return;
-        }
-      }
-
-
-      if (this.myForm.controls['idpac']['value'] == '') {
-        this.invalid = true;
-        this.isClick = false;
-        return;
-      }
-
-      if (this.myForm.controls['aislado']['value'] == '') {
-        this.invalid = true;
-        this.isClick = false;
-        return;
-
-      }
-      // if (this.myForm.controls['recurso']['value'].length == 0) {
-      //   this.invalid = true;
-      //   this.isClick = false;
-      //   return;
-
-
-      // }
-
-
-      if (this.myForm.status == 'VALID') {
-        isValid = true;
-      }
-    } else {
-      if (this.myForm.status == 'VALID') {
-        isValid = true;
-        console.log('hola')
-      } else {
-        console.log('aqui')
-      }
+    if (faltan.length) {
+      this.isClick = false;
+      this.saving = false;
+      this.toast.MsgError('Falta: ' + faltan.map((f) => f.label).join(', '));
+      return;
     }
+
+    isValid = true;
 
 
 
@@ -451,6 +412,7 @@ export class FormPruebasPage implements OnInit {
               this.isClick = false;
 
               this.myForm.reset()
+              this.intentoGuardar = false;
 
               this.router.navigate(['/dashboard'])
 
@@ -485,6 +447,18 @@ export class FormPruebasPage implements OnInit {
     console.log(isValid, 'VALID')
   }
 
+
+  camposFaltantes(): Faltante[] {
+    return camposFaltantes(this.myForm, this.isPaciente, this.isInsumos, this.myQuestion);
+  }
+
+  falta(campo: string) {
+    return this.intentoGuardar && this.camposFaltantes().some((f) => f.campo === campo);
+  }
+
+  faltantesTexto() {
+    return this.camposFaltantes().map((f) => f.label).join(', ');
+  }
 
   changeMot(event) {
     this.selectMotivo = true;

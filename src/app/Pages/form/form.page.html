@@ -76,7 +76,7 @@
         <ion-grid>
             <ion-row>
                 <ion-col size="6">FECHA DE SOLICITUD</ion-col>
-                <ion-col size="6">
+                <ion-col size="6" [class.rojo]="falta('fecha')">
 
                     <mat-form-field>
                         <mat-label>Seleccione fecha</mat-label>
@@ -91,7 +91,7 @@
 
             <ion-row>
                 <ion-col size="6">HORA DE SOLICITUD</ion-col>
-                <ion-col size="6">
+                <ion-col size="6" [class.rojo]="falta('hora')">
 
 
                     <mat-form-field>
@@ -109,7 +109,7 @@
 
             <ion-row>
                 <ion-col size="6">NOMBRE DE QUIEN SOLIICITA</ion-col>
-                <ion-col size="6">
+                <ion-col size="6" [class.rojo]="falta('solicita')">
 
 
                     <mat-form-field>
@@ -127,7 +127,7 @@
 
             <ion-row>
                 <ion-col size="6">DONDE ESTA UBICADO LO QUE SE DEBE TRANSPORTAR</ion-col>
-                <ion-col size="6">
+                <ion-col size="6" [class.rojo]="falta('origen')">
 
                     <mat-form-field>
                         <mat-label>Punto</mat-label>
@@ -142,7 +142,7 @@
 
             <ion-row>
                 <ion-col size="6">HACIA DONDE SE DEBE TRANSPORTAR</ion-col>
-                <ion-col size="6">
+                <ion-col size="6" [class.rojo]="falta('destino')">
 
                     <mat-form-field>
                         <mat-label>Punto</mat-label>
@@ -163,7 +163,7 @@
 
             </ion-row>
             <ion-row>
-                <ion-col size="12" [class.rojo]="(isClick && myForm.controls['motivos']['errors'])">
+                <ion-col size="12" [class.rojo]="falta('motivos')">
 
                     <ion-radio-group formControlName="motivos" (ionChange)="changeMot($event)">
 
@@ -185,7 +185,7 @@
             </ion-row>
 
             <ion-row *ngIf="isInsumos">
-                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['nominsumo'].value)">
+                <ion-col size="12" [class.rojo]="falta('nominsumo')">
 
                     <mat-form-field>
                         <mat-label>Nombre</mat-label>
@@ -203,7 +203,7 @@
             </ion-row>
 
             <ion-row *ngIf="isInsumos">
-                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['nomsoli'].value)">
+                <ion-col size="12" [class.rojo]="falta('nomsoli')">
 
                     <mat-form-field>
                         <mat-label>Nombre</mat-label>
@@ -220,7 +220,7 @@
             </ion-row>
 
             <ion-row *ngIf="isInsumos">
-                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['cargosoli'].value)">
+                <ion-col size="12" [class.rojo]="falta('cargosoli')">
 
                     <mat-form-field>
                         <mat-label>Cargo</mat-label>
@@ -239,7 +239,7 @@
             </ion-row>
 
             <ion-row *ngIf="isPaciente || isInsumos">
-                <ion-col size="12">
+                <ion-col size="12" [class.rojo]="falta('nombrepac')">
 
                     <mat-form-field>
                         <mat-label>Nombre</mat-label>
@@ -265,7 +265,7 @@
             </ion-row>
 
             <ion-row *ngIf="isPaciente">
-                <ion-col size="12" [class.rojo]="(isClick && !myForm.controls['idpac'].value)">
+                <ion-col size="12" [class.rojo]="falta('idpac')">
 
                     <mat-form-field>
 
@@ -291,7 +291,7 @@
 
             </ion-row>
             <ion-row *ngIf="isPaciente">
-                <ion-col size="12" >
+                <ion-col size="12" [class.rojo]="falta('recurso')">
 
                     <ion-item lines="none" *ngFor="let rec of recursos">
                         <ion-checkbox [value]="rec.Name" slot="start" (ionChange)="change($event)"></ion-checkbox>
@@ -308,7 +308,7 @@
 
             </ion-row>
             <ion-row *ngIf="isPaciente">
-                <ion-col size="12" [class.rojo]="(isClick && myForm.controls['aislado']['errors'])">
+                <ion-col size="12" [class.rojo]="falta('aislado')">
 
                     <ion-radio-group formControlName="aislado">
 
@@ -337,7 +337,7 @@
                 </ion-row>
                 <ion-row>
                     <ion-col size="12"
-                        [class.rojo]="(isClick && !myForm.controls[option.Api.toString().toLowerCase()].value)">
+                        [class.rojo]="falta(option.Api.toString().toLowerCase())">
 
                         <ion-radio-group formControlName="{{option.Api.toString().toLowerCase()}}">
 
@@ -384,6 +384,10 @@
 
 
         <app-loading *ngIf="saving"></app-loading>
+
+        <div class="faltan" *ngIf="intentoGuardar && camposFaltantes().length">
+            <strong>Falta:</strong> {{ faltantesTexto() }}
+        </div>
 
         <input class="btn" type="submit" value="Guardar">
 

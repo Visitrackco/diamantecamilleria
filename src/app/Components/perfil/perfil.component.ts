@@ -4,6 +4,7 @@ import { PopoverController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { ApiService } from 'src/app/Services/api.service';
 import { ObserverService } from 'src/app/Services/observer.service';
+import { PermisosService } from 'src/app/Services/permisos.service';
 import { SocketService } from 'src/app/Services/Sockets.service';
 import { StorageWebService } from 'src/app/Services/storage.service';
 import { ToastService } from 'src/app/Services/toast.service';
@@ -34,7 +35,8 @@ export class PerfilComponent implements OnInit {
     private api: ApiService,
     private toast: ToastService,
     private socketService: SocketService,
-    private obs: ObserverService
+    private obs: ObserverService,
+    private permisos: PermisosService
   ) { }
 
   ngOnInit() { }
@@ -55,6 +57,21 @@ export class PerfilComponent implements OnInit {
         if (data[0].WorkZoneID.length > 1) {
           this.getworkzones(data[0].WorkZoneID)
         }
+
+        // Las zonas del usuario se releen del servidor: si se las cambiaron en Control
+        // de Usuarios / Super Admin la tarjeta las muestra sin cerrar sesion.
+        this.permisos.refrescar(true).then((p) => {
+          const zonas = p.WorkZoneID || [];
+          const antes = (data[0].WorkZoneID || []).join(',');
+
+          if (zonas.length > 0 && zonas.join(',') !== antes) {
+            if (zonas.length > 1) {
+              this.getworkzones(zonas);
+            } else {
+              this.zones = [];
+            }
+          }
+        });
 
       }
     })
@@ -78,6 +95,10 @@ export class PerfilComponent implements OnInit {
           return;
         }
         this.zones = rs.response;
+
+        // Nombre de la zona activa desde el catalogo: sirve tambien para zonas nuevas.
+        const activa = this.zones.find((z) => z.IDVT == this.zoneSelect);
+        if (activa) this.zoneName = activa.Name;
       }
 
     } catch (error) {

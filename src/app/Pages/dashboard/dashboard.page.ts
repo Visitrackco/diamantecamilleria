@@ -21,6 +21,7 @@ import { MatInput } from '@angular/material/input';
 import { HistoryComponent } from 'src/app/Components/history/history.component';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ObserverService } from 'src/app/Services/observer.service';
+import { PermisosService } from 'src/app/Services/permisos.service';
 import { DetailComponent } from 'src/app/Components/detail/detail.component';
 import { VersionActivitiesComponent } from 'src/app/Components/version-activities/version-activities.component';
 import { ClinicaService } from 'src/app/Services/clinica.service';
@@ -140,7 +141,8 @@ export class DashboardPage implements OnInit {
     private modalCtrl: ModalController,
     private fb: FormBuilder,
     private obs: ObserverService,
-    private clinicaSvc: ClinicaService
+    private clinicaSvc: ClinicaService,
+    private permisos: PermisosService
   ) {
     this.socket.newActivityOn().subscribe({
       next: async (data: any) => {
@@ -884,6 +886,7 @@ export class DashboardPage implements OnInit {
 
       this.isDelete = login[0].isCantDelete
       this.isAssigment = login[0].isCantAssigment
+      this.refrescarPermisos();
 
       if (this.filter) {
 
@@ -1170,6 +1173,15 @@ export class DashboardPage implements OnInit {
 
   }
 
+
+  // Asignar / eliminar se releen del servidor (PermisosService): un cambio hecho en
+  // Control de Usuarios aplica en el siguiente refresco del tablero, sin cerrar sesion.
+  refrescarPermisos() {
+    this.permisos.refrescar().then((p) => {
+      this.isDelete = p.isCantDelete;
+      this.isAssigment = p.isCantAssigment;
+    });
+  }
 
   order(arr, param, desc?) {
     return arr.sort((a, b) => {
