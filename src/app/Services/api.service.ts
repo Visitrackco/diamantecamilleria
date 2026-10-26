@@ -72,6 +72,19 @@ export class ApiService {
 
     }
 
+    // Crea el usuario de un correo nuevo que entra con Google (zona elegida en la web).
+    async googleRegistro(data: any) {
+        return fetch('https://diamanteticvisitrack.com/googleRegistro', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then((response) => response.json().then(async (value: any) => value))
+
+    }
+
     getWorkZones(data: any) {
         return fetch('https://diamanteticvisitrack.com/workzonesList', {
             method: 'POST',

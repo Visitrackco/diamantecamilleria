@@ -352,6 +352,8 @@
               <th>Código</th>
               <th>Inicio en la app</th>
               <th>Cierre en la app</th>
+              <th>Dominios Google</th>
+              <th>Rol Google</th>
               <th class="num">Usuarios</th>
               <th class="num">Ubicaciones</th>
               <th class="num">Motivos</th>
@@ -378,6 +380,15 @@
                 <select class="sa-input sa-input-sm" [ngModel]="z.LogoutModo" (ngModelChange)="cambiarModoLogin(z, 'LogoutModo', $event)"
                   title="Cómo cierra sesión el camillero en la app">
                   <option *ngFor="let m of modosLogin" [ngValue]="m.value">{{ m.label }}</option>
+                </select>
+              </td>
+              <td title="Correos con estos dominios que entran con Google quedan en la zona sin aprobación">
+                {{ (z.Dominios || []).join(', ') || '—' }}
+              </td>
+              <td>
+                <select class="sa-input sa-input-sm" [ngModel]="z.RolGoogle" (ngModelChange)="cambiarRolGoogle(z, $event)"
+                  title="Rol con el que se crean los usuarios de estos dominios al entrar con Google">
+                  <option *ngFor="let r of roles" [ngValue]="r.IDVT">{{ r.Name }} ({{ r.IDVT }})</option>
                 </select>
               </td>
               <td class="num">{{ z.Usuarios }}</td>

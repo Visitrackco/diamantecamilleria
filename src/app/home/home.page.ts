@@ -118,65 +118,7 @@ export class HomePage {
     if (!rs.status) {
       this.load = false;
       if (rs.createUser) {
-    
-
-        const alert = await this.alert.create(({
-          header: 'Mensaje',
-          message: 'Escoge el hospital donde perteneces',
-          inputs: [{
-            name: 'radio',
-            type: 'radio',
-            value: [6842],
-            label: 'MEDELLIN'
-          },{
-            name: 'radio',
-            type: 'radio',
-            value: [6993],
-            label: 'RIONEGRO'
-          }],
-          buttons: [{
-            text: 'Aceptar',
-            handler: async (data) => {
-
-              console.log(data)
-              if (!data) {
-                this.toast.MsgError('Debe seleccionar un hospital')
-                return;
-              }
-
-         
-              const create = await this.api.apiPost('usersOnly', {
-                ID: 0,
-                CompanyID: 2030,
-                FirstName: rs.data.given_name,
-                LastName: rs.data.family_name,
-                Email: rs.data.email,
-                Login: rs.data.email,
-                Password: '',
-                WorkZoneID: data,
-                RoleID: 38,
-              })
-
-              if (!create.status) {
-                this.toast.MsgError(create.err)
-                return;
-
-              }
-
-              this.api.googleSingIn({
-                token
-              }).then((rss) => {
-                this.entryLogi(rss)
-              }).catch(() => this.load = false)
-
-      
-            }
-          }],
-          backdropDismiss: false
-        }))
-
-        await alert.present();
-
+        await this.registroGoogle(rs, token);
       } else {
         this.toast.MsgError(rs.err)
       }
@@ -254,6 +196,68 @@ export class HomePage {
 
     this.toast.MsgOK('Bienvenid@ ' + obj.FirstName)
     this.load = false;
+  }
+
+  // Usuario nuevo con Google. El servidor manda las zonas de su dominio de correo que
+  // puede elegir (si es una sola entra directo). Otros dominios no llegan aca: no pueden entrar.
+  async registroGoogle(rs: any, token) {
+    const zonas: any[] = Array.isArray(rs.zonas) ? rs.zonas : [];
+
+    if (!zonas.length) {
+      this.toast.MsgError('No hay clínicas disponibles para registrarse');
+      return;
+    }
+
+    if (zonas.length == 1) {
+      await this.crearUsuarioGoogle(zonas[0].IDVT, token);
+      return;
+    }
+
+    const alert = await this.alert.create({
+      header: 'Mensaje',
+      message: 'Escoge el hospital donde perteneces',
+      inputs: zonas.map((z) => ({
+        name: 'radio',
+        type: 'radio' as const,
+        value: z.IDVT,
+        label: z.Name
+      })),
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Aceptar',
+          handler: (data) => {
+            if (!data) {
+              this.toast.MsgError('Debe seleccionar un hospital');
+              return false;
+            }
+            this.crearUsuarioGoogle(data, token);
+            return true;
+          }
+        }
+      ],
+      backdropDismiss: false
+    });
+
+    await alert.present();
+  }
+
+  async crearUsuarioGoogle(WorkZoneID, token) {
+    this.load = true;
+
+    const create = await this.api.googleRegistro({ token, WorkZoneID }).catch(() => null);
+
+    if (!create || !create.status) {
+      this.load = false;
+      this.toast.MsgError(create && create.err ? create.err : 'No se pudo crear el usuario');
+      return;
+    }
+
+    this.api.googleSingIn({
+      token
+    }).then((rss) => {
+      this.entryLogi(rss, token)
+    }).catch(() => this.load = false)
   }
 
   change(event: any, type: number) {

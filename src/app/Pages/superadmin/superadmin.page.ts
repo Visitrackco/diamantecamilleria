@@ -535,7 +535,11 @@ export class SuperAdminPage {
       inputs: [
         { name: 'Name', type: 'text', value: zona.Name, placeholder: 'Nombre' },
         { name: 'Code', type: 'text', value: zona.Code, placeholder: 'Código' },
-        { name: 'TagUID', type: 'text', value: zona.TagUID, placeholder: 'TagUID' }
+        { name: 'TagUID', type: 'text', value: zona.TagUID, placeholder: 'TagUID' },
+        {
+          name: 'Dominios', type: 'text', value: (zona.Dominios || []).join(', '),
+          placeholder: 'Dominios de correo (ej. clinica.com, otra.com)'
+        }
       ],
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
@@ -569,6 +573,24 @@ export class SuperAdminPage {
     this.toast.MsgOK(zona.Name + ': los camilleros ' + (campo == 'LoginModo' ? 'entran' : 'cierran sesión') + ' con ' + label);
   }
 
+  // Rol de los usuarios nuevos que entran con Google con un dominio de la zona.
+  async cambiarRolGoogle(zona, RolGoogle) {
+    const anterior = zona.RolGoogle;
+    zona.RolGoogle = RolGoogle;
+
+    const token = await this.token();
+    const rs: any = await this.api.apiPost('superadmin/zonas/' + zona._id, { token, RolGoogle });
+
+    if (!rs || !rs.status) {
+      zona.RolGoogle = anterior;
+      this.toast.MsgError(rs && rs.err ? rs.err : 'No se pudo cambiar el rol');
+      return;
+    }
+
+    const rol = this.roles.find((r) => r.IDVT == RolGoogle);
+    this.toast.MsgOK(zona.Name + ': los usuarios nuevos de Google quedan como ' + (rol ? rol.Name : RolGoogle));
+  }
+
   private async guardarZona(zona, data) {
     if (!data.Name || !data.Name.trim()) {
       this.toast.MsgError('El nombre de la zona es obligatorio');
@@ -580,7 +602,8 @@ export class SuperAdminPage {
       token,
       Name: data.Name,
       Code: data.Code,
-      TagUID: data.TagUID
+      TagUID: data.TagUID,
+      Dominios: data.Dominios || ''
     });
 
     if (!rs || !rs.status) {
