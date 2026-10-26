@@ -15,7 +15,8 @@ interface FuncionRol {
   descripcion: string;
 }
 
-// Modulo Super Admin: crear usuarios con todos sus permisos, administrar los roles
+// Modulo Super Admin: crear y editar usuarios (datos, login, clave, rol, zonas y
+// permisos), administrar los roles
 // (crear, renombrar, prender/apagar cada funcion, eliminar) y las zonas de trabajo
 // (crear, editar, eliminar las que no tienen nada asociado). Solo entra quien tenga
 // Users.SuperAdmin (SuperAdminGuard) y el API lo vuelve a validar en cada endpoint.
@@ -38,6 +39,12 @@ export class SuperAdminPage {
   biPages = BI_PAGES;
 
   usuario: any = this.usuarioVacio();
+
+  // Edicion: _id del usuario cargado en el formulario (null = creando uno nuevo).
+  editandoId: string = null;
+  busqueda = '';
+  resultados: any[] = [];
+  buscando = false;
 
   // Resultado de la validacion en vivo de los valores unicos: null = sin revisar.
   disponible: any = { Login: null, Email: null, IDVT: null };
@@ -192,7 +199,8 @@ export class SuperAdminPage {
     }
 
     const token = await this.token();
-    const rs: any = await this.api.apiGet('superadmin/disponible?campo=' + campo + '&valor=' + encodeURIComponent(valor), token);
+    const excluir = this.editandoId ? '&excluir=' + this.editandoId : '';
+    const rs: any = await this.api.apiGet('superadmin/disponible?campo=' + campo + '&valor=' + encodeURIComponent(valor) + excluir, token);
 
     this.disponible[campo] = rs && rs.status ? rs.response : null;
   }
@@ -205,7 +213,9 @@ export class SuperAdminPage {
     if (!u.FirstName.trim()) err.push('Nombre');
     if (!u.LastName.trim()) err.push('Apellido');
     if (!u.Login.trim()) err.push('Login');
-    if (String(u.Password).trim().length < 4) err.push('Clave (mínimo 4 caracteres)');
+    // Al editar la clave es opcional: vacía = no se cambia.
+    const clave = String(u.Password || '').trim();
+    if ((!this.editandoId || clave) && clave.length < 4) err.push('Clave (mínimo 4 caracteres)');
     if (u.Email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(u.Email.trim())) err.push('Email válido');
     if (!u.RoleID) err.push('Rol');
     if (!u.WorkZoneID.length) err.push('Al menos una zona');
@@ -216,20 +226,10 @@ export class SuperAdminPage {
     return err;
   }
 
-  async crearUsuario() {
-    if (this.erroresUsuario.length) {
-      this.toast.MsgError('Falta: ' + this.erroresUsuario.join(', '));
-      return;
-    }
-
-    const token = await this.token();
-    if (!token) return;
-
+  private cuerpoUsuario(token) {
     const u = this.usuario;
 
-    this.guardando = true;
-
-    const rs: any = await this.api.apiPost('superadmin/users', {
+    return {
       token,
       FirstName: u.FirstName,
       LastName: u.LastName,
@@ -249,8 +249,29 @@ export class SuperAdminPage {
       DashboardPages: u.DashboardPages,
       IsLocked: u.IsLocked ? 1 : 0,
       SuperAdmin: u.SuperAdmin === true
-    });
+    };
+  }
 
+  // Crea o, si hay un usuario cargado para editar, guarda sus cambios.
+  async guardarUsuario() {
+    if (this.erroresUsuario.length) {
+      this.toast.MsgError('Falta: ' + this.erroresUsuario.join(', '));
+      return;
+    }
+
+    if (this.editandoId) {
+      await this.guardarEdicion();
+    } else {
+      await this.crearUsuario();
+    }
+  }
+
+  private async crearUsuario() {
+    const token = await this.token();
+    if (!token) return;
+
+    this.guardando = true;
+    const rs: any = await this.api.apiPost('superadmin/users', this.cuerpoUsuario(token));
     this.guardando = false;
 
     if (!rs || !rs.status) {
@@ -264,9 +285,98 @@ export class SuperAdminPage {
     this.limpiarUsuario();
   }
 
+  private async guardarEdicion() {
+    const token = await this.token();
+    if (!token) return;
+
+    this.guardando = true;
+    const rs: any = await this.api.apiPost('superadmin/users/' + this.editandoId, this.cuerpoUsuario(token));
+    this.guardando = false;
+
+    if (!rs || !rs.status) {
+      this.toast.MsgError(rs && rs.err ? rs.err : 'No se pudo actualizar el usuario');
+      return;
+    }
+
+    this.toast.MsgOK('Usuario ' + rs.response.Login + ' actualizado' + (rs.claveCambiada ? ' (clave cambiada)' : ''));
+
+    this.limpiarUsuario();
+    if (this.resultados.length) await this.buscarUsuarios();
+  }
+
   limpiarUsuario() {
     this.usuario = this.usuarioVacio();
     this.disponible = { Login: null, Email: null, IDVT: null };
+    this.editandoId = null;
+  }
+
+  async buscarUsuarios() {
+    const token = await this.token();
+    if (!token) return;
+
+    this.buscando = true;
+    const rs: any = await this.api.apiGet('superadmin/users?q=' + encodeURIComponent(this.busqueda.trim()), token);
+    this.buscando = false;
+
+    if (!rs || !rs.status) {
+      this.toast.MsgError(rs && rs.err ? rs.err : 'No se pudo buscar');
+      return;
+    }
+
+    this.resultados = rs.response;
+
+    if (!this.resultados.length) this.toast.MsgError('No se encontraron usuarios');
+  }
+
+  zonasDe(u) {
+    return (u.WorkZoneID || []).map((z) => this.nombreZona(z)).join(', ');
+  }
+
+  nombreRol(id) {
+    const r = this.roles.find((it) => it.IDVT == id);
+    return r ? r.Name : id;
+  }
+
+  // Carga el usuario en el mismo formulario de creacion para editarlo.
+  async editarUsuario(item) {
+    const token = await this.token();
+    if (!token) return;
+
+    const rs: any = await this.api.apiGet('superadmin/users/' + item._id, token);
+
+    if (!rs || !rs.status) {
+      this.toast.MsgError(rs && rs.err ? rs.err : 'No se pudo cargar el usuario');
+      return;
+    }
+
+    const u = rs.response;
+    const si = (v) => v == 1 || v === true;
+
+    this.usuario = {
+      FirstName: u.FirstName || '',
+      LastName: u.LastName || '',
+      Login: u.Login || '',
+      Password: '',
+      Email: u.Email || '',
+      IDVT: u.IDVT ? u.IDVT : '',
+      RoleID: u.RoleID,
+      WorkZoneID: Array.isArray(u.WorkZoneID) ? u.WorkZoneID.map(Number) : [],
+      Perfil: u.Perfil || null,
+      isCantDelete: si(u.isCantDelete),
+      isCantAssigment: si(u.isCantAssigment),
+      COH: si(u.COH),
+      isCentral: si(u.isCentral),
+      isCentralAdmin: si(u.isCentralAdmin),
+      DashboardPages: Array.isArray(u.DashboardPages) ? [...u.DashboardPages] : [],
+      IsLocked: si(u.IsLocked),
+      SuperAdmin: u.SuperAdmin === true
+    };
+
+    this.disponible = { Login: null, Email: null, IDVT: null };
+    this.editandoId = u._id;
+
+    const content: any = document.querySelector('app-superadmin ion-content');
+    if (content && content.scrollToTop) content.scrollToTop(300);
   }
 
   // ===================== ROLES =====================

@@ -150,3 +150,13 @@ $diamante: #0E3651;
   &.sa-ico-del { color: #dc2626; &:hover { background: #fdeceb; } }
   &:disabled { opacity: .35; cursor: default; }
 }
+
+// Buscador de usuarios a editar y aviso de edicion en curso.
+.sa-buscar { display: flex; gap: 8px; margin-bottom: 12px; .sa-input { flex: 1; } }
+.sa-tabla tr.sel td { background: #e6f0f7; }
+.sa-editando {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  background: #fff7e6; border: 1px solid #f5c26b; color: #7a4b00;
+  border-radius: 10px; padding: 10px 14px; margin-bottom: 16px;
+  span { flex: 1; min-width: 200px; }
+}

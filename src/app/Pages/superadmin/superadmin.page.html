@@ -16,7 +16,7 @@
 
     <div class="sa-tabs">
       <button class="sa-tab" [class.on]="tab === 'usuario'" (click)="tab = 'usuario'">
-        <ion-icon name="person-add"></ion-icon><span>Crear usuario</span>
+        <ion-icon name="people"></ion-icon><span>Usuarios</span>
       </button>
       <button class="sa-tab" [class.on]="tab === 'roles'" (click)="tab = 'roles'">
         <ion-icon name="shield-checkmark"></ion-icon><span>Roles</span>
@@ -30,11 +30,60 @@
       <ion-spinner></ion-spinner>
     </div>
 
-    <!-- ===================== CREAR USUARIO ===================== -->
+    <!-- ===================== USUARIOS (crear / editar) ===================== -->
     <ng-container *ngIf="!cargando && tab === 'usuario'">
 
       <section class="sa-card">
-        <h3>Datos del usuario</h3>
+        <h3>Editar un usuario</h3>
+        <div class="sa-buscar">
+          <input class="sa-input" [(ngModel)]="busqueda" (keyup.enter)="buscarUsuarios()"
+            placeholder="Nombre, apellido, login o email" />
+          <button class="sa-btn sa-btn-sec" (click)="buscarUsuarios()" [disabled]="buscando">
+            <ion-spinner name="crescent" *ngIf="buscando"></ion-spinner>
+            <span *ngIf="!buscando">Buscar</span>
+          </button>
+        </div>
+
+        <div class="sa-tabla-wrap" *ngIf="resultados.length">
+          <table class="sa-tabla">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Login</th>
+                <th>Rol</th>
+                <th>Zonas</th>
+                <th class="acc">Editar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of resultados" [class.sel]="r._id === editandoId">
+                <td>
+                  <span class="sa-nombre">{{ r.FirstName }} {{ r.LastName }}</span>
+                  <span class="sa-tag" *ngIf="r.IsLocked == 1">bloqueado</span>
+                  <span class="sa-tag on" *ngIf="r.SuperAdmin">super admin</span>
+                </td>
+                <td>{{ r.Login }}</td>
+                <td>{{ nombreRol(r.RoleID) }}</td>
+                <td>{{ zonasDe(r) }}</td>
+                <td class="acc">
+                  <button class="sa-ico" title="Editar" (click)="editarUsuario(r)">
+                    <ion-icon name="create-outline"></ion-icon>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="sa-editando" *ngIf="editandoId">
+        <ion-icon name="create-outline"></ion-icon>
+        <span>Editando a <strong>{{ usuario.FirstName }} {{ usuario.LastName }}</strong>. Los cambios se guardan con "Guardar cambios".</span>
+        <button class="sa-btn sa-btn-sec" (click)="limpiarUsuario()" [disabled]="guardando">Cancelar edición</button>
+      </div>
+
+      <section class="sa-card">
+        <h3>{{ editandoId ? 'Datos del usuario' : 'Nuevo usuario' }}</h3>
         <div class="sa-grid">
           <div class="sa-field">
             <label class="sa-label">Nombre *</label>
@@ -53,8 +102,9 @@
             <span class="sa-hint ok" *ngIf="disponible.Login === true">Disponible</span>
           </div>
           <div class="sa-field">
-            <label class="sa-label">Clave *</label>
-            <input class="sa-input" type="password" [(ngModel)]="usuario.Password" placeholder="Mínimo 4 caracteres"
+            <label class="sa-label">{{ editandoId ? 'Nueva clave' : 'Clave *' }} <span *ngIf="editandoId">(vacío = no se cambia)</span></label>
+            <input class="sa-input" type="password" [(ngModel)]="usuario.Password"
+              [placeholder]="editandoId ? 'Escriba solo si la va a cambiar' : 'Mínimo 4 caracteres'"
               autocomplete="new-password" />
           </div>
           <div class="sa-field">
@@ -157,7 +207,7 @@
         <h3>Estado</h3>
         <div class="sa-switches">
           <div class="sa-switch">
-            <span>Crear bloqueado</span>
+            <span>{{ editandoId ? 'Bloqueado' : 'Crear bloqueado' }}</span>
             <mat-slide-toggle color="primary" [(ngModel)]="usuario.IsLocked"></mat-slide-toggle>
           </div>
           <div class="sa-switch warn">
@@ -169,10 +219,10 @@
 
       <div class="sa-actions">
         <span class="sa-hint mal" *ngIf="erroresUsuario.length">Falta: {{ erroresUsuario.join(', ') }}</span>
-        <button class="sa-btn sa-btn-sec" (click)="limpiarUsuario()" [disabled]="guardando">Limpiar</button>
-        <button class="sa-btn sa-btn-pri" (click)="crearUsuario()" [disabled]="guardando || erroresUsuario.length">
+        <button class="sa-btn sa-btn-sec" (click)="limpiarUsuario()" [disabled]="guardando">{{ editandoId ? 'Cancelar edición' : 'Limpiar' }}</button>
+        <button class="sa-btn sa-btn-pri" (click)="guardarUsuario()" [disabled]="guardando || erroresUsuario.length">
           <ion-spinner name="crescent" *ngIf="guardando"></ion-spinner>
-          <span *ngIf="!guardando">Crear usuario</span>
+          <span *ngIf="!guardando">{{ editandoId ? 'Guardar cambios' : 'Crear usuario' }}</span>
         </button>
       </div>
 
