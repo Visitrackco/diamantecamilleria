@@ -23,6 +23,7 @@
                   
               "src/firebase-messaging-sw.js",
               "src/manifest.json" ,
+              "src/privacidad.html",
               {
                 "glob": "**/*",
                 "input": "src/assets",
@@ -107,6 +108,7 @@
                   
               "src/firebase-messaging-sw.js",
               "src/manifest.json" ,
+              "src/privacidad.html",
               {
                 "glob": "**/*",
                 "input": "src/assets",
