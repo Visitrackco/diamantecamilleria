@@ -272,6 +272,12 @@
             <label class="sa-label">TagUID <span>(opcional)</span></label>
             <input class="sa-input" [(ngModel)]="nuevaZona.TagUID" placeholder="TagUID" />
           </div>
+          <div class="sa-field">
+            <label class="sa-label">Inicio de sesión en la app <span>(camilleros)</span></label>
+            <select class="sa-input" [(ngModel)]="nuevaZona.LoginModo">
+              <option *ngFor="let m of modosLogin" [ngValue]="m.value">{{ m.label }}</option>
+            </select>
+          </div>
         </div>
         <div class="sa-actions">
           <button class="sa-btn sa-btn-pri" (click)="crearZona()" [disabled]="guardando">
@@ -288,6 +294,7 @@
               <th class="num">ID</th>
               <th>Zona</th>
               <th>Código</th>
+              <th>Inicio en la app</th>
               <th class="num">Usuarios</th>
               <th class="num">Ubicaciones</th>
               <th class="num">Motivos</th>
@@ -304,6 +311,12 @@
                 <span class="sa-tag" *ngIf="!z.Operativa" title="Todavía no tiene colección de solicitudes">sin solicitudes</span>
               </td>
               <td>{{ z.Code }}</td>
+              <td>
+                <select class="sa-input sa-input-sm" [ngModel]="z.LoginModo" (ngModelChange)="cambiarModoLogin(z, $event)"
+                  title="Cómo inicia y cierra sesión el camillero en la app">
+                  <option *ngFor="let m of modosLogin" [ngValue]="m.value">{{ m.label }}</option>
+                </select>
+              </td>
               <td class="num">{{ z.Usuarios }}</td>
               <td class="num">{{ z.Ubicaciones }}</td>
               <td class="num">{{ z.Motivos }}</td>

@@ -87,8 +87,15 @@ export class SuperAdminPage {
   }
 
   private zonaVacia() {
-    return { Name: '', IDVT: '', Code: '', TagUID: '' };
+    return { Name: '', IDVT: '', Code: '', TagUID: '', LoginModo: 'NFC' };
   }
+
+  // Como inicia y cierra sesion el camillero en la app movil, por zona.
+  modosLogin = [
+    { value: 'NFC', label: 'Tarjeta NFC' },
+    { value: 'QR', label: 'Código QR' },
+    { value: 'AMBOS', label: 'NFC o QR' }
+  ];
 
   private async token() {
     const login = await this.stg.getLogin();
@@ -429,6 +436,23 @@ export class SuperAdminPage {
     });
 
     await alert.present();
+  }
+
+  // Se guarda al cambiar el select de la tabla.
+  async cambiarModoLogin(zona, modo) {
+    const anterior = zona.LoginModo;
+    zona.LoginModo = modo;
+
+    const token = await this.token();
+    const rs: any = await this.api.apiPost('superadmin/zonas/' + zona._id, { token, LoginModo: modo });
+
+    if (!rs || !rs.status) {
+      zona.LoginModo = anterior;
+      this.toast.MsgError(rs && rs.err ? rs.err : 'No se pudo cambiar el modo de inicio');
+      return;
+    }
+
+    this.toast.MsgOK(zona.Name + ': los camilleros entran con ' + this.modosLogin.find((m) => m.value == modo).label);
   }
 
   private async guardarZona(zona, data) {

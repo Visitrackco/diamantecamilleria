@@ -56,6 +56,8 @@ $diamante: #0E3651;
   &:disabled { background: #f8fafc; }
 }
 
+.sa-input-sm { padding: 5px 8px; font-size: 13px; min-width: 120px; }
+
 .sa-hint {
   font-size: 11px; color: #94a3b8;
   &.mal { color: #dc2626; }
