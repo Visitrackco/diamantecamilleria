@@ -95,8 +95,9 @@ export class SuperAdminPage {
     { value: 'NFC', label: 'Tarjeta NFC' },
     { value: 'QR', label: 'Código QR' },
     { value: 'AMBOS', label: 'NFC o QR' },
-    // Sin lectura: para la zona de pruebas (revisión de Google Play), no para clínicas.
-    { value: 'NINGUNO', label: 'Solo usuario y contraseña' }
+    // NA: no pide NFC ni QR al entrar, al salir ni dentro de la app (origen, destino y
+    // retornos se marcan con un botón). Para la zona de pruebas / revisión de Google Play.
+    { value: 'NINGUNO', label: 'NA (sin lectura)' }
   ];
 
   private async token() {
