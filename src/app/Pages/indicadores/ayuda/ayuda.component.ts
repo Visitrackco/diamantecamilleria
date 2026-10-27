@@ -130,6 +130,12 @@ export class AyudaComponent {
           {
             titulo: 'Se saca el porcentaje',
             desc: 'A tiempo sobre el total de medibles. La meta (90% por defecto) viene de la configuración de la zona.'
+          },
+          {
+            titulo: 'Tiempos promedio por motivo (tablas de abajo)',
+            desc: 'Promedio en minutos desde la llegada al origen hasta la llegada al destino, y desde la solicitud hasta la llegada al destino. '
+              + 'No tienen meta, así que no hay % de cumplimiento. Cada uno usa solo los servicios que tienen esas dos marcas, '
+              + 'con los mismos filtros y sin los puntos extremos.'
           }
         ],
         filtros: [A.F_FECHA, A.F_PRIORIDAD, A.F_UNIDAD, A.F_ORIGEN, A.F_DESTINO, A.F_TIPO, A.F_EXTREMOS],

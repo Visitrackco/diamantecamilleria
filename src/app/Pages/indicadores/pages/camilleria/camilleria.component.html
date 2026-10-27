@@ -233,6 +233,46 @@
 
   </div>
 
+  <!-- Tiempos promedio por motivo (minutos). No tienen meta: solo promedio. -->
+  <div class="cam-tiempos">
+    <div class="panel" *ngFor="let t of tablasTiempo">
+      <div class="panel-title">
+        {{ t.titulo }}
+        <span class="panel-hint">{{ t.desc }}</span>
+      </div>
+      <div class="tabla-wrap">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>MOTIVO</th>
+              <th class="num">Servicios</th>
+              <th class="num">Promedio (min)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of distribucion">
+              <td>{{ m.motivo }}</td>
+              <td class="num">{{ m[t.campo]?.servicios | number }}</td>
+              <td class="num">{{ m[t.campo]?.promedio != null ? (m[t.campo].promedio | number:'1.1-1') : '—' }}</td>
+            </tr>
+            <tr *ngIf="!distribucion.length">
+              <td colspan="3" class="vacio">Sin datos para los filtros seleccionados.</td>
+            </tr>
+          </tbody>
+          <tfoot *ngIf="distribucion.length">
+            <tr>
+              <td>Total</td>
+              <td class="num">{{ tiemposTotal[t.campo]?.servicios | number }}</td>
+              <td class="num">
+                {{ tiemposTotal[t.campo]?.promedio != null ? (tiemposTotal[t.campo].promedio | number:'1.1-1') : '—' }}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <div class="cam-loading" *ngIf="loading">
     <ion-spinner></ion-spinner>
   </div>

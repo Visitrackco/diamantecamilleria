@@ -79,6 +79,14 @@ export class CamilleriaComponent implements OnInit, OnChanges {
   // y los valores con que se calcularon: { excluidos, medidos, promedio, desviacion, limiteInf, limiteSup }.
   atipicos: any = null;
 
+  // Tablas de tiempo promedio por motivo. `campo` es la propiedad de cada fila de
+  // distribucionPorMotivo (y de response.tiempos para la fila Total).
+  tablasTiempo = [
+    { campo: 'tiempoTraslado', titulo: 'TIEMPO PROMEDIO ORIGEN → DESTINO', desc: 'Desde la llegada al origen hasta la llegada al destino' },
+    { campo: 'tiempoTotal', titulo: 'TIEMPO PROMEDIO SOLICITUD → DESTINO', desc: 'Desde la solicitud hasta la llegada al destino' }
+  ];
+  tiemposTotal: any = {};
+
   // Charts (ApexCharts)
   gauge: any = null;
   line: any = null;
@@ -136,6 +144,8 @@ export class CamilleriaComponent implements OnInit, OnChanges {
     this.totalAtiempo = r.totales ? r.totales.aTiempo : 0;
     this.totalFuera = r.totales ? r.totales.fueraTiempo : 0;
     this.atipicos = r.atipicos || null;
+    // Los links compartidos antes de este cambio no traen tiempos: salen en "—".
+    this.tiemposTotal = r.tiempos || {};
     this.buildGauge(r.cumplimiento);
     this.tendenciaGlobal = r.tendencia || [];
     this.buildLine(this.tendenciaGlobal);

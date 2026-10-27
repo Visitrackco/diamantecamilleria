@@ -257,6 +257,17 @@ $border: #e5e7eb;
   }
 }
 
+/* ===== Tablas de tiempo promedio por motivo (debajo de la tabla y la grafica) ===== */
+.cam-tiempos {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 1100px) {
+  .cam-tiempos { grid-template-columns: 1fr 1fr; }
+}
+
 /* ===== Grid inferior: tabla + gráfica =====
    Con la letra mas grande las dos lado a lado quedan apretadas, asi que por defecto
    van una debajo de la otra a todo el ancho. Solo en monitores anchos se reparten
