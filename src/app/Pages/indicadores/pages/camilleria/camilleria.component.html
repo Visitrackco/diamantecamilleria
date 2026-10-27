@@ -253,7 +253,9 @@
             <tr *ngFor="let m of distribucion">
               <td>{{ m.motivo }}</td>
               <td class="num">{{ m[t.campo]?.servicios | number }}</td>
-              <td class="num">{{ m[t.campo]?.promedio != null ? (m[t.campo].promedio | number:'1.1-1') : '—' }}</td>
+              <td class="num" [title]="'Promedio de ' + (m[t.campo]?.conTiempo || 0) + ' servicios con llegada a destino'">
+                {{ m[t.campo]?.promedio != null ? (m[t.campo].promedio | number:'1.1-1') : '—' }}
+              </td>
             </tr>
             <tr *ngIf="!distribucion.length">
               <td colspan="3" class="vacio">Sin datos para los filtros seleccionados.</td>
