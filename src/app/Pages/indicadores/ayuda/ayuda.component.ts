@@ -134,8 +134,8 @@ export class AyudaComponent {
           {
             titulo: 'Tiempos promedio por motivo (tablas de abajo)',
             desc: 'Promedio en minutos desde la llegada al origen hasta la llegada al destino, y desde la solicitud hasta la llegada al destino. '
-              + 'No tienen meta, así que no hay % de cumplimiento. Cada uno usa solo los servicios que tienen esas dos marcas, '
-              + 'con los mismos filtros y sin los puntos extremos.'
+              + 'No tienen meta, así que no hay % de cumplimiento. Usan los mismos servicios de la tabla de cumplimiento '
+              + '(sus cantidades suman igual que A tiempo + Fuera de tiempo); uno que todavía no llega al destino no entra al promedio.'
           }
         ],
         filtros: [A.F_FECHA, A.F_PRIORIDAD, A.F_UNIDAD, A.F_ORIGEN, A.F_DESTINO, A.F_TIPO, A.F_EXTREMOS],
